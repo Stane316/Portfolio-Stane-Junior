@@ -24,17 +24,32 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
-/**
- * LanguageProvider component
- * Wraps the application and provides language context to all children
- */
+// Fonction de détection de langue du navigateur
+const detectBrowserLanguage = (): Language => {
+  if (typeof navigator === 'undefined') return 'fr';
+  
+  const browserLang = navigator.language || (navigator as any).userLanguage;
+  const langCode = browserLang.toLowerCase();
+  
+  // Si la langue commence par 'fr' -> français
+  if (langCode.startsWith('fr')) return 'fr';
+  
+  // Si la langue est dans une région francophone
+  const francophoneRegions = ['fr', 'be', 'ch', 'lu', 'mc', 're', 'gp', 'mq', 'gf', 'nc', 'pf', 'pm', 'wf', 'yt'];
+  if (francophoneRegions.some((region) => langCode.includes(region))) return 'fr';
+  
+  // Par défaut -> anglais pour les autres
+  return 'en';
+};
+
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [lang, setLangState] = useState<Language>(() => {
-    // Try to get saved language from localStorage
+    // 1. Vérifier localStorage d'abord
     const saved = localStorage.getItem('portfolio-lang');
     if (saved === 'fr' || saved === 'en') return saved;
-    // Default to French (local audience)
-    return 'fr';
+    
+    // 2. Sinon détecter la langue du navigateur
+    return detectBrowserLanguage();
   });
 
   const setLang = (newLang: Language) => {
@@ -46,13 +61,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     setLang(lang === 'fr' ? 'en' : 'fr');
   };
 
-  // Simple translation function - in production, this would use i18n data
   const t = (key: string): string => {
-    // This will be replaced with actual translation data from i18n.ts
     return key;
   };
 
-  // Update HTML lang attribute
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
@@ -64,10 +76,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   );
 };
 
-/**
- * Hook to use the language context
- * Must be used within a LanguageProvider
- */
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {

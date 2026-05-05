@@ -42,7 +42,7 @@ const About: React.FC = () => {
   ];
 
   return (
-    <section id="about" className="py-20 md:py-32 relative">
+    <section id="about" className="py-16 sm:py-20 md:py-24 lg:py-32 relative" aria-labelledby="about-title">
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -50,52 +50,43 @@ const About: React.FC = () => {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          {/* Section Title */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 id="about-title" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 sm:mb-4">
               <span className="text-gradient">{isFr ? 'À propos de moi' : 'About me'}</span>
             </h2>
-            <div className="w-20 h-1 bg-[var(--accent-cyan)] mx-auto rounded-full" />
+            <div className="w-16 sm:w-20 h-1 bg-[#00BFFF] mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column - Photo */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex justify-center"
             >
               <div className="relative">
-                <div className="absolute w-64 h-64 md:w-80 md:h-80 bg-[var(--accent-blue)] rounded-full blur-[80px] opacity-20" />
-                <div className="relative w-64 h-64 md:w-80 md:h-80 glass rounded-3xl overflow-hidden flex items-center justify-center">
-                  <div className="w-full h-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-cyan)] opacity-30" />
-                  <span className="absolute text-5xl md:text-7xl font-display font-bold text-white opacity-50">
-                    SJ
-                  </span>
+                <div className="absolute w-56 h-56 md:w-72 md:h-72 bg-[#1A6FC4] rounded-full blur-[80px] opacity-20" />
+                <div className="relative w-56 h-56 md:w-72 md:h-72 glass rounded-2xl md:rounded-3xl overflow-hidden flex items-center justify-center">
+                  <div className="w-full h-full bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] opacity-30" />
+                  <span className="absolute text-4xl md:text-6xl font-display font-bold text-white opacity-50">SJ</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Right Column - Content */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              {/* Paragraphs */}
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="text-[var(--text-secondary)] leading-relaxed">
-                    {paragraph}
-                  </p>
+                  <p key={index} className="text-[#A8B4C8] leading-relaxed text-sm sm:text-base">{paragraph}</p>
                 ))}
               </div>
 
-              {/* Quick Facts */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-6 sm:mb-8">
                 {facts.map((fact, index) => (
                   <motion.div
                     key={index}
@@ -103,24 +94,23 @@ const About: React.FC = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.5 + index * 0.1 }}
-                    className="flex items-center gap-3"
+                    className="flex items-center gap-2 sm:gap-3"
                   >
-                    <span className="text-2xl">{fact.icon}</span>
-                    <span className="text-[var(--text-secondary)] text-sm">{fact.text}</span>
+                    <span className="text-xl sm:text-2xl flex-shrink-0">{fact.icon}</span>
+                    <span className="text-[#A8B4C8] text-xs sm:text-sm">{fact.text}</span>
                   </motion.div>
                 ))}
               </div>
 
-              {/* CV Download Button */}
               <motion.a
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.9 }}
                 href="#"
-                className="btn-secondary inline-flex items-center gap-2"
+                className="btn-secondary inline-flex items-center gap-2 text-sm"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 {isFr ? 'Télécharger mon CV' : 'Download my CV'}

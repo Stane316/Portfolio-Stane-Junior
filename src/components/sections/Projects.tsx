@@ -1,11 +1,8 @@
-/**
- * Projects Section avec images et études de cas iconifiées
- */
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData, type Project as SupabaseProject } from '../../hooks/useSupabaseData';
+import SocialShare from '../../components/ui/SocialShare';
 
 interface CaseStudyStep {
   title: string;
@@ -13,7 +10,6 @@ interface CaseStudyStep {
   icon: string;
 }
 
-// Icônes pour chaque étape de l'étude de cas
 const CASE_STUDY_ICONS = {
   fr: [
     { icon: '🔍', title: 'Le problème' },
@@ -31,24 +27,14 @@ const CASE_STUDY_ICONS = {
   ],
 };
 
-const convertProject = (p: SupabaseProject): {
-  id: number;
-  title: { fr: string; en: string };
-  status: 'delivered' | 'in_progress' | 'concept';
-  description: { fr: string; en: string };
-  stack: string[];
-  liveUrl: string;
-  imageUrl: string;
-  isFeatured: boolean;
-  caseStudy: { fr: CaseStudyStep[]; en: CaseStudyStep[] };
-} => {
+const convertProject = (p: SupabaseProject) => {
   const caseStudyFr: CaseStudyStep[] = [];
   const caseStudyEn: CaseStudyStep[] = [];
-  
+
   if (p.case_study_fr) {
     try {
       const cs = typeof p.case_study_fr === 'string' ? JSON.parse(p.case_study_fr) : p.case_study_fr;
-      Object.entries(cs).forEach(([_, value]: [string, any], index) => {
+      Object.entries(cs).forEach(([, value]: [string, any], index) => {
         const stepIcon = CASE_STUDY_ICONS.fr[index]?.icon || '📋';
         caseStudyFr.push({
           title: value?.title || CASE_STUDY_ICONS.fr[index]?.title || `Étape ${index + 1}`,
@@ -57,7 +43,6 @@ const convertProject = (p: SupabaseProject): {
         });
       });
     } catch {
-      // Fallback avec icônes par défaut
       CASE_STUDY_ICONS.fr.forEach((icon) => {
         caseStudyFr.push({ title: icon.title, content: '', icon: icon.icon });
       });
@@ -67,7 +52,7 @@ const convertProject = (p: SupabaseProject): {
   if (p.case_study_en) {
     try {
       const cs = typeof p.case_study_en === 'string' ? JSON.parse(p.case_study_en) : p.case_study_en;
-      Object.entries(cs).forEach(([_, value]: [string, any], index) => {
+      Object.entries(cs).forEach(([, value]: [string, any], index) => {
         const stepIcon = CASE_STUDY_ICONS.en[index]?.icon || '📋';
         caseStudyEn.push({
           title: value?.title || CASE_STUDY_ICONS.en[index]?.title || `Step ${index + 1}`,
@@ -100,8 +85,22 @@ const Projects: React.FC = () => {
   const isFr = lang === 'fr';
   const { projects: supabaseProjects, loading, error } = useSupabaseData();
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const projects = supabaseProjects.map(p => convertProject(p));
+
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery.trim()) return projects;
+    const query = searchQuery.toLowerCase();
+    return projects.filter(
+      (p) =>
+        p.title.fr.toLowerCase().includes(query) ||
+        p.title.en.toLowerCase().includes(query) ||
+        p.description.fr.toLowerCase().includes(query) ||
+        p.description.en.toLowerCase().includes(query) ||
+        p.stack.some((tech) => tech.toLowerCase().includes(query))
+    );
+  }, [projects, searchQuery]);
 
   const getStatusBadge = (status: SupabaseProject['status']) => {
     const config = {
@@ -144,7 +143,7 @@ const Projects: React.FC = () => {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
         >
-          <div className="text-center mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
               <span className="text-gradient">{isFr ? 'Projets réels' : 'Real projects'}</span>
             </h2>
@@ -154,17 +153,60 @@ const Projects: React.FC = () => {
             <div className="w-16 sm:w-20 h-1 bg-cyan-400 mx-auto rounded-full mt-4" />
           </div>
 
+          {/* Search Bar */}
+          <div className="max-w-md mx-auto mb-8 sm:mb-12">
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={isFr ? 'Rechercher un projet...' : 'Search projects...'}
+                className="w-full pl-10 pr-10 py-3 glass rounded-xl border border-[var(--border)] bg-[#141430] text-white placeholder-[var(--text-muted)] text-sm focus:outline-none focus:border-[#00BFFF] transition-colors"
+                aria-label={isFr ? 'Rechercher des projets' : 'Search projects'}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-white transition-colors"
+                  aria-label="Effacer la recherche"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="text-[var(--text-muted)] text-xs mt-2 text-center">
+                {isFr
+                  ? `${filteredProjects.length} résultat${filteredProjects.length > 1 ? 's' : ''}`
+                  : `${filteredProjects.length} result${filteredProjects.length > 1 ? 's' : ''}`}
+              </p>
+            )}
+          </div>
+
           {error && (
             <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400 text-center mb-8">
               {isFr ? 'Erreur de chargement des projets' : 'Error loading projects'}
             </div>
           )}
 
-          {projects.length === 0 ? (
+          {filteredProjects.length === 0 ? (
             <div className="glass-card text-center py-12">
-              <p className="text-gray-400">
-                {isFr ? 'Aucun projet disponible pour le moment.' : 'No projects available at the moment.'}
+              <span className="text-4xl mb-4 block">🔍</span>
+              <p className="text-[var(--text-secondary)] mb-2">
+                {searchQuery
+                  ? (isFr ? 'Aucun projet trouvé' : 'No projects found')
+                  : (isFr ? 'Aucun projet disponible pour le moment.' : 'No projects available at the moment.')}
               </p>
+              {searchQuery && (
+                <p className="text-[var(--text-muted)] text-sm">
+                  {isFr ? 'Essayez un autre terme de recherche' : 'Try a different search term'}
+                </p>
+              )}
             </div>
           ) : (
             <motion.div
@@ -174,15 +216,13 @@ const Projects: React.FC = () => {
               viewport={{ once: true }}
               className="space-y-6 sm:space-y-8"
             >
-              {projects.map((project) => {
+              {filteredProjects.map((project) => {
                 const status = getStatusBadge(project.status as any);
 
                 return (
                   <motion.div key={project.id} variants={itemVariants}>
                     <div className="project-card">
-                      {/* Project Header with Image */}
                       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4">
-                        {/* Project Image */}
                         {project.imageUrl ? (
                           <div className="w-full sm:w-48 md:w-56 h-32 sm:h-36 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
                             <img
@@ -196,8 +236,7 @@ const Projects: React.FC = () => {
                             <span className="text-4xl opacity-50">🚀</span>
                           </div>
                         )}
-                        
-                        {/* Project Info */}
+
                         <div className="flex-1">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                             <div className="flex items-center gap-2">
@@ -222,8 +261,14 @@ const Projects: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Action Buttons */}
+
+                      <SocialShare
+                        title={isFr ? project.title.fr : project.title.en}
+                        url={project.liveUrl || window.location.href}
+                        description={isFr ? project.description.fr : project.description.en}
+                        className="mb-4"
+                      />
+
                       <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800">
                         {project.liveUrl && (
                           <a
@@ -256,7 +301,6 @@ const Projects: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Case Study Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -274,7 +318,6 @@ const Projects: React.FC = () => {
               className="relative glass-card w-full max-w-[95vw] sm:max-w-2xl lg:max-w-3xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-0"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedProject(null)}
                 className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 text-gray-400 hover:text-white transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
@@ -285,9 +328,8 @@ const Projects: React.FC = () => {
                 </svg>
               </button>
 
-              {/* Project Header */}
-              <div className="pb-4 sm:pb-6 border-b border-gray-800 mb-4 sm:mb-6">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white pr-10">
+              <div className="pb-4 sm:pb-6 border-b border-gray-800 mb-4 sm:mb-6 pr-10">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
                   {isFr ? selectedProject.title.fr : selectedProject.title.en}
                 </h3>
                 <p className="text-gray-400 text-sm mt-2">
@@ -295,7 +337,6 @@ const Projects: React.FC = () => {
                 </p>
               </div>
 
-              {/* Steps */}
               <div className="space-y-6 sm:space-y-8 px-1 sm:px-0 pb-4">
                 {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step: CaseStudyStep, index: number) => (
                   <motion.div
@@ -305,20 +346,15 @@ const Projects: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                     className="relative"
                   >
-                    {/* Connecting line */}
                     {index > 0 && (
                       <div className="absolute left-6 top-0 w-0.5 h-4 bg-gray-700 -mt-6" />
                     )}
-                    
                     <div className="flex items-start gap-4">
-                      {/* Icon with number */}
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-2xl">
                           {step.icon}
                         </div>
                       </div>
-                      
-                      {/* Content */}
                       <div className="flex-1 pt-2">
                         <h4 className="text-cyan-400 font-semibold mb-2 text-sm sm:text-base">
                           {index + 1}. {step.title}
@@ -334,7 +370,6 @@ const Projects: React.FC = () => {
                 ))}
               </div>
 
-              {/* Footer */}
               <div className="pt-4 border-t border-gray-800 text-center">
                 {selectedProject.liveUrl && (
                   <a

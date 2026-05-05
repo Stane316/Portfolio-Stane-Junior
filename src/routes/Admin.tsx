@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useToast } from '../admin/hooks/useToast';
 import { ToastContainer } from '../admin/components/Toast';
+import ConfirmDialog from '../admin/components/ConfirmDialog';
 import Sidebar from '../admin/components/Sidebar';
 import Topbar from '../admin/components/Topbar';
 import AdminDashboard from '../admin/components/AdminDashboard';
@@ -11,22 +12,73 @@ import MessageList from '../admin/components/MessageList';
 import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
 
+interface Project {
+  id: string;
+  title_fr: string;
+  title_en: string;
+  status: 'delivered' | 'in_progress' | 'concept';
+  description_fr: string;
+  description_en: string;
+  stack: string[];
+  live_url: string;
+  image_url: string;
+  display_order: number;
+  is_visible: boolean;
+  is_featured: boolean;
+  created_at: string;
+}
+
+interface Message {
+  id: string;
+  full_name: string;
+  email: string;
+  subject: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+interface Testimonial {
+  id: string;
+  person_name: string;
+  person_role: string;
+  company: string;
+  content_fr: string;
+  content_en: string;
+  photo_url: string;
+  video_url: string;
+  is_visible: boolean;
+  display_order: number;
+  created_at: string;
+}
+
+interface DashboardData {
+  projects: number;
+  testimonials: number;
+  messages: number;
+  unreadMessages: number;
+  recentMessages: Message[];
+  recentProjects: Project[];
+}
+
 const AdminLogin: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      if (authError) throw authError;
       navigate('/admin/dashboard');
-    } catch (err: any) {
-      setError('Identifiants incorrects');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Identifiants incorrects';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -42,16 +94,18 @@ const AdminLogin: React.FC = () => {
           <h1 className="text-2xl font-display font-bold text-white">Administration</h1>
         </div>
         <form onSubmit={handleLogin} className="glass-card space-y-6">
-          {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400">{error}</div>}
+          {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400" role="alert">{error}</div>}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-white">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
+            <label htmlFor="login-email" className="block text-sm font-semibold mb-2 text-white">Email</label>
+            <input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" aria-required="true" />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-2 text-white">Mot de passe</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
+            <label htmlFor="login-password" className="block text-sm font-semibold mb-2 text-white">Mot de passe</label>
+            <input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" aria-required="true" />
           </div>
-          <button type="submit" disabled={loading} className="w-full btn-primary">{loading ? 'Connexion...' : 'Se connecter'}</button>
+          <button type="submit" disabled={loading} className="w-full btn-primary" aria-busy={loading}>
+            {loading ? 'Connexion...' : 'Se connecter'}
+          </button>
         </form>
       </div>
     </div>
@@ -62,8 +116,15 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toasts, addToast, removeToast } = useToast();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [dashboardData, setDashboardData] = useState({
+  const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; title: string; message: string; onConfirm: () => void; type: 'danger' | 'warning' | 'info' }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    type: 'danger',
+  });
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
     projects: 0,
     testimonials: 0,
     messages: 0,
@@ -71,12 +132,12 @@ const AdminLayout: React.FC = () => {
     recentMessages: [],
     recentProjects: [],
   });
-  const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = async (): Promise<void> => {
     if (!isSupabaseConfigured()) {
       setLoading(false);
       return;
@@ -88,13 +149,13 @@ const AdminLayout: React.FC = () => {
         supabase.from('messages').select('*').order('created_at', { ascending: false }),
       ]);
 
-      const projectsData = pRes.data || [];
-      const messagesData = mRes.data || [];
-      const unread = messagesData.filter((m: any) => !m.is_read).length;
+      const projectsData: Project[] = (pRes.data as Project[]) || [];
+      const messagesData: Message[] = (mRes.data as Message[]) || [];
+      const unread = messagesData.filter((m: Message) => !m.is_read).length;
 
       setDashboardData({
         projects: projectsData.length,
-        testimonials: (tRes.data || []).length,
+        testimonials: (tRes.data as Testimonial[] || []).length,
         messages: messagesData.length,
         unreadMessages: unread,
         recentMessages: messagesData.slice(0, 5),
@@ -102,7 +163,7 @@ const AdminLayout: React.FC = () => {
       });
       setProjects(projectsData);
       setMessages(messagesData);
-      setTestimonials(tRes.data || []);
+      setTestimonials((tRes.data as Testimonial[]) || []);
     } catch (err) {
       console.error('Dashboard fetch error:', err);
     } finally {
@@ -114,12 +175,20 @@ const AdminLayout: React.FC = () => {
     fetchDashboard();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await supabase.auth.signOut();
     navigate('/admin/login');
   };
 
-  const getPageInfo = () => {
+  const showConfirm = (title: string, message: string, onConfirm: () => void, type: 'danger' | 'warning' | 'info' = 'danger'): void => {
+    setConfirmDialog({ isOpen: true, title, message, onConfirm, type });
+  };
+
+  const closeConfirm = (): void => {
+    setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const getPageInfo = (): { title: string; breadcrumb: string[] } => {
     const path = location.pathname;
     if (path.includes('/projects')) return { title: 'Projets', breadcrumb: ['Projets'] };
     if (path.includes('/testimonials')) return { title: 'Témoignages', breadcrumb: ['Témoignages'] };
@@ -137,19 +206,30 @@ const AdminLayout: React.FC = () => {
       <main className="flex-1 flex flex-col min-w-0">
         <Topbar title={title} breadcrumb={breadcrumb} unreadCount={dashboardData.unreadMessages} onMobileMenuClick={() => setIsMobileOpen(true)} onLogout={handleLogout} />
         
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6" role="main">
           <Routes>
             <Route index element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
             <Route path="dashboard" element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
-            <Route path="projects" element={<ProjectTable projects={projects} onRefresh={fetchDashboard} onToast={addToast} />} />
-            <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} />} />
-            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
+            <Route path="projects" element={<ProjectTable projects={projects} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le projet', `Êtes-vous sûr de vouloir supprimer "${name}" ? Cette action est irréversible.`, onDone, 'danger')} />} />
+            <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le témoignage', `Êtes-vous sûr de vouloir supprimer le témoignage de "${name}" ?`, onDone, 'danger')} />} />
+            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le message', `Supprimer le message de "${name}" ?`, onDone, 'warning')} />} />
             <Route path="content" element={<AdminContent />} />
           </Routes>
         </div>
       </main>
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={() => {
+          confirmDialog.onConfirm();
+          closeConfirm();
+        }}
+        onCancel={closeConfirm}
+        type={confirmDialog.type}
+      />
     </div>
   );
 };

@@ -18,17 +18,17 @@ interface UseToastReturn {
 export const useToast = (): UseToastReturn => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((type: ToastType, message: string, duration = 4000) => {
-    const id = Date.now().toString() + Math.random().toString(36).substring(7);
-    setToasts((prev) => [...prev, { id, type, message, duration }]);
+  const addToast = useCallback((type: ToastType, message: string, duration: number = 4000): void => {
+    const id: string = Date.now().toString() + Math.random().toString(36).substring(7);
+    setToasts((prev: Toast[]) => [...prev, { id, type, message, duration }]);
     
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+    setTimeout((): void => {
+      setToasts((prev: Toast[]) => prev.filter((t: Toast) => t.id !== id));
     }, duration);
   }, []);
 
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+  const removeToast = useCallback((id: string): void => {
+    setToasts((prev: Toast[]) => prev.filter((t: Toast) => t.id !== id));
   }, []);
 
   return { toasts, addToast, removeToast };

@@ -14,24 +14,79 @@
     <meta name="theme-color" content="#0A0A1E" />
     <meta name="color-scheme" content="dark" />
     
-    <!-- Google Analytics - Replace GA_MEASUREMENT_ID with your actual ID -->
-    <!-- Exemple: G-XXXXXXXXXX -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JJSZ4SBEEF"></script>
+    <!-- Structured Data JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Stane-Junior Aniambossou",
+      "alternateName": "Stane316",
+      "url": "https://stanejunior.netlify.app",
+      "jobTitle": "Étudiant Développeur & Fondateur d'Agence",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "GROW TECH",
+        "url": "https://growtech.bj"
+      },
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "IFRI-UAC",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Abomey-Calavi",
+          "addressCountry": "BJ"
+        }
+      },
+      "knowsAbout": ["React", "Supabase", "TailwindCSS", "JavaScript", "TypeScript", "Development Web"],
+      "sameAs": [
+        "https://github.com/Stane316",
+        "https://www.linkedin.com/in/stane-aniambossou-2a412b3b8/"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Abomey-Calavi",
+        "addressRegion": "Atlantique",
+        "addressCountry": "BJ"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+2290199218112",
+        "contactType": "freelance",
+        "areaServed": "BJ",
+        "availableLanguage": ["French", "English"]
+      }
+    }
+    </script>
+
+    <!-- WebSite Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Stane-Junior Aniambossou - Portfolio",
+      "url": "https://stanejunior.netlify.app",
+      "description": "Portfolio professionnel de Stane-Junior Aniambossou, étudiant développeur et fondateur de GROW TECH",
+      "author": {
+        "@type": "Person",
+        "name": "Stane-Junior Aniambossou"
+      },
+      "inLanguage": ["fr", "en"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://stanejunior.netlify.app/#projects",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-JJSZ4SBEEF', {
-        page_path: window.location.hash || '/',
-        send_page_view: true
-      });
-      
-      // Track hash changes for SPA
-      window.addEventListener('hashchange', function() {
-        gtag('config', 'G-JJSZ4SBEEF', {
-          page_path: window.location.hash || '/'
-        });
-      });
+      gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.hash || '/', send_page_view: true });
+      window.addEventListener('hashchange', function() { gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.hash || '/' }); });
     </script>
     
     <!-- Favicon -->
@@ -57,8 +112,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    
-    <!-- Preload critical fonts -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" as="style" />
   </head>
   <body>
