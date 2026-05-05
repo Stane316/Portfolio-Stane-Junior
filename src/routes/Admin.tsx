@@ -1,15 +1,15 @@
-/**
- * Admin Route Component - CRUD Complete
- */
-
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import AdminLayout from '../admin/components/AdminLayout';
-import AdminProjects from '../admin/components/AdminProjects';
-import AdminTestimonials from '../admin/components/AdminTestimonials';
-import AdminMessages from '../admin/components/AdminMessages';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { useToast } from '../admin/hooks/useToast';
+import { ToastContainer } from '../admin/components/Toast';
+import Sidebar from '../admin/components/Sidebar';
+import Topbar from '../admin/components/Topbar';
+import AdminDashboard from '../admin/components/AdminDashboard';
+import ProjectTable from '../admin/components/ProjectTable';
+import MessageList from '../admin/components/MessageList';
 import AdminContent from '../admin/components/AdminContent';
+import AdminTestimonials from '../admin/components/AdminTestimonials';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,14 +26,14 @@ const AdminLogin: React.FC = () => {
       if (error) throw error;
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError('Invalid credentials');
+      setError('Identifiants incorrects');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-block w-16 h-16 glass rounded-2xl flex items-center justify-center mb-4">
@@ -45,97 +45,112 @@ const AdminLogin: React.FC = () => {
           {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400">{error}</div>}
           <div>
             <label className="block text-sm font-semibold mb-2 text-white">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-white focus:outline-none focus:border-[var(--accent-cyan)]" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-2 text-white">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-white focus:outline-none focus:border-[var(--accent-cyan)]" />
+            <label className="block text-sm font-semibold mb-2 text-white">Mot de passe</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
           </div>
-          <button type="submit" disabled={loading} className="w-full btn-primary">
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
+          <button type="submit" disabled={loading} className="w-full btn-primary">{loading ? 'Connexion...' : 'Se connecter'}</button>
         </form>
       </div>
     </div>
   );
 };
 
-const DashboardOverview: React.FC = () => {
-  const [stats, setStats] = useState({ projects: 0, testimonials: 0, messages: 0 });
+const AdminLayout: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toasts, addToast, removeToast } = useToast();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [dashboardData, setDashboardData] = useState({
+    projects: 0,
+    testimonials: 0,
+    messages: 0,
+    unreadMessages: 0,
+    recentMessages: [],
+    recentProjects: [],
+  });
   const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+
+  const fetchDashboard = async () => {
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const [pRes, tRes, mRes] = await Promise.all([
+        supabase.from('projects').select('*').order('display_order').limit(3),
+        supabase.from('testimonials').select('*').eq('is_visible', true),
+        supabase.from('messages').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      const projectsData = pRes.data || [];
+      const messagesData = mRes.data || [];
+      const unread = messagesData.filter((m: any) => !m.is_read).length;
+
+      setDashboardData({
+        projects: projectsData.length,
+        testimonials: (tRes.data || []).length,
+        messages: messagesData.length,
+        unreadMessages: unread,
+        recentMessages: messagesData.slice(0, 5),
+        recentProjects: projectsData,
+      });
+      setProjects(projectsData);
+      setMessages(messagesData);
+      setTestimonials(tRes.data || []);
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [p, t, m] = await Promise.all([
-          supabase.from('projects').select('*', { count: 'exact', head: true }),
-          supabase.from('testimonials').select('*', { count: 'exact', head: true }),
-          supabase.from('messages').select('*', { count: 'exact', head: true }),
-        ]);
-        setStats({ projects: p.count || 0, testimonials: t.count || 0, messages: m.count || 0 });
-      } catch (err) {
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
+    fetchDashboard();
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[var(--accent-cyan)] border-t-transparent rounded-full animate-spin" /></div>;
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin/login');
+  };
+
+  const getPageInfo = () => {
+    const path = location.pathname;
+    if (path.includes('/projects')) return { title: 'Projets', breadcrumb: ['Projets'] };
+    if (path.includes('/testimonials')) return { title: 'Témoignages', breadcrumb: ['Témoignages'] };
+    if (path.includes('/messages')) return { title: 'Messages', breadcrumb: ['Messages'] };
+    if (path.includes('/content')) return { title: 'Contenu', breadcrumb: ['Contenu'] };
+    return { title: 'Vue d\'ensemble', breadcrumb: [] };
+  };
+
+  const { title, breadcrumb } = getPageInfo();
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-display font-bold text-white">Overview</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-card"><div className="text-3xl font-display font-bold text-[var(--accent-cyan)] mb-1">{stats.projects}</div><div className="text-[var(--text-secondary)] text-sm">Projects</div></div>
-        <div className="glass-card"><div className="text-3xl font-display font-bold text-[var(--accent-cyan)] mb-1">{stats.testimonials}</div><div className="text-[var(--text-secondary)] text-sm">Testimonials</div></div>
-        <div className="glass-card"><div className="text-3xl font-display font-bold text-[var(--accent-cyan)] mb-1">{stats.messages}</div><div className="text-[var(--text-secondary)] text-sm">Messages</div></div>
-      </div>
-      <div className="glass-card">
-        <h3 className="text-xl font-bold text-white mb-4">Quick Access</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/admin/projects" className="p-4 bg-[var(--bg-card)] rounded-lg hover:border-[var(--accent-cyan)] transition-colors"><div className="text-[var(--accent-cyan)] font-semibold">Manage Projects</div><div className="text-[var(--text-secondary)] text-sm">Create, edit, delete</div></a>
-          <a href="/admin/testimonials" className="p-4 bg-[var(--bg-card)] rounded-lg hover:border-[var(--accent-cyan)] transition-colors"><div className="text-[var(--accent-cyan)] font-semibold">Manage Testimonials</div><div className="text-[var(--text-secondary)] text-sm">Add customer reviews</div></a>
-          <a href="/admin/messages" className="p-4 bg-[var(--bg-card)] rounded-lg hover:border-[var(--accent-cyan)] transition-colors"><div className="text-[var(--accent-cyan)] font-semibold">View Messages</div><div className="text-[var(--text-secondary)] text-sm">Contact form</div></a>
-          <a href="/admin/content" className="p-4 bg-[var(--bg-card)] rounded-lg hover:border-[var(--accent-cyan)] transition-colors"><div className="text-[var(--accent-cyan)] font-semibold">Edit Content</div><div className="text-[var(--text-secondary)] text-sm">Site text content</div></a>
+    <div className="min-h-screen bg-[#0A0A1E] flex">
+      <Sidebar unreadCount={dashboardData.unreadMessages} onLogout={handleLogout} isMobileOpen={isMobileOpen} onMobileClose={() => setIsMobileOpen(false)} />
+      
+      <main className="flex-1 flex flex-col min-w-0">
+        <Topbar title={title} breadcrumb={breadcrumb} unreadCount={dashboardData.unreadMessages} onMobileMenuClick={() => setIsMobileOpen(true)} onLogout={handleLogout} />
+        
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <Routes>
+            <Route index element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
+            <Route path="dashboard" element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
+            <Route path="projects" element={<ProjectTable projects={projects} onRefresh={fetchDashboard} onToast={addToast} />} />
+            <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} />} />
+            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
+            <Route path="content" element={<AdminContent />} />
+          </Routes>
         </div>
-      </div>
+      </main>
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
-  );
-};
-
-const AdminDashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-      if (!session) navigate('/admin/login');
-    };
-    checkAuth();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-      if (!session) navigate('/admin/login');
-    });
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  if (isAuthenticated === null) return <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center"><div className="w-8 h-8 border-4 border-[var(--accent-cyan)] border-t-transparent rounded-full animate-spin" /></div>;
-
-  return (
-    <AdminLayout>
-      <Routes>
-        <Route index element={<DashboardOverview />} />
-        <Route path="dashboard" element={<DashboardOverview />} />
-        <Route path="projects" element={<AdminProjects />} />
-        <Route path="testimonials" element={<AdminTestimonials />} />
-        <Route path="messages" element={<AdminMessages />} />
-        <Route path="content" element={<AdminContent />} />
-      </Routes>
-    </AdminLayout>
   );
 };
 
@@ -143,7 +158,7 @@ const Admin: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<AdminLogin />} />
-      <Route path="/*" element={<AdminDashboard />} />
+      <Route path="/*" element={<AdminLayout />} />
     </Routes>
   );
 };
