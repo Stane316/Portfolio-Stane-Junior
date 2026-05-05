@@ -1,0 +1,315 @@
+/**
+ * Internationalization (i18n) translations
+ * 
+ * All text content for the portfolio is stored here in FR/EN.
+ * NO hardcoded strings in components!
+ */
+
+export type Language = 'fr' | 'en';
+
+export const translations: Record<Language, Record<string, string>> = {
+  fr: {
+    // Navigation
+    'nav.home': 'Accueil',
+    'nav.about': 'À propos',
+    'nav.skills': 'Compétences',
+    'nav.projects': 'Projets',
+    'nav.growtech': 'GROW TECH',
+    'nav.vision': 'Vision',
+    'nav.contact': 'Contact',
+    
+    // Hero Section
+    'hero.badge': 'Disponible pour missions freelance',
+    'hero.headline.line1': 'Étudiant Développeur',
+    'hero.headline.line2': '& Fondateur d\'Agence',
+    'hero.tagline': 'Je ne construis pas juste des sites web. Je code des solutions à des problèmes que j\'ai observés, vécus, compris.',
+    'hero.cta.projects': 'Voir mes projets',
+    'hero.cta.contact': 'Me contacter',
+    'hero.stat.projects.value': '5+',
+    'hero.stat.projects.label': 'Projets livrés',
+    'hero.stat.team.value': '6',
+    'hero.stat.team.label': 'Membres GROW TECH',
+    'hero.stat.founders.value': '2',
+    'hero.stat.founders.label': 'Co-fondateurs',
+    
+    // About Section
+    'about.title': 'À propos de moi',
+    'about.text.p1': "J'ai 18 ans, je suis en Licence 1 à l'IFRI-UAC à Abomey-Calavi, et je code depuis que j'ai compris qu'on pouvait transformer une idée en quelque chose de réel avec juste un clavier.",
+    'about.text.p2': "Ce qui me motive n'est pas l'outil. C'est le problème à résoudre. J'ai travaillé dans une agence Mobile Money, j'ai vu comment les petits commerçants béninois gèrent — ou plutôt ne gèrent pas — leurs factures. C'est de là qu'est né FacturaPro. J'ai voulu faire plaisir à quelqu'un d'une façon que personne d'autre ne pouvait faire. C'est de là qu'est né Capsule.",
+    'about.text.p3': "Aujourd'hui, j'ai fondé GROW TECH avec un collaborateur. Six personnes. Une vraie agence. On développe des solutions digitales pour les entreprises du Bénin et de la sous-région.",
+    'about.text.p4': "Je suis développeur. Mais surtout, je suis quelqu'un qui observe, qui comprend, et qui code pour résoudre.",
+    'about.location': '📍 Abomey-Calavi, Bénin',
+    'about.education': '🎓 IFRI-UAC — Licence 1 Dev Logiciel',
+    'about.role': '🏢 Fondateur & Tech Lead — GROW TECH',
+    'about.target': '🌍 Zone OHADA — 17 pays cibles',
+    'about.available': '⚡ Disponible pour missions freelance',
+    'about.cv.download': 'Télécharger mon CV',
+    
+    // Skills Section
+    'skills.title': 'Ce que je maîtrise',
+    'skills.mastered': 'Maîtrisé',
+    'skills.learning': 'En apprentissage actif',
+    'skills.basics': 'Notions',
+    'skills.honesty': "Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière — pas un aveu de faiblesse.",
+    
+    // Projects Section
+    'projects.title': 'Projets réels',
+    'projects.subtitle': 'Des problèmes observés. Des solutions livrées.',
+    'projects.view': 'Voir le projet',
+    'projects.caseStudy': 'Étude de cas',
+    'projects.status.delivered': 'Livré · En production',
+    'projects.status.inProgress': 'En cours d\'évolution',
+    'projects.status.concept': 'Concept',
+    'projects.loading': 'Chargement des projets...',
+    'projects.error': 'Erreur de chargement des projets',
+    'projects.empty': 'Aucun projet disponible pour le moment.',
+    
+    // Grow Tech Section
+    'growtech.title': "GROW TECH — L'agence que j'ai fondée",
+    'growtech.tagline': 'Votre Vision, Notre Technologie.',
+    'growtech.slogan': 'Innover • Développer • Faire Grandir.',
+    'growtech.description': "GROW TECH est une agence digitale estudiantine que j'ai co-fondée avec Godo Landron. Six personnes. Trois squads : Front-End, Back-End, Commercial. On développe des sites vitrines, des applications sur mesure et des solutions digitales pour les entreprises du Bénin et de la sous-région OHADA. Ce n'est pas un projet académique. C'est une structure réelle, avec des clients réels, des contrats signés, des projets livrés.",
+    'growtech.cta.visit': 'Visiter GROW TECH',
+    'growtech.cta.comingSoon': 'Bientôt disponible',
+    'growtech.cta.contact': 'Nous contacter',
+    'growtech.team.title': "L'équipe",
+    'growtech.team.founder': 'Fondateur · Tech Lead',
+    'growtech.team.coFounder': 'Co-fondateur · Directeur Commercial',
+    'growtech.team.backend': 'Développeur Backend',
+    'growtech.team.fullstack': 'Développeur Front & Back',
+    'growtech.team.sales': 'Agent Commercial',
+    'growtech.services.title': 'Nos services',
+    'growtech.services.website': 'Sites vitrines professionnels',
+    'growtech.services.app': 'Applications web sur mesure',
+    'growtech.services.sass': 'Solutions SaaS pour le marché africain',
+    'growtech.services.pme': 'Accompagnement digital PME',
+    
+    // Vision Section
+    'vision.title': 'Ce que je construis pour demain',
+    'vision.subtitle': 'Des idées documentées, des problèmes réels, des marchés identifiés.',
+    'vision.explanation': "Ces projets ne sont pas encore livrés. Ils sont en réflexion, en pause ou en construction. Je les présente ici non pas pour prétendre qu'ils existent, mais parce qu'ils témoignent d'une façon de penser : observer un problème de marché, documenter une solution, valider avant de coder.",
+    'vision.badge.paused': 'En pause · Concept documenté',
+    'vision.badge.concept': 'Concept documenté',
+    'vision.target': 'Cible',
+    'vision.target.ohada': 'Zone OHADA — 17 pays',
+    'vision.target.benin': 'Marché béninois',
+    
+    // Testimonials Section
+    'testimonials.title': "Ce que disent ceux qui m'ont fait confiance",
+    'testimonials.placeholder': "Les témoignages arrivent bientôt — les projets, eux, sont déjà là.",
+    'testimonials.loading': 'Chargement...',
+    'testimonials.watchVideo': 'Voir la vidéo',
+    
+    // Contact Section
+    'contact.title': 'Travaillons ensemble',
+    'contact.subtitle': 'Freelance · Collaboration · Opportunités',
+    'contact.form.name': 'Nom complet',
+    'contact.form.email': 'Email',
+    'contact.form.subject': 'Sujet',
+    'contact.form.message': 'Message',
+    'contact.form.send': 'Envoyer',
+    'contact.form.subject.freelance': 'Mission freelance',
+    'contact.form.subject.growtech': 'Collaboration GROW TECH',
+    'contact.form.subject.other': 'Autre',
+    'contact.form.success': 'Message envoyé avec succès !',
+    'contact.form.error': 'Une erreur est survenue. Veuillez réessayer.',
+    'contact.form.valid.name.required': 'Nom requis',
+    'contact.form.valid.name.min': 'Nom trop court',
+    'contact.form.valid.email.required': 'Email requis',
+    'contact.form.valid.email.invalid': 'Email invalide',
+    'contact.form.valid.message.required': 'Message requis',
+    'contact.form.valid.message.min': 'Message trop court',
+    'contact.available': 'Disponible pour missions freelance',
+    'contact.direct.title': 'Contact direct',
+    
+    // Footer
+    'footer.tagline': "Étudiant Développeur & Fondateur d'Agence",
+    'footer.founder': 'Fondateur de GROW TECH · Abomey-Calavi, Bénin',
+    'footer.copyright': '© 2025 Stane-Junior Aniambossou',
+    'footer.rights': 'Tous droits réservés.',
+    
+    // Admin
+    'admin.login.title': 'Administration',
+    'admin.login.email': 'Email',
+    'admin.login.password': 'Mot de passe',
+    'admin.login.submit': 'Se connecter',
+    'admin.login.error': 'Identifiants incorrects',
+    'admin.dashboard.title': 'Tableau de bord',
+    'admin.dashboard.overview': 'Vue d\'ensemble',
+    'admin.dashboard.projects': 'Projets',
+    'admin.dashboard.testimonials': 'Témoignages',
+    'admin.dashboard.messages': 'Messages',
+    'admin.dashboard.content': 'Contenu',
+    'admin.dashboard.links': 'Liens & Config',
+    'admin.logout': 'Déconnexion',
+    
+    // Common
+    'common.loading': 'Chargement...',
+    'common.error': 'Erreur',
+    'common.save': 'Enregistrer',
+    'common.delete': 'Supprimer',
+    'common.edit': 'Modifier',
+    'common.add': 'Ajouter',
+    'common.cancel': 'Annuler',
+    'common.close': 'Fermer',
+    'common.view': 'Voir',
+    'common.back': 'Retour',
+    'common.retry': 'Réessayer',
+  },
+  
+  en: {
+    // Navigation
+    'nav.home': 'Home',
+    'nav.about': 'About',
+    'nav.skills': 'Skills',
+    'nav.projects': 'Projects',
+    'nav.growtech': 'GROW TECH',
+    'nav.vision': 'Vision',
+    'nav.contact': 'Contact',
+    
+    // Hero Section
+    'hero.badge': 'Available for freelance missions',
+    'hero.headline.line1': 'Developer Student',
+    'hero.headline.line2': '& Agency Founder',
+    'hero.tagline': "I don't just build websites. I code solutions to problems I've observed, lived, and understood.",
+    'hero.cta.projects': 'See my projects',
+    'hero.cta.contact': 'Get in touch',
+    'hero.stat.projects.value': '5+',
+    'hero.stat.projects.label': 'Delivered projects',
+    'hero.stat.team.value': '6',
+    'hero.stat.team.label': 'GROW TECH members',
+    'hero.stat.founders.value': '2',
+    'hero.stat.founders.label': 'Co-founders',
+    
+    // About Section
+    'about.title': 'About me',
+    'about.text.p1': "I'm 18, studying Software Development (Licence 1) at IFRI-UAC in Abomey-Calavi, and I've been coding since I realized you can turn an idea into something real with just a keyboard.",
+    'about.text.p2': "What drives me isn't the tool. It's the problem to solve. I worked at a Mobile Money agency and watched how small Beninese merchants handle — or rather don't handle — their invoicing. That's where FacturaPro came from. I wanted to create something special for someone in a way nobody else could. That's where Capsule came from.",
+    'about.text.p3': "Today, I co-founded GROW TECH with a business partner. Six people. A real agency. We build digital solutions for businesses in Benin and the West African sub-region.",
+    'about.text.p4': "I'm a developer. But above all, I'm someone who observes, understands, and codes to solve.",
+    'about.location': '📍 Abomey-Calavi, Benin',
+    'about.education': '🎓 IFRI-UAC — Software Development Licence 1',
+    'about.role': '🏢 Founder & Tech Lead — GROW TECH',
+    'about.target': '🌍 OHADA Zone — 17 target countries',
+    'about.available': '⚡ Available for freelance missions',
+    'about.cv.download': 'Download my CV',
+    
+    // Skills Section
+    'skills.title': 'What I master',
+    'skills.mastered': 'Mastered',
+    'skills.learning': 'Actively learning',
+    'skills.basics': 'Basic knowledge',
+    'skills.honesty': "I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right — not an admission of weakness.",
+    
+    // Projects Section
+    'projects.title': 'Real projects',
+    'projects.subtitle': 'Problems observed. Solutions delivered.',
+    'projects.view': 'View project',
+    'projects.caseStudy': 'Case study',
+    'projects.status.delivered': 'Delivered · In production',
+    'projects.status.inProgress': 'In development',
+    'projects.status.concept': 'Concept',
+    'projects.loading': 'Loading projects...',
+    'projects.error': 'Error loading projects',
+    'projects.empty': 'No projects available at the moment.',
+    
+    // Grow Tech Section
+    'growtech.title': 'GROW TECH — The agency I co-founded',
+    'growtech.tagline': 'Your Vision, Our Technology.',
+    'growtech.slogan': 'Innovate • Develop • Grow.',
+    'growtech.description': "GROW TECH is a student digital agency I co-founded with Godo Landron. Six people. Three squads: Front-End, Back-End, Sales. We build websites, custom applications, and digital solutions for businesses in Benin and the OHADA sub-region. This is not an academic project. It's a real structure, with real clients, signed contracts, and delivered projects.",
+    'growtech.cta.visit': 'Visit GROW TECH',
+    'growtech.cta.comingSoon': 'Coming soon',
+    'growtech.cta.contact': 'Contact us',
+    'growtech.team.title': 'The team',
+    'growtech.team.founder': 'Founder · Tech Lead',
+    'growtech.team.coFounder': 'Co-founder · Sales Director',
+    'growtech.team.backend': 'Backend Developer',
+    'growtech.team.fullstack': 'Front & Back Developer',
+    'growtech.team.sales': 'Sales Agent',
+    'growtech.services.title': 'Our services',
+    'growtech.services.website': 'Professional showcase websites',
+    'growtech.services.app': 'Custom web applications',
+    'growtech.services.sass': 'SaaS solutions for African market',
+    'growtech.services.pme': 'SME digital accompaniment',
+    
+    // Vision Section
+    'vision.title': "What I'm building for tomorrow",
+    'vision.subtitle': 'Documented ideas, real problems, identified markets.',
+    'vision.explanation': "These projects are not yet delivered. They are in reflection, on hold, or under construction. I present them here not to claim they exist, but because they demonstrate a way of thinking: observe a market problem, document a solution, validate before coding.",
+    'vision.badge.paused': 'On hold · Documented concept',
+    'vision.badge.concept': 'Documented concept',
+    'vision.target': 'Target',
+    'vision.target.ohada': 'OHADA Zone — 17 countries',
+    'vision.target.benin': 'Beninese market',
+    
+    // Testimonials Section
+    'testimonials.title': "What those who trusted me say",
+    'testimonials.placeholder': "Testimonials coming soon — the projects are already there.",
+    'testimonials.loading': 'Loading...',
+    'testimonials.watchVideo': 'Watch video',
+    
+    // Contact Section
+    'contact.title': "Let's work together",
+    'contact.subtitle': 'Freelance · Collaboration · Opportunities',
+    'contact.form.name': 'Full name',
+    'contact.form.email': 'Email',
+    'contact.form.subject': 'Subject',
+    'contact.form.message': 'Message',
+    'contact.form.send': 'Send',
+    'contact.form.subject.freelance': 'Freelance mission',
+    'contact.form.subject.growtech': 'GROW TECH collaboration',
+    'contact.form.subject.other': 'Other',
+    'contact.form.success': 'Message sent successfully!',
+    'contact.form.error': 'An error occurred. Please try again.',
+    'contact.form.valid.name.required': 'Name required',
+    'contact.form.valid.name.min': 'Name too short',
+    'contact.form.valid.email.required': 'Email required',
+    'contact.form.valid.email.invalid': 'Invalid email',
+    'contact.form.valid.message.required': 'Message required',
+    'contact.form.valid.message.min': 'Message too short',
+    'contact.available': 'Available for freelance missions',
+    'contact.direct.title': 'Direct contact',
+    
+    // Footer
+    'footer.tagline': 'Developer Student & Agency Founder',
+    'footer.founder': 'Founder of GROW TECH · Abomey-Calavi, Benin',
+    'footer.copyright': '© 2025 Stane-Junior Aniambossou',
+    'footer.rights': 'All rights reserved.',
+    
+    // Admin
+    'admin.login.title': 'Administration',
+    'admin.login.email': 'Email',
+    'admin.login.password': 'Password',
+    'admin.login.submit': 'Login',
+    'admin.login.error': 'Invalid credentials',
+    'admin.dashboard.title': 'Dashboard',
+    'admin.dashboard.overview': 'Overview',
+    'admin.dashboard.projects': 'Projects',
+    'admin.dashboard.testimonials': 'Testimonials',
+    'admin.dashboard.messages': 'Messages',
+    'admin.dashboard.content': 'Content',
+    'admin.dashboard.links': 'Links & Config',
+    'admin.logout': 'Logout',
+    
+    // Common
+    'common.loading': 'Loading...',
+    'common.error': 'Error',
+    'common.save': 'Save',
+    'common.delete': 'Delete',
+    'common.edit': 'Edit',
+    'common.add': 'Add',
+    'common.cancel': 'Cancel',
+    'common.close': 'Close',
+    'common.view': 'View',
+    'common.back': 'Back',
+    'common.retry': 'Retry',
+  },
+};
+
+/**
+ * Translation helper function
+ */
+export const translate = (key: string, lang: Language): string => {
+  return translations[lang][key] || key;
+};

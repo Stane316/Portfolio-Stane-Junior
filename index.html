@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence GROW TECH</title>
+    <meta name="title" content="Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence GROW TECH" />
+    <meta name="description" content="Portfolio de Stane-Junior Aniambossou, étudiant en développement logiciel à l'IFRI-UAC et fondateur de l'agence GROW TECH. Solutions digitales pour le marché africain OHADA." />
+    <meta name="keywords" content="développeur web, Benin, GROW TECH, portfolio, React, Supabase, freelance, OHADA, Afrique, Cotonou" />
+    <meta name="author" content="Stane-Junior Aniambossou" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0A0A1E" />
+    <meta name="color-scheme" content="dark" />
+    
+    <!-- Google Analytics - Replace GA_MEASUREMENT_ID with your actual ID -->
+    <!-- Exemple: G-XXXXXXXXXX -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JJSZ4SBEEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JJSZ4SBEEF', {
+        page_path: window.location.hash || '/',
+        send_page_view: true
+      });
+      
+      // Track hash changes for SPA
+      window.addEventListener('hashchange', function() {
+        gtag('config', 'G-JJSZ4SBEEF', {
+          page_path: window.location.hash || '/'
+        });
+      });
+    </script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://stanejunior.netlify.app/" />
+    <meta property="og:title" content="Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence" />
+    <meta property="og:description" content="Portfolio de Stane-Junior Aniambossou, fondateur de GROW TECH. Solutions digitales pour le marché africain." />
+    <meta property="og:site_name" content="Stane-Junior Aniambossou" />
+    <meta property="og:locale" content="fr_FR" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://stanejunior.netlify.app/" />
+    <meta property="twitter:title" content="Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence" />
+    <meta property="twitter:description" content="Portfolio de Stane-Junior Aniambossou, fondateur de GROW TECH." />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" as="style" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

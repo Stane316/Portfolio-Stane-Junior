@@ -1,0 +1,391 @@
+/**
+ * Global Styles for Stane-Junior Portfolio
+ * 
+ * Design System:
+ * - Primary BG: #0A0A1E (bleu nuit profond)
+ * - Secondary BG: #0F0F2E
+ * - Card BG: #141430
+ * - Accent Blue: #1A6FC4
+ * - Accent Cyan: #00BFFF
+ * - Text Primary: #FFFFFF
+ * - Text Secondary: #A8B4C8
+ * 
+ * CORRECTIONS APPLIQUÉES:
+ * - Safari/iOS compatibility (-webkit prefixes)
+ * - Fallback for backdrop-filter
+ * - Safe area support for iOS
+ * - Smooth scroll polyfill
+ * - 100vh fix for iOS
+ */
+
+@import "tailwindcss";
+
+/* Custom CSS Variables with Fallback */
+:root {
+  --bg-primary: #0A0A1E;
+  --bg-secondary: #0F0F2E;
+  --bg-card: #141430;
+  --accent-blue: #1A6FC4;
+  --accent-cyan: #00BFFF;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A8B4C8;
+  --text-muted: #4A5568;
+  --border: rgba(0, 191, 255, 0.15);
+  --glow-cyan: rgba(0, 191, 255, 0.3);
+  --glow-blue: rgba(26, 111, 196, 0.4);
+  
+  /* Fonts */
+  --font-display: 'Syne', sans-serif;
+  --font-heading: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+/* iOS Safe Area & Viewport Fix */
+@supports (padding: max(0px)) {
+  body {
+    padding-top: max(env(safe-area-inset-top), 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+    padding-left: max(env(safe-area-inset-left), 20px);
+    padding-right: max(env(safe-area-inset-right), 20px);
+  }
+}
+
+/* Fix 100vh sur iOS */
+html {
+  height: -webkit-fill-available;
+  scroll-behavior: smooth;
+}
+
+@supports not (scroll-behavior: smooth) {
+  html {
+    scroll-padding-top: 80px;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Component Styles */
+
+/* Custom Cursor - Desktop Only */
+.custom-cursor {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--accent-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 50;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, background-color 0.3s;
+  mix-blend-mode: difference;
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+.custom-cursor.hover {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(0, 191, 255, 0.2);
+}
+
+/* Glassmorphism - Safari Compatible */
+.glass {
+  /* Fallback pour Safari ancien */
+  background-color: rgba(10, 10, 30, 0.85);
+  background-color: rgba(255, 255, 255, 0.05);
+  /* -webkit-backdrop-filter prefix for Safari */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  border: 1px solid var(--border);
+}
+
+.glass-card {
+  /* Fallback pour Safari ancien */
+  background-color: rgba(10, 10, 30, 0.85);
+  background-color: rgba(255, 255, 255, 0.05);
+  /* -webkit-backdrop-filter prefix for Safari */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+/* Glow Effects */
+.glow-cyan {
+  box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
+  -webkit-box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px var(--glow-blue), 0 0 40px var(--glow-blue);
+  -webkit-box-shadow: 0 0 20px var(--glow-blue), 0 0 40px var(--glow-blue);
+}
+
+.glow-cyan-hover:hover {
+  box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+  -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+}
+
+/* Buttons - Touch Friendly (min 44px height) */
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  background-color: var(--accent-cyan);
+  color: black;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+  box-shadow: 0 0 20px var(--glow-cyan);
+  -webkit-box-shadow: 0 0 20px var(--glow-cyan);
+}
+
+@media (min-width: 640px) {
+  .btn-primary {
+    padding: 1rem 2rem;
+  }
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+  -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+  transform: translateY(-3px);
+  -webkit-transform: translateY(-3px);
+}
+
+.btn-primary:active {
+  transform: translateY(0px);
+  -webkit-transform: translateY(0px);
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  border: 2px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+@media (min-width: 640px) {
+  .btn-secondary {
+    padding: 1rem 2rem;
+  }
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent-cyan);
+  color: black;
+  transform: translateY(-3px);
+  -webkit-transform: translateY(-3px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0px);
+  -webkit-transform: translateY(0px);
+}
+
+/* Cards */
+.project-card {
+  /* Fallback pour Safari ancien */
+  background-color: rgba(10, 10, 30, 0.85);
+  background-color: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  -webkit-transform: translateY(-8px);
+  box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+  -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
+}
+
+.team-card {
+  /* Fallback pour Safari ancien */
+  background-color: rgba(10, 10, 30, 0.85);
+  background-color: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 191, 255, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+.team-card:hover {
+  transform: scale(1.05);
+  -webkit-transform: scale(1.05);
+}
+
+/* Animations - Safari Compatible */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+  -webkit-animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+  -webkit-animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+  -webkit-animation: gradient-shift 8s ease infinite;
+}
+
+/* Gradient Mesh Background - Optimized for mobile */
+.gradient-mesh {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background: radial-gradient(circle at 50% 50%, var(--accent-cyan), transparent 50%),
+              radial-gradient(circle at 20% 80%, var(--accent-blue), transparent 40%),
+              radial-gradient(circle at 80% 20%, #0A0A1E, transparent 60%);
+  filter: blur(60px);
+  -webkit-filter: blur(60px);
+}
+
+/* Reduce blur on mobile for performance */
+@media (max-width: 768px) {
+  .gradient-mesh {
+    filter: blur(40px);
+    -webkit-filter: blur(40px);
+    opacity: 0.2;
+  }
+}
+
+/* Grid Background */
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: linear-gradient(to right, var(--accent-cyan) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--accent-cyan) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Noise Texture */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Scrollbar - Webkit Only */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 191, 255, 0.5);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent-cyan);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--accent-cyan);
+  color: black;
+}
+
+/* Utility Classes */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+}
+
+.text-shadow {
+  text-shadow: 0 0 30px var(--glow-cyan);
+  -webkit-text-shadow: 0 0 30px var(--glow-cyan);
+}
+
+.container-custom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-custom {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-custom {
+    padding: 0 2rem;
+  }
+}

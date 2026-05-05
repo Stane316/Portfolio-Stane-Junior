@@ -1,0 +1,10 @@
+# robots.txt pour portfolio Stane-Junior
+# Autoriser les moteurs de recherche
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://stanejunior.netlify.app/sitemap.xml
+
+# Ne pas indexer les pages admin
+Disallow: /#/admin
