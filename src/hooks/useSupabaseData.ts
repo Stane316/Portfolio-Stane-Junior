@@ -1,6 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
+// FALLBACKS quand Supabase n'est pas configuré
+const FALLBACK_STATS = {
+  hero_stat_1: { value_generic: '5+', value_fr: 'Projets livrés', value_en: 'Delivered projects' },
+  hero_stat_2: { value_generic: '6', value_fr: 'Membres GROW TECH', value_en: 'GROW TECH members' },
+  hero_stat_3: { value_generic: '2', value_fr: 'Co-fondateurs', value_en: 'Co-founders' },
+};
+
+const FALLBACK_BADGE = {
+  value_generic: '',
+  value_fr: 'Disponible pour missions freelance',
+  value_en: 'Available for freelance missions',
+};
+
+const FALLBACK_TAGLINE = {
+  value_generic: '',
+  value_fr: "Je ne construis pas juste des sites web. Je code des solutions à des problèmes que j'ai observés, vécus, compris.",
+  value_en: "I don't just build websites. I code solutions to problems I've observed, lived, and understood.",
+};
+
 export interface Project {
   id: string;
   title_fr: string;
@@ -56,10 +75,18 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
   const fetchData = useCallback(async () => {
     try {
       setError(null);
+      
       if (!isSupabaseConfigured()) {
+        // FALLBACKS : retourner les données par défaut
         setProjects([]);
         setTestimonials([]);
-        setSiteConfig({});
+        setSiteConfig({
+          hero_stat_1: FALLBACK_STATS.hero_stat_1,
+          hero_stat_2: FALLBACK_STATS.hero_stat_2,
+          hero_stat_3: FALLBACK_STATS.hero_stat_3,
+          hero_badge: FALLBACK_BADGE,
+          hero_tagline: FALLBACK_TAGLINE,
+        });
         setLoading(false);
         return;
       }
@@ -74,7 +101,6 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
       if (testimonialsRes.error) throw testimonialsRes.error;
       if (configRes.error) throw configRes.error;
 
-      // Stocker directement les données brutes sans transformation
       setProjects((projectsRes.data as Project[]) || []);
       setTestimonials((testimonialsRes.data as Testimonial[]) || []);
       
@@ -86,14 +112,29 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
         };
         return acc;
       }, {} as SiteConfig);
+
+      // Merge avec les fallbacks pour les stats si absentes de la DB
+      if (!configMap.hero_stat_1) configMap.hero_stat_1 = FALLBACK_STATS.hero_stat_1;
+      if (!configMap.hero_stat_2) configMap.hero_stat_2 = FALLBACK_STATS.hero_stat_2;
+      if (!configMap.hero_stat_3) configMap.hero_stat_3 = FALLBACK_STATS.hero_stat_3;
+      if (!configMap.hero_badge) configMap.hero_badge = FALLBACK_BADGE;
+      if (!configMap.hero_tagline) configMap.hero_tagline = FALLBACK_TAGLINE;
+
       setSiteConfig(configMap);
 
     } catch (err: any) {
       console.error('Error fetching data from Supabase:', err);
       setError(err.message || 'Failed to load data');
+      // En cas d'erreur, utiliser les fallbacks
       setProjects([]);
       setTestimonials([]);
-      setSiteConfig({});
+      setSiteConfig({
+        hero_stat_1: FALLBACK_STATS.hero_stat_1,
+        hero_stat_2: FALLBACK_STATS.hero_stat_2,
+        hero_stat_3: FALLBACK_STATS.hero_stat_3,
+        hero_badge: FALLBACK_BADGE,
+        hero_tagline: FALLBACK_TAGLINE,
+      });
     } finally {
       setLoading(false);
     }
