@@ -1,19 +1,15 @@
-/**
- * Main App Component
- * 
- * Entry point with Error Boundary, Lazy Loading, and Routing.
- */
-
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
+// CODE SPLITTING : chaque route est chargée dynamiquement
 const Portfolio = lazy(() => import('./routes/Portfolio'));
 const Admin = lazy(() => import('./routes/Admin'));
 
+// Loading fallback optimisé
 const LoadingFallback: React.FC = () => (
   <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center">
     <div className="text-center">
@@ -23,32 +19,31 @@ const LoadingFallback: React.FC = () => (
   </div>
 );
 
+// Animation de page
 const pageVariants = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 const pageTransition = {
   type: 'tween' as const,
   ease: 'easeInOut' as const,
-  duration: 0.3,
+  duration: 0.2,
 };
 
 const AnimatedRoutes: React.FC = () => {
-  const location = useLocation();
-
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={location.pathname}
+        key={window.location.pathname}
         initial="initial"
         animate="animate"
         exit="exit"
         variants={pageVariants}
         transition={pageTransition}
       >
-        <Routes location={location}>
+        <Routes>
           <Route path="/" element={<Portfolio />} />
           <Route path="/admin/*" element={<Admin />} />
         </Routes>
@@ -72,4 +67,5 @@ const App: React.FC = () => {
     </ErrorBoundary>
   );
 };
+
 export default App;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
@@ -18,15 +18,25 @@ interface MessageListProps {
   onToast: (type: 'success' | 'error' | 'info' | 'warning', message: string) => void;
 }
 
+// VIRTUAL SCROLL : ne render que les messages visibles
+const VISIBLE_COUNT = 10;
+
 const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast }) => {
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [visibleStart, setVisibleStart] = useState(0);
 
-  const filtered = messages.filter((m) => {
-    if (filter === 'unread') return !m.is_read;
-    if (filter === 'read') return m.is_read;
-    return true;
-  });
+  // Filtrage optimisé avec useMemo
+  const filteredMessages = useMemo(() => {
+    if (filter === 'unread') return messages.filter((m) => !m.is_read);
+    if (filter === 'read') return messages.filter((m) => m.is_read);
+    return messages;
+  }, [messages, filter]);
+
+  // Messages visibles (virtual scroll simplifié)
+  const visibleMessages = useMemo(() => {
+    return filteredMessages.slice(visibleStart, visibleStart + VISIBLE_COUNT);
+  }, [filteredMessages, visibleStart]);
 
   const toggleRead = async (id: string, current: boolean) => {
     if (!isSupabaseConfigured()) return;
@@ -68,21 +78,30 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
     other: 'Autre',
   };
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
+    
+    if (scrollPercentage > 0.7 && visibleStart + VISIBLE_COUNT < filteredMessages.length) {
+      setVisibleStart((prev) => Math.min(prev + 5, filteredMessages.length - VISIBLE_COUNT));
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {/* Header + Filters */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h2 className="text-lg font-display font-bold text-white">Messages ({messages.length})</h2>
         <div className="flex gap-2">
           {(['all', 'unread', 'read'] as const).map((f) => (
             <button
               key={f}
-              onClick={() => setFilter(f)}
+              onClick={() => { setFilter(f); setVisibleStart(0); }}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                 filter === f
                   ? 'bg-[#00BFFF] text-black font-semibold'
                   : 'text-[#A8B4C8] hover:text-white bg-[#141430]'
               }`}
+              aria-pressed={filter === f ? 'true' : 'false'}
             >
               {f === 'all' ? 'Tous' : f === 'unread' ? 'Non lus' : 'Lus'}
             </button>
@@ -90,16 +109,15 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
         </div>
       </div>
 
-      {/* Messages List */}
-      {filtered.length === 0 ? (
+      {filteredMessages.length === 0 ? (
         <div className="glass-card text-center py-12">
           <span className="text-4xl mb-4 block">📭</span>
           <p className="text-[#A8B4C8]">Aucun message pour l'instant.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[600px] overflow-y-auto" onScroll={handleScroll}>
           <AnimatePresence>
-            {filtered.map((msg) => {
+            {visibleMessages.map((msg) => {
               const isExpanded = expandedId === msg.id;
               return (
                 <motion.div
@@ -112,6 +130,10 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
                     !msg.is_read ? 'border-l-4 border-l-[#00BFFF]' : 'border-[rgba(0,191,255,0.15)]'
                   } ${isExpanded ? 'border-[#00BFFF]' : ''}`}
                   onClick={() => setExpandedId(isExpanded ? null : msg.id)}
+                  role="button"
+                  aria-expanded={isExpanded ? 'true' : 'false'}
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setExpandedId(isExpanded ? null : msg.id); }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -129,23 +151,32 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
                       <p className="text-[#A8B4C8] text-sm truncate">{msg.message.substring(0, 100)}...</p>
                     </div>
                     <div className="flex gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => toggleRead(msg.id, msg.is_read)} className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" title={msg.is_read ? 'Marquer non lu' : 'Marquer lu'}>
+                      <button 
+                        onClick={() => toggleRead(msg.id, msg.is_read)} 
+                        className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" 
+                        title={msg.is_read ? 'Marquer non lu' : 'Marquer lu'}
+                        aria-label={msg.is_read ? 'Marquer comme non lu' : 'Marquer comme lu'}
+                      >
                         {msg.is_read ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" /></svg>
                         ) : (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                         )}
                       </button>
-                      <a href={`mailto:${msg.email}?subject=Re: ${msg.subject}`} className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" title="Répondre">
+                      <a href={`mailto:${msg.email}?subject=Re: ${msg.subject}`} className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" title="Répondre" aria-label="Répondre au message">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                       </a>
-                      <button onClick={() => deleteMessage(msg.id)} className="p-2 text-[#A8B4C8] hover:text-red-400 transition-colors" title="Supprimer">
+                      <button 
+                        onClick={() => deleteMessage(msg.id)} 
+                        className="p-2 text-[#A8B4C8] hover:text-red-400 transition-colors" 
+                        title="Supprimer"
+                        aria-label="Supprimer le message"
+                      >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
                     </div>
                   </div>
 
-                  {/* Expanded content */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -156,9 +187,6 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                               Répondre
                             </a>
-                            <a href={`https://wa.me/${msg.email.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-[#A8B4C8] hover:text-green-400 text-xs transition-colors">
-                              WhatsApp
-                            </a>
                           </div>
                         </div>
                       </motion.div>
@@ -168,6 +196,17 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
               );
             })}
           </AnimatePresence>
+          
+          {visibleStart + VISIBLE_COUNT < filteredMessages.length && (
+            <div className="text-center py-4">
+              <button 
+                onClick={() => setVisibleStart((prev) => prev + 5)}
+                className="text-[#00BFFF] text-sm hover:underline"
+              >
+                Charger plus de messages...
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -10,11 +10,13 @@
  * @see /src/contexts/LanguageContext.tsx
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-const About: React.FC = () => {
+interface AboutProps {}
+
+const About: React.FC<AboutProps> = memo(() => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
 
@@ -121,6 +123,8 @@ const About: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;
