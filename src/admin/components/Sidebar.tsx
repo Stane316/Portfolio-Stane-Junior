@@ -70,13 +70,21 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
         </svg>
       ),
     },
+    {
+      path: '/admin/blog',
+      label: isFr ? 'Blog' : 'Blog',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        </svg>
+     ),
+    },
   ];
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="p-4 border-b border-[rgba(0,191,255,0.15)] flex items-center justify-between">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
@@ -87,6 +95,8 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 text-[#A8B4C8] hover:text-white transition-colors rounded-lg hover:bg-[#141430]"
+          title={isCollapsed ? 'Développer le menu' : 'Réduire le menu'}
+          aria-label={isCollapsed ? 'Développer le menu latéral' : 'Réduire le menu latéral'}
         >
           <svg className={`w-5 h-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -94,8 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
         </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto" aria-label="Navigation principale">
         {navItems.map((item) => {
           const active = isActive(item.path);
           return (
@@ -108,6 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
                   ? 'bg-[#00BFFF] bg-opacity-10 text-[#00BFFF]'
                   : 'text-[#A8B4C8] hover:text-white hover:bg-[#141430]'
               }`}
+              aria-current={active ? 'page' : undefined}
             >
               {active && (
                 <motion.div
@@ -115,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#00BFFF] rounded-r-full"
                 />
               )}
-              <span className="flex-shrink-0">{item.icon}</span>
+              <span className="flex-shrink-0" aria-hidden="true">{item.icon}</span>
               {!isCollapsed && (
                 <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
               )}
@@ -134,7 +144,6 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
         })}
       </nav>
 
-      {/* User Profile */}
       <div className="p-3 border-t border-[rgba(0,191,255,0.15)]">
         <div className={`flex items-center gap-3 p-2 rounded-lg ${isCollapsed ? 'justify-center' : ''}`}>
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] flex items-center justify-center flex-shrink-0">
@@ -152,6 +161,8 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
           className={`mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500 hover:bg-opacity-10 transition-all w-full ${
             isCollapsed ? 'justify-center' : ''
           }`}
+          title="Se déconnecter"
+          aria-label="Se déconnecter de l'administration"
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -164,16 +175,15 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside
         className={`hidden lg:flex flex-col bg-[#0A0A1E] border-r border-[rgba(0,191,255,0.15)] transition-all duration-300 ${
           isCollapsed ? 'w-16' : 'w-64'
         }`}
+        aria-label="Menu latéral"
       >
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileOpen && (
           <>
@@ -190,6 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed left-0 top-0 h-full w-72 bg-[#0A0A1E] border-r border-[rgba(0,191,255,0.15)] z-50 lg:hidden"
+              aria-label="Menu mobile"
             >
               {sidebarContent}
             </motion.aside>

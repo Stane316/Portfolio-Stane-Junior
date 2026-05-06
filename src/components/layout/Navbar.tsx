@@ -114,12 +114,13 @@ const Navbar: React.FC = () => {
                 {lang === 'fr' ? 'EN' : 'FR'}
               </button>
 
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2 text-[#00BFFF]"
-                aria-label="Menu"
-                aria-expanded={isMenuOpen}
-              >
+              
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="lg:hidden p-2 text-[#00BFFF]"
+                  aria-label="Menu"
+                  aria-expanded={isMenuOpen}
+                >
                 <div className="w-6 h-5 flex flex-col justify-between">
                   <span className={`w-full h-0.5 bg-current transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
                   <span className={`w-full h-0.5 bg-current transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`} />

@@ -1,6 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Toast, ToastType } from '../hooks/useToast';
+
+interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  duration?: number;
+}
 
 interface ToastProps {
   toast: Toast;
@@ -23,20 +29,22 @@ const ToastComponent: React.FC<ToastProps> = ({ toast, onRemove }) => {
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 100, scale: 0.8 }}
       className={`${style.bg} ${style.border} border rounded-lg p-4 mb-3 max-w-sm shadow-lg backdrop-blur-sm`}
+      role="alert"
     >
       <div className="flex items-start gap-3">
-        <span className="text-lg flex-shrink-0">{style.icon}</span>
+        <span className="text-lg flex-shrink-0" aria-hidden="true">{style.icon}</span>
         <p className={`${style.text} text-sm flex-1`}>{toast.message}</p>
         <button
           onClick={() => onRemove(toast.id)}
           className={`${style.text} hover:opacity-70 transition-opacity flex-shrink-0`}
+          title="Fermer la notification"
+          aria-label="Fermer la notification"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      {/* Progress bar */}
       <motion.div
         className={`h-1 ${style.border} rounded-full mt-2 origin-left`}
         initial={{ scaleX: 1 }}
@@ -50,7 +58,7 @@ const ToastComponent: React.FC<ToastProps> = ({ toast, onRemove }) => {
 
 export const ToastContainer: React.FC<{ toasts: Toast[]; onRemove: (id: string) => void }> = ({ toasts, onRemove }) => {
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end" aria-live="polite" aria-label="Notifications">
       <AnimatePresence>
         {toasts.map((toast) => (
           <ToastComponent key={toast.id} toast={toast} onRemove={onRemove} />

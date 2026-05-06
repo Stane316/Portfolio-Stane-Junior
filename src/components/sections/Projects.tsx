@@ -1,98 +1,82 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData, type Project as SupabaseProject } from '../../hooks/useSupabaseData';
 import SocialShare from '../../components/ui/SocialShare';
 
-interface CaseStudyStep {
-  title: string;
-  content: string;
-  icon: string;
+interface ConvertedProject {
+  id: number;
+  title: { fr: string; en: string };
+  status: 'delivered' | 'in_progress' | 'concept';
+  description: { fr: string; en: string };
+  stack: string[];
+  liveUrl: string;
+  imageUrl: string;
+  isFeatured: boolean;
+  caseStudy: { 
+    fr: Array<{ title: string; content: string; icon: string }>; 
+    en: Array<{ title: string; content: string; icon: string }>; 
+  };
 }
 
 const CASE_STUDY_ICONS = {
-  fr: [
-    { icon: '🔍', title: 'Le problème' },
-    { icon: '💡', title: 'La solution' },
-    { icon: '⚙️', title: 'Fonctionnalités' },
-    { icon: '🚧', title: 'Les obstacles' },
-    { icon: '🎯', title: 'Le résultat' },
-  ],
-  en: [
-    { icon: '🔍', title: 'The problem' },
-    { icon: '💡', title: 'The solution' },
-    { icon: '⚙️', title: 'Features' },
-    { icon: '🚧', title: 'Obstacles' },
-    { icon: '🎯', title: 'The result' },
-  ],
+  fr: ['🔍', '💡', '⚙️', '🚧', '🎯'],
+  en: ['🔍', '', '⚙️', '🚧', '🎯'],
 };
 
-const convertProject = (p: SupabaseProject) => {
-  const caseStudyFr: CaseStudyStep[] = [];
-  const caseStudyEn: CaseStudyStep[] = [];
-
-  if (p.case_study_fr) {
-    try {
-      const cs = typeof p.case_study_fr === 'string' ? JSON.parse(p.case_study_fr) : p.case_study_fr;
-      Object.entries(cs).forEach(([, value]: [string, any], index) => {
-        const stepIcon = CASE_STUDY_ICONS.fr[index]?.icon || '📋';
-        caseStudyFr.push({
-          title: value?.title || CASE_STUDY_ICONS.fr[index]?.title || `Étape ${index + 1}`,
-          content: value?.content || '',
-          icon: stepIcon,
-        });
-      });
-    } catch {
-      CASE_STUDY_ICONS.fr.forEach((icon) => {
-        caseStudyFr.push({ title: icon.title, content: '', icon: icon.icon });
-      });
-    }
-  }
-
-  if (p.case_study_en) {
-    try {
-      const cs = typeof p.case_study_en === 'string' ? JSON.parse(p.case_study_en) : p.case_study_en;
-      Object.entries(cs).forEach(([, value]: [string, any], index) => {
-        const stepIcon = CASE_STUDY_ICONS.en[index]?.icon || '📋';
-        caseStudyEn.push({
-          title: value?.title || CASE_STUDY_ICONS.en[index]?.title || `Step ${index + 1}`,
-          content: value?.content || '',
-          icon: stepIcon,
-        });
-      });
-    } catch {
-      CASE_STUDY_ICONS.en.forEach((icon) => {
-        caseStudyEn.push({ title: icon.title, content: '', icon: icon.icon });
-      });
-    }
-  }
-
-  return {
-    id: parseInt(p.id) || 0,
-    title: { fr: p.title_fr, en: p.title_en },
-    status: p.status,
-    description: { fr: p.description_fr, en: p.description_en },
-    stack: p.stack || [],
-    liveUrl: p.live_url || '',
-    imageUrl: p.image_url || '',
-    isFeatured: p.is_featured,
-    caseStudy: { fr: caseStudyFr, en: caseStudyEn },
-  };
+const defaultTitles = {
+  fr: ['Le problème', 'La solution', 'Fonctionnalités', 'Les obstacles', 'Le résultat'],
+  en: ['The problem', 'The solution', 'Features', 'Obstacles', 'The result'],
 };
 
 const Projects: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
-  const { projects: supabaseProjects, loading, error } = useSupabaseData();
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const { projects: rawProjects, loading, error, refresh } = useSupabaseData();
+  const [selectedProject, setSelectedProject] = useState<ConvertedProject | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const projects = supabaseProjects.map(p => convertProject(p));
+  // CORRECTION : Une seule fonction de conversion + filtrage dans un useMemo stable
+  const getFilteredProjects = useCallback((): ConvertedProject[] => {
+    // Conversion
+    const allConverted: ConvertedProject[] = rawProjects.map((p) => {
+      const parseCaseStudy = (data: any, icons: string[], titles: string[]) => {
+        if (!data) return [];
+        try {
+          const cs = typeof data === 'string' ? JSON.parse(data) : data;
+          return Object.values(cs).map((value: any, index: number) => ({
+            title: value?.title || titles[index] || `Step ${index + 1}`,
+            content: value?.content || '',
+            icon: icons[index] || '📋',
+          }));
+        } catch {
+          return icons.map((icon, i) => ({ title: titles[i], content: '', icon }));
+        }
+      };
 
-  const filteredProjects = useMemo(() => {
-    if (!searchQuery.trim()) return projects;
+      return {
+        id: parseInt(p.id) || 0,
+        title: { fr: p.title_fr, en: p.title_en },
+        status: p.status,
+        description: { fr: p.description_fr, en: p.description_en },
+        stack: p.stack || [],
+        liveUrl: p.live_url || '',
+        imageUrl: p.image_url || '',
+        isFeatured: p.is_featured,
+        caseStudy: {
+          fr: parseCaseStudy(p.case_study_fr, CASE_STUDY_ICONS.fr, defaultTitles.fr),
+          en: parseCaseStudy(p.case_study_en, CASE_STUDY_ICONS.en, defaultTitles.en),
+        },
+      };
+    });
+
+    // Filtrage
+    if (!searchQuery.trim()) {
+      return allConverted;
+    }
+
     const query = searchQuery.toLowerCase();
-    return projects.filter(
+    return allConverted.filter(
       (p) =>
         p.title.fr.toLowerCase().includes(query) ||
         p.title.en.toLowerCase().includes(query) ||
@@ -100,15 +84,18 @@ const Projects: React.FC = () => {
         p.description.en.toLowerCase().includes(query) ||
         p.stack.some((tech) => tech.toLowerCase().includes(query))
     );
-  }, [projects, searchQuery]);
+  }, [rawProjects, searchQuery, isFr]);
 
-  const getStatusBadge = (status: SupabaseProject['status']) => {
-    const config = {
+  // CORRECTION : useMemo avec dépendance stable
+  const filteredProjects = useMemo(() => getFilteredProjects(), [getFilteredProjects]);
+
+  const getStatusBadge = (status: string) => {
+    const config: Record<string, { text: string; color: string; icon: string }> = {
       delivered: { text: isFr ? 'Livré · En production' : 'Delivered · In production', color: 'bg-green-500', icon: '✅' },
       in_progress: { text: isFr ? 'En cours d\'évolution' : 'In development', color: 'bg-yellow-500', icon: '🔄' },
       concept: { text: isFr ? 'Concept' : 'Concept', color: 'bg-gray-500', icon: '💭' },
     };
-    return config[status];
+    return config[status] || config.concept;
   };
 
   const containerVariants = {
@@ -153,7 +140,7 @@ const Projects: React.FC = () => {
             <div className="w-16 sm:w-20 h-1 bg-cyan-400 mx-auto rounded-full mt-4" />
           </div>
 
-          {/* Search Bar */}
+          {/* Barre de recherche */}
           <div className="max-w-md mx-auto mb-8 sm:mb-12">
             <div className="relative">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,7 +204,7 @@ const Projects: React.FC = () => {
               className="space-y-6 sm:space-y-8"
             >
               {filteredProjects.map((project) => {
-                const status = getStatusBadge(project.status as any);
+                const status = getStatusBadge(project.status);
 
                 return (
                   <motion.div key={project.id} variants={itemVariants}>
@@ -338,7 +325,7 @@ const Projects: React.FC = () => {
               </div>
 
               <div className="space-y-6 sm:space-y-8 px-1 sm:px-0 pb-4">
-                {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step: CaseStudyStep, index: number) => (
+                {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}

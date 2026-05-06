@@ -13,6 +13,8 @@ interface BlogPost {
   readTime: string;
   image: string;
   slug: string;
+  article_url?: string;
+  source_title?: string;
 }
 
 const Blog: React.FC = () => {
@@ -75,6 +77,8 @@ const Blog: React.FC = () => {
       readTime: '8 min',
       image: '',
       slug: 'facturapro-facturation-afrique',
+      article_url: 'https://www.fedapay.com/blog/',
+      source_title: 'FedaPay Blog',
     },
   ];
 
@@ -124,7 +128,8 @@ const Blog: React.FC = () => {
                     ? 'bg-[var(--accent-cyan)] text-black'
                     : 'bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-white border border-[var(--border)]'
                 }`}
-                aria-pressed={activeCategory === cat.id}
+                role="button"
+                aria-pressed={activeCategory === cat.id ? 'true' : 'false'}
               >
                 {cat.label}
               </button>
@@ -164,6 +169,24 @@ const Blog: React.FC = () => {
                 <p className="text-[var(--text-secondary)] text-sm sm:text-base mb-4 line-clamp-3">
                   {isFr ? post.excerpt_fr : post.excerpt_en}
                 </p>
+
+                {/* Article lié */}
+                {post.article_url && (
+                  <div className="flex items-center gap-2 mb-4 p-2 bg-[var(--bg-card)] rounded-lg border border-[var(--border)]">
+                    <svg className="w-4 h-4 text-[var(--accent-cyan)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <a 
+                      href={post.article_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[var(--accent-cyan)] text-xs hover:underline truncate"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {isFr ? 'Basé sur : ' : 'Based on: '}{post.source_title || post.article_url}
+                    </a>
+                  </div>
+                )}
 
                 {/* Read More */}
                 <div className="flex items-center gap-2 text-[var(--accent-cyan)] text-sm font-medium group-hover:gap-3 transition-all">

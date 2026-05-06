@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 interface CaseStudyEditorProps {
@@ -68,40 +68,55 @@ const CaseStudyEditor: React.FC<CaseStudyEditorProps> = ({ projectId, onClose, o
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black bg-opacity-80 backdrop-blur-sm" />
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto mx-2" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
         <div className="sticky top-0 bg-[#0A0A1E] bg-opacity-95 backdrop-blur-xl border-b border-[rgba(0,191,255,0.15)] p-4 flex items-center justify-between z-10">
           <div>
             <h2 className="text-xl font-display font-bold text-white">📖 Étude de cas</h2>
             <p className="text-[#A8B4C8] text-sm">Structurez le parcours de votre projet</p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Language toggle */}
-            <div className="flex bg-[#141430] rounded-lg p-1">
-              <button onClick={() => setActiveLang('fr')} className={`px-3 py-1 rounded-md text-sm transition-colors ${activeLang === 'fr' ? 'bg-[#00BFFF] text-black font-semibold' : 'text-[#A8B4C8] hover:text-white'}`}>FR</button>
-              <button onClick={() => setActiveLang('en')} className={`px-3 py-1 rounded-md text-sm transition-colors ${activeLang === 'en' ? 'bg-[#00BFFF] text-black font-semibold' : 'text-[#A8B4C8] hover:text-white'}`}>EN</button>
+            <div className="flex bg-[#141430] rounded-lg p-1" role="radiogroup" aria-label="Sélection de langue">
+              <button 
+                onClick={() => setActiveLang('fr')} 
+                className={`px-3 py-1 rounded-md text-sm transition-colors ${activeLang === 'fr' ? 'bg-[#00BFFF] text-black font-semibold' : 'text-[#A8B4C8] hover:text-white'}`}
+                role="radio"
+                aria-checked={activeLang === 'fr'}
+                title="Français"
+              >
+                FR
+              </button>
+              <button 
+                onClick={() => setActiveLang('en')} 
+                className={`px-3 py-1 rounded-md text-sm transition-colors ${activeLang === 'en' ? 'bg-[#00BFFF] text-black font-semibold' : 'text-[#A8B4C8] hover:text-white'}`}
+                role="radio"
+                aria-checked={activeLang === 'en'}
+                title="English"
+              >
+                EN
+              </button>
             </div>
-            <button onClick={onClose} className="p-2 text-[#A8B4C8] hover:text-white transition-colors">
+            <button 
+              onClick={onClose} 
+              className="p-2 text-[#A8B4C8] hover:text-white transition-colors"
+              title="Fermer l'éditeur"
+              aria-label="Fermer l'éditeur d'étude de cas"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         </div>
 
-        {/* Steps */}
         <div className="p-6 space-y-6">
           {defaultSteps.map((step, index) => {
             const data = caseStudy[activeLang][step.key];
             return (
               <motion.div key={step.key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="relative">
-                {/* Connecting line */}
                 {index > 0 && <div className="absolute left-6 top-0 w-0.5 h-4 bg-[rgba(0,191,255,0.15)] -mt-6" />}
                 <div className="flex items-start gap-4">
-                  {/* Step icon */}
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-xl bg-[#141430] border border-[rgba(0,191,255,0.15)] flex items-center justify-center text-2xl">
+                    <div className="w-12 h-12 rounded-xl bg-[#141430] border border-[rgba(0,191,255,0.15)] flex items-center justify-center text-2xl" aria-hidden="true">
                       {step.icon}
                     </div>
                   </div>
-                  {/* Content */}
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-[#00BFFF] font-semibold text-sm">{index + 1}.</span>
@@ -111,6 +126,7 @@ const CaseStudyEditor: React.FC<CaseStudyEditorProps> = ({ projectId, onClose, o
                         onChange={(e) => updateStep(activeLang, step.key, 'title', e.target.value)}
                         className="flex-1 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg px-3 py-2 text-white text-sm font-semibold focus:outline-none focus:border-[#00BFFF]"
                         placeholder={activeLang === 'fr' ? 'Titre de l\'étape' : 'Step title'}
+                        aria-label={`Titre de l'étape ${index + 1}`}
                       />
                     </div>
                     <textarea
@@ -119,8 +135,8 @@ const CaseStudyEditor: React.FC<CaseStudyEditorProps> = ({ projectId, onClose, o
                       rows={3}
                       className="w-full bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg px-3 py-2 text-[#A8B4C8] text-sm resize-none focus:outline-none focus:border-[#00BFFF]"
                       placeholder={activeLang === 'fr' ? 'Décrivez cette étape...' : 'Describe this step...'}
+                      aria-label={`Contenu de l'étape ${index + 1}`}
                     />
-                    {/* Preview other language */}
                     {activeLang === 'fr' && caseStudy.en[step.key].title && (
                       <p className="text-[#4A5568] text-xs italic pl-2 border-l-2 border-[rgba(0,191,255,0.15)]">
                         EN: {caseStudy.en[step.key].title}
@@ -138,7 +154,6 @@ const CaseStudyEditor: React.FC<CaseStudyEditorProps> = ({ projectId, onClose, o
           })}
         </div>
 
-        {/* Footer */}
         <div className="sticky bottom-0 bg-[#0A0A1E] bg-opacity-95 backdrop-blur-xl border-t border-[rgba(0,191,255,0.15)] p-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-[#4A5568] text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

@@ -110,7 +110,6 @@ const Portfolio: React.FC = () => {
       </main>
 
        <Newsletter />
-       <Footer /> 
       
       <Footer />
 

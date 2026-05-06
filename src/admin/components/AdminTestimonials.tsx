@@ -159,7 +159,10 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-display font-bold text-white">Témoignages ({testimonials.length})</h2>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary inline-flex items-center gap-2 text-sm py-2 px-4" aria-expanded={showForm}>
+        <button 
+          onClick={() => setShowForm(!showForm)} 
+          className="btn-primary inline-flex items-center gap-2 text-sm py-2 px-4"
+        >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           Nouveau
         </button>
@@ -174,28 +177,28 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="test-name" className="block text-sm font-semibold mb-1 text-white">Nom <span className="text-red-400">*</span></label>
-                    <input id="test-name" type="text" value={formData.person_name} onChange={(e) => { setFormData({ ...formData, person_name: e.target.value }); setFormErrors({ ...formErrors, person_name: '' }); }} required className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_name ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.person_name} />
+                    <input id="test-name" type="text" value={formData.person_name} onChange={(e) => { setFormData({ ...formData, person_name: e.target.value }); setFormErrors({ ...formErrors, person_name: '' }); }} required placeholder="Nom de la personne" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_name ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.person_name ? 'true' : 'false'} />
                     {formErrors.person_name && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.person_name}</p>}
                   </div>
                   <div>
                     <label htmlFor="test-role" className="block text-sm font-semibold mb-1 text-white">Rôle <span className="text-red-400">*</span></label>
-                    <input id="test-role" type="text" value={formData.person_role} onChange={(e) => { setFormData({ ...formData, person_role: e.target.value }); setFormErrors({ ...formErrors, person_role: '' }); }} required className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_role ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.person_role} />
+                    <input id="test-role" type="text" value={formData.person_role} onChange={(e) => { setFormData({ ...formData, person_role: e.target.value }); setFormErrors({ ...formErrors, person_role: '' }); }} required placeholder="Rôle/Poste" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_role ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.person_role ? 'true' : 'false'} />
                     {formErrors.person_role && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.person_role}</p>}
                   </div>
                 </div>
                 <div>
                   <label htmlFor="test-company" className="block text-sm font-semibold mb-1 text-white">Entreprise</label>
-                  <input id="test-company" type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                  <input id="test-company" type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} placeholder="Nom de l'entreprise" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="test-content-fr" className="block text-sm font-semibold mb-1 text-white">Contenu (FR) <span className="text-red-400">*</span></label>
-                    <textarea id="test-content-fr" value={formData.content_fr} onChange={(e) => { setFormData({ ...formData, content_fr: e.target.value }); setFormErrors({ ...formErrors, content_fr: '' }); }} rows={3} required className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_fr ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.content_fr} />
+                    <textarea id="test-content-fr" value={formData.content_fr} onChange={(e) => { setFormData({ ...formData, content_fr: e.target.value }); setFormErrors({ ...formErrors, content_fr: '' }); }} rows={3} required placeholder="Témoignage en français" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_fr ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.content_fr ? 'true' : 'false'} />
                     {formErrors.content_fr && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.content_fr}</p>}
                   </div>
                   <div>
                     <label htmlFor="test-content-en" className="block text-sm font-semibold mb-1 text-white">Contenu (EN) <span className="text-red-400">*</span></label>
-                    <textarea id="test-content-en" value={formData.content_en} onChange={(e) => { setFormData({ ...formData, content_en: e.target.value }); setFormErrors({ ...formErrors, content_en: '' }); }} rows={3} required className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_en ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.content_en} />
+                    <textarea id="test-content-en" value={formData.content_en} onChange={(e) => { setFormData({ ...formData, content_en: e.target.value }); setFormErrors({ ...formErrors, content_en: '' }); }} rows={3} required placeholder="Testimonial in English" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_en ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.content_en ? 'true' : 'false'} />
                     {formErrors.content_en && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.content_en}</p>}
                   </div>
                 </div>
@@ -247,9 +250,9 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
                   {t.company && <p className="text-[#4A5568] text-xs">{t.company}</p>}
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
-                  <button onClick={() => toggleVisible(t.id, t.is_visible)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" aria-label={t.is_visible ? 'Masquer' : 'Afficher'}>{t.is_visible ? '👁' : '🙈'}</button>
-                  <button onClick={() => handleEdit(t)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" aria-label="Modifier">✏️</button>
-                  <button onClick={() => handleDelete(t.id, t.person_name)} className="p-1.5 text-[#A8B4C8] hover:text-red-400 transition-colors" aria-label="Supprimer">🗑</button>
+                  <button onClick={() => toggleVisible(t.id, t.is_visible)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" aria-label={t.is_visible ? 'Masquer le témoignage' : 'Afficher le témoignage'}>{t.is_visible ? '👁' : '🙈'}</button>
+                  <button onClick={() => handleEdit(t)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" aria-label="Modifier le témoignage">✏️</button>
+                  <button onClick={() => handleDelete(t.id, t.person_name)} className="p-1.5 text-[#A8B4C8] hover:text-red-400 transition-colors" aria-label="Supprimer le témoignage">🗑</button>
                 </div>
               </div>
               <p className="text-[#A8B4C8] text-sm italic">"{t.content_fr.substring(0, 120)}..."</p>

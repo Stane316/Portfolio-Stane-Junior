@@ -11,6 +11,7 @@ import ProjectTable from '../admin/components/ProjectTable';
 import MessageList from '../admin/components/MessageList';
 import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
+import AdminBlog from '../admin/components/AdminBlog';
 
 interface Project {
   id: string;
@@ -22,6 +23,8 @@ interface Project {
   stack: string[];
   live_url: string;
   image_url: string;
+  case_study_fr: Record<string, { title: string; content: string }>;
+  case_study_en: Record<string, { title: string; content: string }>;
   display_order: number;
   is_visible: boolean;
   is_featured: boolean;
@@ -97,13 +100,13 @@ const AdminLogin: React.FC = () => {
           {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400" role="alert">{error}</div>}
           <div>
             <label htmlFor="login-email" className="block text-sm font-semibold mb-2 text-white">Email</label>
-            <input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" aria-required="true" />
+            <input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
           </div>
           <div>
             <label htmlFor="login-password" className="block text-sm font-semibold mb-2 text-white">Mot de passe</label>
-            <input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" aria-required="true" />
+            <input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 glass rounded-lg border border-[rgba(0,191,255,0.15)] bg-[#141430] text-white focus:outline-none focus:border-[#00BFFF]" />
           </div>
-          <button type="submit" disabled={loading} className="w-full btn-primary" aria-busy={loading}>
+          <button type="submit" disabled={loading} className="w-full btn-primary">
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
@@ -194,6 +197,7 @@ const AdminLayout: React.FC = () => {
     if (path.includes('/testimonials')) return { title: 'Témoignages', breadcrumb: ['Témoignages'] };
     if (path.includes('/messages')) return { title: 'Messages', breadcrumb: ['Messages'] };
     if (path.includes('/content')) return { title: 'Contenu', breadcrumb: ['Contenu'] };
+    if (path.includes('/blog')) return { title: 'Blog', breadcrumb: ['Blog'] };
     return { title: 'Vue d\'ensemble', breadcrumb: [] };
   };
 
@@ -212,8 +216,9 @@ const AdminLayout: React.FC = () => {
             <Route path="dashboard" element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
             <Route path="projects" element={<ProjectTable projects={projects} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le projet', `Êtes-vous sûr de vouloir supprimer "${name}" ? Cette action est irréversible.`, onDone, 'danger')} />} />
             <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le témoignage', `Êtes-vous sûr de vouloir supprimer le témoignage de "${name}" ?`, onDone, 'danger')} />} />
-            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le message', `Supprimer le message de "${name}" ?`, onDone, 'warning')} />} />
+            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
             <Route path="content" element={<AdminContent />} />
+            <Route path="blog" element={<AdminBlog onToast={addToast} />} />
           </Routes>
         </div>
       </main>
