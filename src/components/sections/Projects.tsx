@@ -1,9 +1,86 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData, type Project as SupabaseProject } from '../../hooks/useSupabaseData';
 import SocialShare from '../../components/ui/SocialShare';
 
+interface CaseStudyStep {
+  title: string;
+  content: string;
+  icon: string;
+}
+
+const CASE_STUDY_ICONS = {
+  fr: [
+    { icon: '🔍', title: 'Le problème' },
+    { icon: '💡', title: 'La solution' },
+    { icon: '⚙️', title: 'Fonctionnalités' },
+    { icon: '🚧', title: 'Les obstacles' },
+    { icon: '🎯', title: 'Le résultat' },
+  ],
+  en: [
+    { icon: '🔍', title: 'The problem' },
+    { icon: '💡', title: 'The solution' },
+    { icon: '⚙️', title: 'Features' },
+    { icon: '🚧', title: 'Obstacles' },
+    { icon: '🎯', title: 'The result' },
+  ],
+};
+
+const convertProject = (p: SupabaseProject) => {
+  const caseStudyFr: CaseStudyStep[] = [];
+  const caseStudyEn: CaseStudyStep[] = [];
+
+  if (p.case_study_fr) {
+    try {
+      const cs = typeof p.case_study_fr === 'string' ? JSON.parse(p.case_study_fr) : p.case_study_fr;
+      Object.entries(cs).forEach(([, value]: [string, any], index) => {
+        const stepIcon = CASE_STUDY_ICONS.fr[index]?.icon || '📋';
+        caseStudyFr.push({
+          title: value?.title || CASE_STUDY_ICONS.fr[index]?.title || `Étape ${index + 1}`,
+          content: value?.content || '',
+          icon: stepIcon,
+        });
+      });
+    } catch {
+      CASE_STUDY_ICONS.fr.forEach((icon) => {
+        caseStudyFr.push({ title: icon.title, content: '', icon: icon.icon });
+      });
+    }
+  }
+
+  if (p.case_study_en) {
+    try {
+      const cs = typeof p.case_study_en === 'string' ? JSON.parse(p.case_study_en) : p.case_study_en;
+      Object.entries(cs).forEach(([, value]: [string, any], index) => {
+        const stepIcon = CASE_STUDY_ICONS.en[index]?.icon || '📋';
+        caseStudyEn.push({
+          title: value?.title || CASE_STUDY_ICONS.en[index]?.title || `Step ${index + 1}`,
+          content: value?.content || '',
+          icon: stepIcon,
+        });
+      });
+    } catch {
+      CASE_STUDY_ICONS.en.forEach((icon) => {
+        caseStudyEn.push({ title: icon.title, content: '', icon: icon.icon });
+      });
+    }
+  }
+
+  return {
+    id: parseInt(p.id) || 0,
+    title: { fr: p.title_fr, en: p.title_en },
+    status: p.status,
+    description: { fr: p.description_fr, en: p.description_en },
+    stack: p.stack || [],
+    liveUrl: p.live_url || '',
+    imageUrl: p.image_url || '',
+    isFeatured: p.is_featured,
+    caseStudy: { fr: caseStudyFr, en: caseStudyEn },
+  };
+};
+
+// Type pour les projets convertis
 interface ConvertedProject {
   id: number;
   title: { fr: string; en: string };
@@ -13,70 +90,32 @@ interface ConvertedProject {
   liveUrl: string;
   imageUrl: string;
   isFeatured: boolean;
-  caseStudy: { 
-    fr: Array<{ title: string; content: string; icon: string }>; 
-    en: Array<{ title: string; content: string; icon: string }>; 
-  };
+  caseStudy: { fr: CaseStudyStep[]; en: CaseStudyStep[] };
 }
-
-const CASE_STUDY_ICONS = {
-  fr: ['🔍', '💡', '⚙️', '🚧', '🎯'],
-  en: ['🔍', '', '⚙️', '🚧', '🎯'],
-};
-
-const defaultTitles = {
-  fr: ['Le problème', 'La solution', 'Fonctionnalités', 'Les obstacles', 'Le résultat'],
-  en: ['The problem', 'The solution', 'Features', 'Obstacles', 'The result'],
-};
 
 const Projects: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
-  const { projects: rawProjects, loading, error, refresh } = useSupabaseData();
-  const [selectedProject, setSelectedProject] = useState<ConvertedProject | null>(null);
+  const { projects: supabaseProjects, loading, error } = useSupabaseData();
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  
+  // CORRECTION : Stocker les projets convertis dans un state stable
+  const [convertedProjects, setConvertedProjects] = useState<ConvertedProject[]>([]);
 
-  // CORRECTION : Une seule fonction de conversion + filtrage dans un useMemo stable
-  const getFilteredProjects = useCallback((): ConvertedProject[] => {
-    // Conversion
-    const allConverted: ConvertedProject[] = rawProjects.map((p) => {
-      const parseCaseStudy = (data: any, icons: string[], titles: string[]) => {
-        if (!data) return [];
-        try {
-          const cs = typeof data === 'string' ? JSON.parse(data) : data;
-          return Object.values(cs).map((value: any, index: number) => ({
-            title: value?.title || titles[index] || `Step ${index + 1}`,
-            content: value?.content || '',
-            icon: icons[index] || '📋',
-          }));
-        } catch {
-          return icons.map((icon, i) => ({ title: titles[i], content: '', icon }));
-        }
-      };
+  // Convertir une seule fois quand les données changent
+  useEffect(() => {
+    const converted = supabaseProjects.map(p => convertProject(p));
+    setConvertedProjects(converted);
+  }, [supabaseProjects]);
 
-      return {
-        id: parseInt(p.id) || 0,
-        title: { fr: p.title_fr, en: p.title_en },
-        status: p.status,
-        description: { fr: p.description_fr, en: p.description_en },
-        stack: p.stack || [],
-        liveUrl: p.live_url || '',
-        imageUrl: p.image_url || '',
-        isFeatured: p.is_featured,
-        caseStudy: {
-          fr: parseCaseStudy(p.case_study_fr, CASE_STUDY_ICONS.fr, defaultTitles.fr),
-          en: parseCaseStudy(p.case_study_en, CASE_STUDY_ICONS.en, defaultTitles.en),
-        },
-      };
-    });
-
-    // Filtrage
+  // Filtrage basé sur le state stable
+  const filteredProjects = useMemo(() => {
     if (!searchQuery.trim()) {
-      return allConverted;
+      return convertedProjects;
     }
-
     const query = searchQuery.toLowerCase();
-    return allConverted.filter(
+    return convertedProjects.filter(
       (p) =>
         p.title.fr.toLowerCase().includes(query) ||
         p.title.en.toLowerCase().includes(query) ||
@@ -84,18 +123,15 @@ const Projects: React.FC = () => {
         p.description.en.toLowerCase().includes(query) ||
         p.stack.some((tech) => tech.toLowerCase().includes(query))
     );
-  }, [rawProjects, searchQuery, isFr]);
+  }, [convertedProjects, searchQuery]);
 
-  // CORRECTION : useMemo avec dépendance stable
-  const filteredProjects = useMemo(() => getFilteredProjects(), [getFilteredProjects]);
-
-  const getStatusBadge = (status: string) => {
-    const config: Record<string, { text: string; color: string; icon: string }> = {
+  const getStatusBadge = (status: SupabaseProject['status']) => {
+    const config = {
       delivered: { text: isFr ? 'Livré · En production' : 'Delivered · In production', color: 'bg-green-500', icon: '✅' },
       in_progress: { text: isFr ? 'En cours d\'évolution' : 'In development', color: 'bg-yellow-500', icon: '🔄' },
       concept: { text: isFr ? 'Concept' : 'Concept', color: 'bg-gray-500', icon: '💭' },
     };
-    return config[status] || config.concept;
+    return config[status];
   };
 
   const containerVariants = {
@@ -204,7 +240,7 @@ const Projects: React.FC = () => {
               className="space-y-6 sm:space-y-8"
             >
               {filteredProjects.map((project) => {
-                const status = getStatusBadge(project.status);
+                const status = getStatusBadge(project.status as any);
 
                 return (
                   <motion.div key={project.id} variants={itemVariants}>
@@ -325,7 +361,7 @@ const Projects: React.FC = () => {
               </div>
 
               <div className="space-y-6 sm:space-y-8 px-1 sm:px-0 pb-4">
-                {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step, index) => (
+                {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step: CaseStudyStep, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
