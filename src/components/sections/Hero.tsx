@@ -1,7 +1,3 @@
-/**
- * Hero Section avec photo professionnelle uploadée
- */
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';

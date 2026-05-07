@@ -21,7 +21,7 @@ interface ConvertedProject {
 
 const CASE_STUDY_ICONS = {
   fr: ['🔍', '', '⚙️', '🚧', '🎯'],
-  en: ['🔍', '', '⚙️', '🚧', ''],
+  en: ['🔍', '💡', '⚙️', '🚧', ''],
 };
 
 const defaultTitles = {
@@ -29,19 +29,11 @@ const defaultTitles = {
   en: ['The problem', 'The solution', 'Features', 'Obstacles', 'The result'],
 };
 
-// Kanban columns
-const KANBAN_COLUMNS: { key: string; labelFr: string; labelEn: string; color: string }[] = [
-  { key: 'concept', labelFr: 'Concept', labelEn: 'Concept', color: 'border-gray-500' },
-  { key: 'in_progress', labelFr: 'En cours', labelEn: 'In Progress', color: 'border-yellow-500' },
-  { key: 'delivered', labelFr: 'Livré', labelEn: 'Delivered', color: 'border-green-500' },
-];
-
 const Projects: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
   const { projects: rawProjects, loading, error } = useSupabaseData();
   const [selectedProject, setSelectedProject] = useState<ConvertedProject | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban');
 
   const projects = useMemo((): ConvertedProject[] => {
     return rawProjects.map((p) => {
@@ -76,26 +68,23 @@ const Projects: React.FC = () => {
     });
   }, [rawProjects]);
 
-  // Group by status for Kanban
-  const projectsByStatus = useMemo(() => {
-    const grouped: Record<string, ConvertedProject[]> = {
-      concept: [],
-      in_progress: [],
-      delivered: [],
-    };
-    projects.forEach((p) => {
-      grouped[p.status]?.push(p);
-    });
-    return grouped;
-  }, [projects]);
-
   const getStatusBadge = (status: string) => {
     const config: Record<string, { text: string; color: string; icon: string }> = {
-      delivered: { text: isFr ? 'Livré' : 'Delivered', color: 'bg-green-500', icon: '✅' },
-      in_progress: { text: isFr ? 'En cours' : 'In Progress', color: 'bg-yellow-500', icon: '🔄' },
+      delivered: { text: isFr ? 'Livré · En production' : 'Delivered · In production', color: 'bg-green-500', icon: '✅' },
+      in_progress: { text: isFr ? 'En cours d\'évolution' : 'In development', color: 'bg-yellow-500', icon: '🔄' },
       concept: { text: isFr ? 'Concept' : 'Concept', color: 'bg-gray-500', icon: '💭' },
     };
     return config[status] || config.concept;
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
   if (loading) {
@@ -130,26 +119,6 @@ const Projects: React.FC = () => {
             <div className="w-16 sm:w-20 h-1 bg-cyan-400 mx-auto rounded-full mt-4" />
           </div>
 
-          {/* View Toggle */}
-          <div className="flex justify-center gap-2 mb-8">
-            <button
-              onClick={() => setViewMode('kanban')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                viewMode === 'kanban' ? 'bg-[#00BFFF] text-black' : 'bg-[#141430] text-[#A8B4C8] hover:text-white'
-              }`}
-            >
-              {isFr ? '📋 Kanban' : '📋 Kanban'}
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                viewMode === 'list' ? 'bg-[#00BFFF] text-black' : 'bg-[#141430] text-[#A8B4C8] hover:text-white'
-              }`}
-            >
-              {isFr ? '📄 Liste' : '📄 List'}
-            </button>
-          </div>
-
           {error && (
             <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400 text-center mb-8">
               {isFr ? 'Erreur de chargement des projets' : 'Error loading projects'}
@@ -163,130 +132,179 @@ const Projects: React.FC = () => {
                 {isFr ? 'Aucun projet disponible pour le moment.' : 'No projects available at the moment.'}
               </p>
             </div>
-          ) : viewMode === 'kanban' ? (
-            /* KANBAN VIEW */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-              {KANBAN_COLUMNS.map((col) => (
-                <div key={col.key} className={`glass-card border-t-4 ${col.color} p-4`}>
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center justify-between">
-                    <span>{isFr ? col.labelFr : col.labelEn}</span>
-                    <span className="text-xs bg-[#141430] text-[#A8B4C8] px-2 py-1 rounded-full">
-                      {projectsByStatus[col.key]?.length || 0}
-                    </span>
-                  </h3>
-                  <div className="space-y-3">
-                    {(projectsByStatus[col.key] || []).map((project) => {
-                      const status = getStatusBadge(project.status);
-                      return (
-                        <div key={project.id} className="bg-[#141430] bg-opacity-50 rounded-lg p-3 border border-[rgba(0,191,255,0.1)] hover:border-[#00BFFF] transition-colors cursor-pointer" onClick={() => project.caseStudy.fr.length > 0 && setSelectedProject(project)}>
-                          {project.imageUrl && (
-                            <img src={project.imageUrl} alt={isFr ? project.title.fr : project.title.en} className="w-full h-24 object-cover rounded-lg mb-2" />
-                          )}
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-lg">{status.icon}</span>
-                            <h4 className="text-white font-semibold text-sm">{isFr ? project.title.fr : project.title.en}</h4>
-                          </div>
-                          <p className="text-[#A8B4C8] text-xs line-clamp-2 mb-2">{isFr ? project.description.fr : project.description.en}</p>
-                          <div className="flex flex-wrap gap-1">
-                            {project.stack.slice(0, 3).map((tech, i) => (
-                              <span key={i} className="px-2 py-0.5 bg-[#0A0A1E] text-cyan-400 text-[10px] rounded-full">{tech}</span>
-                            ))}
-                          </div>
-                          {project.liveUrl && (
-                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-[#00BFFF] text-xs hover:underline mt-2 inline-block" onClick={(e) => e.stopPropagation()}>
-                              {isFr ? 'Voir →' : 'View →'}
-                            </a>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
           ) : (
-            /* LIST VIEW */
-            <div className="space-y-6 sm:space-y-8">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="space-y-6 sm:space-y-8"
+            >
               {projects.map((project) => {
                 const status = getStatusBadge(project.status);
+
                 return (
-                  <motion.div key={project.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="project-card">
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4">
-                      {project.imageUrl ? (
-                        <div className="w-full sm:w-48 md:w-56 h-32 sm:h-36 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
-                          <img src={project.imageUrl} alt={isFr ? project.title.fr : project.title.en} className="w-full h-full object-cover" />
-                        </div>
-                      ) : (
-                        <div className="w-full sm:w-48 md:w-56 h-32 sm:h-36 rounded-xl flex-shrink-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-                          <span className="text-4xl opacity-50">🚀</span>
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">{status.icon}</span>
-                            <h3 className="text-xl sm:text-2xl font-bold text-white">{isFr ? project.title.fr : project.title.en}</h3>
+                  <motion.div key={project.id} variants={itemVariants}>
+                    <div className="project-card">
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4">
+                        {project.imageUrl ? (
+                          <div className="w-full sm:w-48 md:w-56 h-32 sm:h-36 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
+                            <img
+                              src={project.imageUrl}
+                              alt={isFr ? project.title.fr : project.title.en}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            />
                           </div>
-                          <span className={`px-2 sm:px-3 py-1 ${status.color} text-white text-xs font-semibold rounded-full whitespace-nowrap self-start`}>{status.text}</span>
-                        </div>
-                        <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">{isFr ? project.description.fr : project.description.en}</p>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {project.stack.map((tech, index) => (
-                            <span key={index} className="px-2 sm:px-3 py-1 bg-gray-800 border border-gray-700 text-cyan-400 text-xs font-mono rounded-full">{tech}</span>
-                          ))}
+                        ) : (
+                          <div className="w-full sm:w-48 md:w-56 h-32 sm:h-36 rounded-xl flex-shrink-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+                            <span className="text-4xl opacity-50">🚀</span>
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">{status.icon}</span>
+                              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                                {isFr ? project.title.fr : project.title.en}
+                              </h3>
+                            </div>
+                            <span className={`px-2 sm:px-3 py-1 ${status.color} text-white text-xs font-semibold rounded-full whitespace-nowrap self-start`}>
+                              {status.text}
+                            </span>
+                          </div>
+                          <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
+                            {isFr ? project.description.fr : project.description.en}
+                          </p>
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {project.stack.map((tech, index) => (
+                              <span key={index} className="px-2 sm:px-3 py-1 bg-gray-800 border border-gray-700 text-cyan-400 text-xs font-mono rounded-full">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <SocialShare title={isFr ? project.title.fr : project.title.en} url={project.liveUrl || window.location.href} description={isFr ? project.description.fr : project.description.en} className="mb-4" />
-                    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800">
-                      {project.liveUrl && (
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center justify-center gap-2 min-h-[48px]">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                          <span className="text-sm">{isFr ? 'Voir le projet' : 'View project'}</span>
-                        </a>
-                      )}
-                      {project.caseStudy.fr.length > 0 && (
-                        <button onClick={() => setSelectedProject(project)} className="btn-secondary inline-flex items-center justify-center gap-2 min-h-[48px]">
-                          <span className="text-sm">📖 {isFr ? 'Étude de cas' : 'Case study'}</span>
-                        </button>
-                      )}
+
+                      <SocialShare
+                        title={isFr ? project.title.fr : project.title.en}
+                        url={project.liveUrl || window.location.href}
+                        description={isFr ? project.description.fr : project.description.en}
+                        className="mb-4"
+                      />
+
+                      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800">
+                        {project.liveUrl && (
+                          <a
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary inline-flex items-center justify-center gap-2 min-h-[48px]"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            <span className="text-sm sm:text-base">{isFr ? 'Voir le projet' : 'View project'}</span>
+                          </a>
+                        )}
+                        {project.caseStudy.fr.length > 0 && (
+                          <button
+                            onClick={() => setSelectedProject(project)}
+                            className="btn-secondary inline-flex items-center justify-center gap-2 min-h-[48px]"
+                          >
+                            <span className="text-sm sm:text-base">📖 {isFr ? 'Étude de cas' : 'Case study'}</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           )}
         </motion.div>
       </div>
 
       <AnimatePresence>
         {selectedProject && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4" onClick={() => setSelectedProject(null)}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
+            onClick={() => setSelectedProject(null)}
+          >
             <div className="absolute inset-0 bg-black bg-opacity-80 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative glass-card w-full max-w-[95vw] sm:max-w-2xl lg:max-w-3xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-0" onClick={(e) => e.stopPropagation()}>
-              <button onClick={() => setSelectedProject(null)} className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 text-gray-400 hover:text-white transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative glass-card w-full max-w-[95vw] sm:max-w-2xl lg:max-w-3xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 text-gray-400 hover:text-white transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close"
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
+
               <div className="pb-4 sm:pb-6 border-b border-gray-800 mb-4 sm:mb-6 pr-10">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{isFr ? selectedProject.title.fr : selectedProject.title.en}</h3>
-                <p className="text-gray-400 text-sm mt-2">📖 {isFr ? 'Étude de cas détaillée' : 'Detailed case study'}</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                  {isFr ? selectedProject.title.fr : selectedProject.title.en}
+                </h3>
+                <p className="text-gray-400 text-sm mt-2">
+                  📖 {isFr ? 'Étude de cas détaillée' : 'Detailed case study'}
+                </p>
               </div>
+
               <div className="space-y-6 sm:space-y-8 px-1 sm:px-0 pb-4">
                 {(isFr ? selectedProject.caseStudy.fr : selectedProject.caseStudy.en).map((step, index) => (
-                  <motion.div key={index} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} className="relative">
-                    {index > 0 && <div className="absolute left-6 top-0 w-0.5 h-4 bg-gray-700 -mt-6" />}
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="relative"
+                  >
+                    {index > 0 && (
+                      <div className="absolute left-6 top-0 w-0.5 h-4 bg-gray-700 -mt-6" />
+                    )}
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0"><div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-2xl">{step.icon}</div></div>
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-2xl">
+                          {step.icon}
+                        </div>
+                      </div>
                       <div className="flex-1 pt-2">
-                        <h4 className="text-cyan-400 font-semibold mb-2 text-sm sm:text-base">{index + 1}. {step.title}</h4>
-                        <div className="bg-gray-800/50 rounded-lg p-3 sm:p-4 border border-gray-700"><p className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">{step.content}</p></div>
+                        <h4 className="text-cyan-400 font-semibold mb-2 text-sm sm:text-base">
+                          {index + 1}. {step.title}
+                        </h4>
+                        <div className="bg-gray-800/50 rounded-lg p-3 sm:p-4 border border-gray-700">
+                          <p className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">
+                            {step.content}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
+
               <div className="pt-4 border-t border-gray-800 text-center">
-                {selectedProject.liveUrl && <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 text-sm inline-flex items-center gap-2">🔗 {isFr ? 'Voir le projet en ligne' : 'View project live'} →</a>}
+                {selectedProject.liveUrl && (
+                  <a
+                    href={selectedProject.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300 text-sm inline-flex items-center gap-2"
+                  >
+                    🔗 {isFr ? 'Voir le projet en ligne' : 'View project live'} →
+                  </a>
+                )}
               </div>
             </motion.div>
           </motion.div>
