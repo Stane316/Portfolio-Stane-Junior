@@ -1,10 +1,7 @@
-/**
- * AdminProjects - CRUD avec upload d'images
- */
-
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
-import ImageUpload from './ImageUpload';
+import ImageUploader from '../ui/ImageUploader';
 
 interface Project {
   id: string;
@@ -22,6 +19,16 @@ interface Project {
   created_at: string;
 }
 
+interface AdminProjectsProps {
+  onToast: (type: 'success' | 'error' | 'info' | 'warning', message: string) => void;
+}
+
+const COLUMNS = [
+  { key: 'concept', labelFr: 'Concept', labelEn: 'Concept', color: 'border-gray-500' },
+  { key: 'in_progress', labelFr: 'En cours', labelEn: 'In Progress', color: 'border-yellow-500' },
+  { key: 'delivered', labelFr: 'Livré', labelEn: 'Delivered', color: 'border-green-500' },
+];
+
 interface FormData {
   title_fr: string;
   title_en: string;
@@ -36,328 +43,216 @@ interface FormData {
   is_featured: boolean;
 }
 
-const AdminProjects: React.FC = () => {
+const AdminProjects: React.FC<AdminProjectsProps> = ({ onToast }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    title_fr: '',
-    title_en: '',
-    status: 'concept',
-    description_fr: '',
-    description_en: '',
-    stack: '',
-    live_url: '',
-    image_url: '',
-    display_order: 0,
-    is_visible: true,
-    is_featured: false,
+    title_fr: '', title_en: '', status: 'concept', description_fr: '', description_en: '',
+    stack: '', live_url: '', image_url: '', display_order: 0, is_visible: true, is_featured: false,
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const fetchProjects = async () => {
+    if (!isSupabaseConfigured()) { setProjects([]); setLoading(false); return; }
     try {
-      setLoading(true);
-      if (!isSupabaseConfigured()) {
-        setProjects([]);
-        setLoading(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('display_order', { ascending: true });
+      const { data, error } = await supabase.from('projects').select('*').order('display_order', { ascending: true });
       if (error) throw error;
-      setProjects(data || []);
-    } catch (err: any) {
-      setError(err.message);
+      setProjects((data as Project[]) || []);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erreur';
+      onToast('error', message);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  useEffect(() => { fetchProjects(); }, []);
 
   const resetForm = () => {
-    setFormData({
-      title_fr: '',
-      title_en: '',
-      status: 'concept',
-      description_fr: '',
-      description_en: '',
-      stack: '',
-      live_url: '',
-      image_url: '',
-      display_order: 0,
-      is_visible: true,
-      is_featured: false,
-    });
+    setFormData({ title_fr: '', title_en: '', status: 'concept', description_fr: '', description_en: '', stack: '', live_url: '', image_url: '', display_order: 0, is_visible: true, is_featured: false });
     setEditingProject(null);
     setShowForm(false);
-    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-
+    if (!isSupabaseConfigured()) { onToast('error', 'Supabase non configuré'); return; }
     try {
-      if (!isSupabaseConfigured()) {
-        setError('Supabase non configuré');
-        return;
-      }
-
       const stackArray = formData.stack.split(',').map((s: string) => s.trim()).filter(Boolean);
-
-      const projectData = {
-        title_fr: formData.title_fr,
-        title_en: formData.title_en,
-        status: formData.status,
-        description_fr: formData.description_fr,
-        description_en: formData.description_en,
-        stack: stackArray,
-        live_url: formData.live_url,
-        image_url: formData.image_url,
-        display_order: formData.display_order,
-        is_visible: formData.is_visible,
-        is_featured: formData.is_featured,
-      };
-
+      const data = { ...formData, stack: stackArray };
       if (editingProject) {
-        const { error } = await supabase
-          .from('projects')
-          .update(projectData)
-          .eq('id', editingProject.id);
+        const { error } = await supabase.from('projects').update(data).eq('id', editingProject.id);
         if (error) throw error;
-        setSuccess('Projet mis à jour !');
+        onToast('success', 'Projet mis à jour !');
       } else {
-        const { error } = await supabase.from('projects').insert([projectData]);
+        const { error } = await supabase.from('projects').insert([data]);
         if (error) throw error;
-        setSuccess('Projet créé !');
+        onToast('success', 'Projet créé !');
       }
-
       resetForm();
       fetchProjects();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erreur';
+      onToast('error', message);
     }
   };
 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
     setFormData({
-      title_fr: project.title_fr,
-      title_en: project.title_en,
-      status: project.status,
-      description_fr: project.description_fr,
-      description_en: project.description_en,
-      stack: project.stack ? (Array.isArray(project.stack) ? project.stack.join(', ') : project.stack) : '',
-      live_url: project.live_url,
-      image_url: project.image_url || '',
-      display_order: project.display_order,
-      is_visible: project.is_visible,
-      is_featured: project.is_featured,
+      title_fr: project.title_fr, title_en: project.title_en, status: project.status,
+      description_fr: project.description_fr, description_en: project.description_en,
+      stack: Array.isArray(project.stack) ? project.stack.join(', ') : (project.stack as unknown as string),
+      live_url: project.live_url, image_url: project.image_url || '',
+      display_order: project.display_order, is_visible: project.is_visible, is_featured: project.is_featured,
     });
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Supprimer ce projet ?')) return;
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`Supprimer "${title}" ?`)) return;
+    if (!isSupabaseConfigured()) return;
     try {
       await supabase.from('projects').delete().eq('id', id);
-      setSuccess('Projet supprimé !');
+      onToast('success', 'Projet supprimé !');
       fetchProjects();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erreur';
+      onToast('error', message);
     }
   };
 
-  const toggleVisibility = async (id: string, current: boolean) => {
+  const moveProject = async (id: string, newStatus: Project['status']) => {
+    if (!isSupabaseConfigured()) return;
     try {
-      await supabase.from('projects').update({ is_visible: !current }).eq('id', id);
+      await supabase.from('projects').update({ status: newStatus }).eq('id', id);
       fetchProjects();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erreur';
+      onToast('error', message);
     }
   };
 
-  const toggleFeatured = async (id: string, current: boolean) => {
-    try {
-      await supabase.from('projects').update({ is_featured: !current }).eq('id', id);
-      fetchProjects();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  const getStatusBadge = (status: Project['status']) => {
-    const config = {
-      delivered: { text: 'Livré', color: 'bg-green-500' },
-      in_progress: { text: 'En cours', color: 'bg-yellow-500' },
-      concept: { text: 'Concept', color: 'bg-gray-500' },
-    };
-    return config[status];
-  };
+  const projectsByStatus = projects.reduce((acc: Record<string, Project[]>, p) => {
+    acc[p.status] = [...(acc[p.status] || []), p];
+    return acc;
+  }, {} as Record<string, Project[]>);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Gestion des projets</h2>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary inline-flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Nouveau projet
+        <h2 className="text-lg font-display font-bold text-white">Projets ({projects.length})</h2>
+        <button onClick={() => setShowForm(!showForm)} className="btn-primary inline-flex items-center gap-2 text-sm py-2 px-4">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          Nouveau
         </button>
       </div>
 
-      {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400">{error}</div>}
-      {success && <div className="p-4 bg-green-500 bg-opacity-20 border border-green-500 rounded-lg text-green-400">{success}</div>}
-
-      {showForm && (
-        <div className="glass-card">
-          <h3 className="text-xl font-bold text-white mb-4">
-            {editingProject ? 'Modifier le projet' : 'Nouveau projet'}
-          </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Image upload */}
-            <ImageUpload
-              label="Image du projet (aperçu)"
-              bucket="portfolio-assets"
-              folder="projects"
-              currentUrl={formData.image_url}
-              onUpload={(url) => setFormData({ ...formData, image_url: url })}
-              onRemove={() => setFormData({ ...formData, image_url: '' })}
-              maxSize={5}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">Titre (FR)</label>
-                <input type="text" value={formData.title_fr} onChange={(e) => setFormData({ ...formData, title_fr: e.target.value })} required className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white focus:outline-none focus:border-cyan-400" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">Titre (EN)</label>
-                <input type="text" value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white focus:outline-none focus:border-cyan-400" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-white">Statut</label>
-              <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as any })} className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white">
-                <option value="concept">Concept</option>
-                <option value="in_progress">En cours</option>
-                <option value="delivered">Livré</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">Description (FR)</label>
-                <textarea value={formData.description_fr} onChange={(e) => setFormData({ ...formData, description_fr: e.target.value })} rows={3} required className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white resize-none" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">Description (EN)</label>
-                <textarea value={formData.description_en} onChange={(e) => setFormData({ ...formData, description_en: e.target.value })} rows={3} required className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white resize-none" />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-white">Stack (séparée par virgules)</label>
-              <input type="text" value={formData.stack} onChange={(e) => setFormData({ ...formData, stack: e.target.value })} placeholder="React, Supabase, TailwindCSS" className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-white">Lien live</label>
-              <input type="url" value={formData.live_url} onChange={(e) => setFormData({ ...formData, live_url: e.target.value })} className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-white">Ordre</label>
-              <input type="number" value={formData.display_order} onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })} className="w-full px-4 py-2 glass rounded-lg border border-gray-700 bg-gray-900 text-white" />
-            </div>
-
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="w-4 h-4" />
-                <span className="text-white">Featured</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={formData.is_visible} onChange={(e) => setFormData({ ...formData, is_visible: e.target.checked })} className="w-4 h-4" />
-                <span className="text-white">Visible</span>
-              </label>
-            </div>
-
-            <div className="flex gap-4">
-              <button type="submit" className="btn-primary">{editingProject ? 'Mettre à jour' : 'Créer'}</button>
-              <button type="button" onClick={resetForm} className="btn-secondary">Annuler</button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-4">
-        {projects.length === 0 ? (
-          <div className="glass-card text-center py-12">
-            <p className="text-gray-400">Aucun projet</p>
-          </div>
-        ) : (
-          projects.map((project) => {
-            const status = getStatusBadge(project.status);
-            return (
-              <div key={project.id} className="glass-card">
-                <div className="flex items-start gap-4 mb-4">
-                  {/* Project Image */}
-                  {project.image_url ? (
-                    <div className="w-32 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
-                      <img src={project.image_url} alt={project.title_fr} className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <div className="w-32 h-20 rounded-lg flex-shrink-0 bg-gray-800 flex items-center justify-center text-gray-600 text-xs">
-                      Pas d'image
-                    </div>
-                  )}
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-white">{project.title_fr}</h3>
-                      <span className={`px-2 py-1 ${status.color} text-white text-xs font-semibold rounded-full`}>{status.text}</span>
-                      {project.is_featured && <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">⭐</span>}
-                      {!project.is_visible && <span className="px-2 py-1 bg-red-500 text-white text-xs font-semibold rounded-full">Caché</span>}
-                    </div>
-                    <p className="text-gray-400 text-sm mb-2">{project.title_en}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(Array.isArray(project.stack) ? project.stack : project.stack?.split(',').map(s => s.trim()) || []).map((tech, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-800 border border-gray-700 text-cyan-400 text-xs rounded-full">{tech}</span>
-                      ))}
-                    </div>
+      <AnimatePresence>
+        {showForm && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+            <div className="glass-card border border-[rgba(0,191,255,0.15)] p-6">
+              <h3 className="text-lg font-bold text-white mb-4">{editingProject ? 'Modifier' : 'Nouveau projet'}</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Titre (FR)</label>
+                    <input type="text" value={formData.title_fr} onChange={(e) => setFormData({ ...formData, title_fr: e.target.value })} required placeholder="Titre" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
                   </div>
-                  
-                  <div className="flex gap-2">
-                    <button onClick={() => toggleVisibility(project.id, project.is_visible)} className="p-2 text-gray-400 hover:text-white">{project.is_visible ? '👁' : '🙈'}</button>
-                    <button onClick={() => toggleFeatured(project.id, project.is_featured)} className="p-2 text-gray-400 hover:text-yellow-500">⭐</button>
-                    <button onClick={() => handleEdit(project)} className="p-2 text-gray-400 hover:text-cyan-400">✏️</button>
-                    <button onClick={() => handleDelete(project.id)} className="p-2 text-gray-400 hover:text-red-500">🗑</button>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Titre (EN)</label>
+                    <input type="text" value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required placeholder="Title" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
                   </div>
                 </div>
-              </div>
-            );
-          })
+                <div>
+                  <label className="block text-sm font-semibold mb-1 text-white">Statut</label>
+                  <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as FormData['status'] })} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]">
+                    <option value="concept">Concept</option>
+                    <option value="in_progress">En cours</option>
+                    <option value="delivered">Livré</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Description (FR)</label>
+                    <textarea value={formData.description_fr} onChange={(e) => setFormData({ ...formData, description_fr: e.target.value })} rows={2} placeholder="Description" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Description (EN)</label>
+                    <textarea value={formData.description_en} onChange={(e) => setFormData({ ...formData, description_en: e.target.value })} rows={2} placeholder="Description" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Stack</label>
+                    <input type="text" value={formData.stack} onChange={(e) => setFormData({ ...formData, stack: e.target.value })} placeholder="React, Supabase" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-1 text-white">Lien live</label>
+                    <input type="url" value={formData.live_url} onChange={(e) => setFormData({ ...formData, live_url: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                  </div>
+                </div>
+                <ImageUploader label="Image du projet" currentUrl={formData.image_url} onChange={(url) => setFormData({ ...formData, image_url: url })} onRemove={() => setFormData({ ...formData, image_url: '' })} folder="projects" />
+                <div>
+                  <label className="block text-sm font-semibold mb-1 text-white">Ordre</label>
+                  <input type="number" value={formData.display_order} onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                </div>
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="w-4 h-4 accent-[#00BFFF]" /><span className="text-white text-sm">Featured</span></label>
+                  <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={formData.is_visible} onChange={(e) => setFormData({ ...formData, is_visible: e.target.checked })} className="w-4 h-4 accent-[#00BFFF]" /><span className="text-white text-sm">Visible</span></label>
+                </div>
+                <div className="flex gap-3">
+                  <button type="submit" className="btn-primary text-sm py-2 px-6">{editingProject ? 'Mettre à jour' : 'Créer'}</button>
+                  <button type="button" onClick={resetForm} className="btn-secondary text-sm py-2 px-6">Annuler</button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      {projects.length === 0 ? (
+        <div className="glass-card text-center py-12"><p className="text-[#A8B4C8]">Aucun projet. Créez votre premier projet !</p></div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {COLUMNS.map((col) => (
+            <div key={col.key} className={`glass-card border-t-4 ${col.color} p-4`}>
+              <h3 className="text-white font-bold mb-4 flex items-center justify-between">
+                <span>{col.labelFr}</span>
+                <span className="text-xs bg-[#141430] text-[#A8B4C8] px-2 py-1 rounded-full">{(projectsByStatus[col.key] || []).length}</span>
+              </h3>
+              <div className="space-y-3 min-h-[100px]">
+                {(projectsByStatus[col.key] || []).map((project) => (
+                  <div key={project.id} className="bg-[#141430] bg-opacity-50 rounded-lg p-3 border border-[rgba(0,191,255,0.1)]">
+                    {project.image_url && <img src={project.image_url} alt={project.title_fr} className="w-full h-20 object-cover rounded-lg mb-2" />}
+                    <h4 className="text-white font-semibold text-sm truncate">{project.title_fr}</h4>
+                    <p className="text-[#A8B4C8] text-xs line-clamp-2 mb-2">{project.description_fr}</p>
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {(Array.isArray(project.stack) ? project.stack : (project.stack as string)?.split(',').map(s => s.trim()) || []).slice(0, 3).map((tech: string, i: number) => (
+                        <span key={i} className="px-2 py-0.5 bg-[#0A0A1E] text-cyan-400 text-[10px] rounded-full">{tech}</span>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      {COLUMNS.filter(c => c.key !== col.key).map(c => (
+                        <button key={c.key} onClick={() => moveProject(project.id, c.key as Project['status'])} className="flex-1 px-2 py-1 bg-[#0A0A1E] text-[#A8B4C8] text-[10px] rounded hover:text-white transition-colors" title={`Déplacer vers ${c.labelFr}`}>
+                          → {c.labelFr}
+                        </button>
+                      ))}
+                      <button onClick={() => handleEdit(project)} className="p-1 text-[#A8B4C8] hover:text-[#00BFFF]" title="Modifier">✏️</button>
+                      <button onClick={() => handleDelete(project.id, project.title_fr)} className="p-1 text-[#A8B4C8] hover:text-red-400" title="Supprimer">🗑</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

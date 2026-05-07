@@ -30,9 +30,8 @@ const Hero: React.FC = () => {
 
   const ctaProjects = isFr ? 'Voir mes projets' : 'See my projects';
   const ctaContact = isFr ? 'Me contacter' : 'Get in touch';
-  const cvDownload = isFr ? 'Télécharger mon CV' : 'Download my CV';
-
   const cvUrl = siteConfig['cv_url']?.value_generic || '#';
+
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
 
   const stats = [
@@ -51,60 +50,18 @@ const Hero: React.FC = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  // Render photo professionnelle ou fallback
-  const renderPhoto = () => {
-    if (heroImageUrl) {
-      return (
-        <img
-          src={heroImageUrl}
-          alt="Stane-Junior Aniambossou"
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-            // Show fallback
-            const parent = e.currentTarget.parentElement;
-            if (parent) {
-              parent.innerHTML = `
-                <div class="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-600 opacity-40"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg mb-3">
-                    <span class="text-3xl sm:text-4xl font-bold text-white">SJ</span>
-                  </div>
-                  <p class="text-white font-bold text-sm sm:text-base opacity-90">Stane-Junior</p>
-                  <p class="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">@Stane316</p>
-                </div>
-              `;
-            }
-          }}
-        />
-      );
-    }
-
-    // Fallback: design professionnel avec initiales
-    return (
-      <>
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-600 opacity-40" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg mb-3 sm:mb-4">
-            <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">SJ</span>
-          </div>
-          <div className="text-center px-4">
-            <p className="text-white font-bold text-sm sm:text-base md:text-lg opacity-90">Stane-Junior</p>
-            <p className="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">@Stane316</p>
-          </div>
-        </div>
-      </>
-    );
-  };
-
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-24 sm:pt-32 lg:pt-20 overflow-hidden">
       <div className="gradient-mesh" />
 
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-          {/* Left Column */}
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="text-center lg:text-left">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center lg:text-left"
+          >
             <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-4 sm:mb-6">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 glass rounded-full">
                 <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
@@ -112,7 +69,7 @@ const Hero: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+            <motion.h1 variants={itemVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-4 sm:mb-6 leading-tight">
               <span className="text-gradient">{isFr ? 'Étudiant Développeur' : 'Developer Student'}</span>
               <br className="sm:hidden" />
               <span className="text-white">{isFr ? "& Fondateur d'Agence" : '& Agency Founder'}</span>
@@ -135,25 +92,22 @@ const Hero: React.FC = () => {
             </motion.div>
 
             {cvUrl && cvUrl !== '#' && (
-              <motion.a variants={itemVariants} href={cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm group px-2">
-                <svg className="w-4 h-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span>{cvDownload}</span>
+              <motion.a variants={itemVariants} href={cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm px-2 mb-6 sm:mb-8">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                {isFr ? 'Télécharger mon CV' : 'Download my CV'}
               </motion.a>
             )}
 
-            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-2xl mx-auto lg:mx-0 mt-8 sm:mt-12">
+            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-2xl mx-auto lg:mx-0">
               {stats.map((stat, index) => (
                 <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + index * 0.1 }} className="glass-card text-center py-2 sm:py-3 md:py-4">
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-cyan-400 mb-0 sm:mb-1">{stat.value}</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-cyan-400 mb-0 sm:mb-1">{stat.value}</div>
                   <div className="text-gray-400 text-[10px] sm:text-xs md:text-sm px-1 leading-tight">{stat.label}</div>
                 </motion.div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Photo */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -166,7 +120,20 @@ const Hero: React.FC = () => {
               <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl rotate-3 sm:rotate-6 opacity-60" />
               <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl -rotate-3 sm:-rotate-6 opacity-60" />
               <div className="relative w-full h-full glass rounded-2xl sm:rounded-3xl overflow-hidden">
-                {renderPhoto()}
+                {heroImageUrl ? (
+                  <img src={heroImageUrl} alt="Stane-Junior Aniambossou" className="w-full h-full object-cover" />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-600 opacity-40" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg mb-3">
+                        <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">SJ</span>
+                      </div>
+                      <p className="text-white font-bold text-sm sm:text-base md:text-lg opacity-90">Stane-Junior</p>
+                      <p className="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">@Stane316</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
