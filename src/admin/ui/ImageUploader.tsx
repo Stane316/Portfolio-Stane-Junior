@@ -8,7 +8,7 @@ interface ImageUploaderProps {
   onRemove: () => void;
   bucket?: string;
   folder?: string;
-  maxSize?: number; // en MB
+  maxSize?: number;
   accept?: string;
 }
 
