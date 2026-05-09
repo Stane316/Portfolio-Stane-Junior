@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useToast } from '../admin/hooks/useToast';
 import { ToastContainer } from '../admin/components/Toast';
 import ConfirmDialog from '../admin/components/ConfirmDialog';
-import ProtectedRoute from '../admin/components/ProtectedRoute'; // <--- NOUVEAU
+import ProtectedRoute from '../admin/components/ProtectedRoute';
 import Sidebar from '../admin/components/Sidebar';
 import Topbar from '../admin/components/Topbar';
 import AdminDashboard from '../admin/components/AdminDashboard';
@@ -14,7 +14,7 @@ import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
 import AdminBlog from '../admin/components/AdminBlog';
 
-// ... (Garde tes interfaces Project, Message, Testimonial, DashboardData ici) ...
+// ... [Tes interfaces Project, Message, etc. restent ici] ...
 interface Project {
   id: string;
   title_fr: string;
@@ -72,6 +72,17 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Sécurité inverse : Si on est déjà connecté, on redirige vers le dashboard
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/admin/dashboard', { replace: true });
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -244,10 +255,10 @@ const AdminLayout: React.FC = () => {
 const Admin: React.FC = () => {
   return (
     <Routes>
-      {/* La route Login est publique */}
+      {/* Login publique (mais vérifie si déjà connecté) */}
       <Route path="/login" element={<AdminLogin />} />
       
-      {/* TOUTES les autres routes sont protégées par ProtectedRoute */}
+      {/* Toutes les autres routes sont strictement protégées */}
       <Route path="/*" element={
         <ProtectedRoute>
           <AdminLayout />
