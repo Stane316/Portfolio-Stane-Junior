@@ -7,7 +7,7 @@ import { SkeletonHero } from '../components/ui/Skeleton';
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
 import Skills from '../components/sections/Skills';
-import Projects from '../components/sections/Projects';
+import ProjectsGallery from '../components/sections/ProjectsGallery';
 import GrowTech from '../components/sections/GrowTech';
 import Vision from '../components/sections/Vision';
 import Testimonials from '../components/sections/Testimonials';
@@ -79,7 +79,7 @@ const Portfolio: React.FC = () => {
         </section>
         
         <section id="projects" aria-label="Projets">
-          <Projects />
+          <ProjectsGallery />
         </section>
         
         <section id="growtech" aria-label="GROW TECH">

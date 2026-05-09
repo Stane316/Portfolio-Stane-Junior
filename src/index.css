@@ -815,3 +815,29 @@ html.light .mobile-menu-overlay {
   margin-top: 0.5rem;
   max-width: 600px;
 }
+
+/* ============================================
+   PROJETS GALLERY STYLE ARISTIDE
+   ============================================ */
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Curseur custom pour les projets */
+.project-cursor {
+  cursor: none;
+}
+
+/* Smooth reveal */
+.reveal-up {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.reveal-up.active {
+  clip-path: inset(0 0 0 0);
+}
