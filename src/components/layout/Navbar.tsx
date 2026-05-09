@@ -1,18 +1,5 @@
-/**
- * Navigation Bar Component
- * 
- * Responsive navbar with:
- * - Logo (SJ with animated cyan dot)
- * - Navigation links (desktop)
- * - Hamburger menu (mobile)
- * - Language switcher
- * - Glassmorphism effect on scroll
- * 
- * @see /src/contexts/LanguageContext.tsx
- */
-
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,8 +7,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Détecte si on est sur une page autre que l'accueil
+  const isProjectsPage = location.pathname === '/projects';
+  const isAdminPage = location.pathname.startsWith('/admin');
+
+  // Si on est sur une sous-page, on préfixe les liens par "/#"
+  const linkPrefix = isProjectsPage ? '/#' : '';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,28 +27,27 @@ const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { href: '#hero', label: lang === 'fr' ? 'Accueil' : 'Home' },
-    { href: '#about', label: lang === 'fr' ? 'À propos' : 'About' },
-    { href: '#skills', label: lang === 'fr' ? 'Compétences' : 'Skills' },
-    { href: '#projects', label: lang === 'fr' ? 'Projets' : 'Projects' },
-    { href: '#growtech', label: lang === 'fr' ? 'GROW TECH' : 'GROW TECH' },
-    { href: '#vision', label: lang === 'fr' ? 'Vision' : 'Vision' },
-    { href: '#contact', label: lang === 'fr' ? 'Contact' : 'Contact' },
+    { href: `${linkPrefix}hero`, label: isFr => isFr ? 'Accueil' : 'Home' },
+    { href: `${linkPrefix}about`, label: isFr => isFr ? 'À propos' : 'About' },
+    { href: `${linkPrefix}projects`, label: isFr => isFr ? 'Projets' : 'Projects' },
+    { href: `${linkPrefix}growtech`, label: isFr => isFr ? 'GROW TECH' : 'GROW TECH' },
+    { href: `${linkPrefix}contact`, label: isFr => isFr ? 'Contact' : 'Contact' },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (isProjectsPage || isAdminPage) return; // Laisser le Router gérer si on change de page
     e.preventDefault();
     setIsMenuOpen(false);
     
-    if (href.startsWith('#')) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      window.location.href = href;
+    const targetId = href.replace('#', '');
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Si on est sur Admin, on n'affiche pas cette navbar
+  if (isAdminPage) return null;
 
   return (
     <>
@@ -69,6 +63,7 @@ const Navbar: React.FC = () => {
       >
         <div className="container-custom">
           <div className="flex items-center justify-between">
+            {/* Logo - Retour accueil */}
             <RouterLink to="/" className="flex items-center gap-2 group" aria-label="Accueil">
               <span className="font-heading text-3xl text-white group-hover:text-[#00BFFF] transition-colors">
                 SJ
@@ -76,36 +71,27 @@ const Navbar: React.FC = () => {
               <span className="w-2 h-2 bg-[#00BFFF] rounded-full animate-pulse" />
             </RouterLink>
 
+            {/* Liens Desktop */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
+                <RouterLink
                   key={link.href}
-                  href={link.href}
+                  to={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-[#A8B4C8] hover:text-[#00BFFF] transition-colors relative group font-body text-sm nav-link"
+                  className="text-[#A8B4C8] hover:text-[#00BFFF] transition-colors relative group font-body text-sm"
                 >
-                  {link.label}
-                </a>
+                  {link.label(lang === 'fr')}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00BFFF] group-hover:w-full transition-all duration-300" />
+                </RouterLink>
               ))}
             </div>
 
+            {/* Actions Droite */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors rounded-lg hover:bg-[#141430] theme-toggle"
-                aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-              >
-                {theme === 'dark' ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )}
-              </button>
+              {/* Thème (Optionnel si activé) */}
+              {/* <button onClick={toggleTheme} className="p-2 text-[#A8B4C8] hover:text-[#00BFFF]">...</button> */}
 
+              {/* Langue */}
               <button
                 onClick={toggleLang}
                 className="hidden sm:flex items-center gap-2 px-3 py-1.5 border border-[#00BFFF] rounded-lg text-[#00BFFF] hover:bg-[#00BFFF] hover:text-black transition-all duration-300 font-semibold text-sm"
@@ -114,13 +100,13 @@ const Navbar: React.FC = () => {
                 {lang === 'fr' ? 'EN' : 'FR'}
               </button>
 
-              
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="lg:hidden p-2 text-[#00BFFF]"
-                  aria-label="Menu"
-                  aria-expanded={isMenuOpen}
-                >
+              {/* Hamburger Mobile */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="lg:hidden p-2 text-[#00BFFF]"
+                aria-label="Menu"
+                aria-expanded={isMenuOpen}
+              >
                 <div className="w-6 h-5 flex flex-col justify-between">
                   <span className={`w-full h-0.5 bg-current transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
                   <span className={`w-full h-0.5 bg-current transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`} />
@@ -132,6 +118,7 @@ const Navbar: React.FC = () => {
         </div>
       </motion.nav>
 
+      {/* Menu Mobile */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -145,17 +132,20 @@ const Navbar: React.FC = () => {
             <div className="relative container-custom pt-24 px-6">
               <div className="flex flex-col gap-4">
                 {navLinks.map((link, index) => (
-                  <motion.a
+                  <RouterLink
                     key={link.href}
-                    href={link.href}
-                    onClick={(e) => handleNavClick(e, link.href)}
+                    to={link.href}
+                    onClick={(e) => {
+                      handleNavClick(e, link.href);
+                      setIsMenuOpen(false);
+                    }}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className="text-lg text-[#A8B4C8] hover:text-[#00BFFF] transition-colors font-body py-2 border-b border-[rgba(0,191,255,0.1)]"
                   >
-                    {link.label}
-                  </motion.a>
+                    {link.label(lang === 'fr')}
+                  </RouterLink>
                 ))}
                 
                 <motion.button

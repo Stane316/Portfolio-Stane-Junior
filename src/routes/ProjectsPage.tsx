@@ -5,6 +5,7 @@ import { useSupabaseData } from '../hooks/useSupabaseData';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import SectionNumber from '../components/ui/SectionNumber';
+import { Link } from 'react-router-dom';
 import SocialShare from '../components/ui/SocialShare';
 
 interface ConvertedProject {
@@ -65,6 +66,19 @@ const ProjectsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0A0A1E]">
       <Navbar />
+      <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 pt-24 pb-8">
+        <Link 
+          to="/#" 
+          className="inline-flex items-center gap-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors group"
+        >
+          <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span className="text-sm uppercase tracking-widest">
+            {isFr ? 'Retour à l\'accueil' : 'Back to home'}
+          </span>
+        </Link>
+      </div>
       
       <section className="pt-32 pb-24 lg:pt-40 lg:pb-32">
         <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12">
