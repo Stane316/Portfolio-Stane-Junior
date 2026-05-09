@@ -9,124 +9,137 @@
  * @see /src/contexts/LanguageContext.tsx
  */
 
-import React, { memo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
+import SectionNumber from '../../components/ui/SectionNumber';
 
-interface Skill {
-  name: string;
-  level: 'mastered' | 'learning' | 'basics';
-  context: string;
+interface SkillCategory {
+  title: string;
+  skills: { name: string; level: number; icon: string }[];
 }
 
-const Skills: React.FC = memo(() => {
+const Skills: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
 
-  const skills: Skill[] = [
-    { name: 'HTML5', level: 'mastered', context: isFr ? 'Tous les projets livrés' : 'All delivered projects' },
-    { name: 'CSS3 / TailwindCSS', level: 'mastered', context: isFr ? 'Maquis Digital, CRM, Portfolio' : 'Maquis Digital, CRM, Portfolio' },
-    { name: 'JavaScript (vanilla)', level: 'mastered', context: isFr ? 'Capsule, Portfolio ancien' : 'Capsule, Old Portfolio' },
-    { name: 'React 18 + Vite', level: 'learning', context: isFr ? 'CRM Léger, Portfolio actuel' : 'CRM Léger, Current Portfolio' },
-    { name: 'Supabase', level: 'mastered', context: isFr ? 'Auth, DB, Storage, Realtime' : 'Auth, DB, Storage, Realtime' },
-    { name: 'Git / GitHub', level: 'mastered', context: isFr ? 'Tous les projets versionnés' : 'All versioned projects' },
-    { name: 'Figma', level: 'learning', context: isFr ? 'Maquettes projets clients GROW TECH' : 'GROW TECH client mockups' },
-    { name: 'Node.js', level: 'learning', context: isFr ? 'Backend API projets en cours' : 'Backend API projects in progress' },
-    { name: 'Netlify', level: 'mastered', context: isFr ? 'Déploiement de tous les projets' : 'All projects deployment' },
-    { name: 'Prompt Engineering / IA', level: 'mastered', context: isFr ? 'Méthode de travail assistée IA' : 'AI-assisted workflow' },
-    { name: 'C (langage)', level: 'mastered', context: isFr ? '31 projets pédagogiques — IFRI-UAC' : '31 educational projects — IFRI-UAC' },
-    { name: 'Algorithmique', level: 'mastered', context: isFr ? 'Cours IFRI-UAC, pseudocode FR' : 'IFRI-UAC courses, FR pseudocode' },
+  const categories: SkillCategory[] = [
+    {
+      title: isFr ? 'Frontend' : 'Frontend',
+      skills: [
+        { name: 'React / Next.js', level: 90, icon: '⚛️' },
+        { name: 'TypeScript', level: 85, icon: '🔷' },
+        { name: 'TailwindCSS', level: 95, icon: '🎨' },
+        { name: 'Framer Motion', level: 80, icon: '✨' },
+      ],
+    },
+    {
+      title: isFr ? 'Backend & DB' : 'Backend & DB',
+      skills: [
+        { name: 'Node.js', level: 75, icon: '🟢' },
+        { name: 'Supabase', level: 85, icon: '🟣' },
+        { name: 'PostgreSQL', level: 70, icon: '🐘' },
+        { name: 'API REST', level: 80, icon: '🔗' },
+      ],
+    },
+    {
+      title: isFr ? 'Outils & Design' : 'Tools & Design',
+      skills: [
+        { name: 'Git / GitHub', level: 90, icon: '🐙' },
+        { name: 'Figma', level: 75, icon: '🎯' },
+        { name: 'Vercel / Netlify', level: 85, icon: '▲' },
+        { name: 'Three.js', level: 60, icon: '' },
+      ],
+    },
   ];
 
-  const levelConfig = {
-    mastered: { icon: '🔵', label: isFr ? 'Maîtrisé' : 'Mastered', color: 'text-blue-400' },
-    learning: { icon: '🟡', label: isFr ? 'En apprentissage actif' : 'Actively learning', color: 'text-yellow-400' },
-    basics: { icon: '⚪', label: isFr ? 'Notions' : 'Basic knowledge', color: 'text-gray-400' },
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  };
-
   return (
-    <section id="skills" className="py-16 sm:py-20 md:py-24 lg:py-32 relative" aria-labelledby="skills-title">
-      <div className="container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 id="skills-title" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 sm:mb-4">
-              <span className="text-gradient">{isFr ? 'Ce que je maîtrise' : 'What I master'}</span>
+    <section id="skills" className="py-24 lg:py-32 bg-[#0F0F2E] relative overflow-hidden">
+      <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
+        
+        {/* Header */}
+        <div className="mb-16 lg:mb-24">
+          <div className="relative">
+            <SectionNumber number="03" />
+            <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
+              {isFr ? 'COMPÉTENCES' : 'SKILLS'}
             </h2>
-            <div className="w-16 sm:w-20 h-1 bg-[#00BFFF] mx-auto rounded-full" />
-          </div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12"
-          >
-            {skills.map((skill, index) => (
-              <motion.div key={index} variants={itemVariants} className="project-card group">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-display font-bold text-white group-hover:text-[#00BFFF] transition-colors">
-                    {skill.name}
-                  </h3>
-                  <span className="text-2xl">{levelConfig[skill.level].icon}</span>
-                </div>
-                <div className={`text-sm ${levelConfig[skill.level].color} font-semibold mb-2`}>
-                  {levelConfig[skill.level].label}
-                </div>
-                <p className="text-[#A8B4C8] text-sm">{skill.context}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className="glass-card max-w-2xl mx-auto text-center"
-          >
-            <p className="text-[#A8B4C8] italic text-sm">
-              {isFr
-                ? "Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière — pas un aveu de faiblesse."
-                : "I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right — not an admission of weakness."}
+            <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
+              {isFr ? 'Technologies que je maîtrise au quotidien.' : 'Technologies I master daily.'}
             </p>
-          </motion.div>
+          </div>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-6 mt-8"
-          >
-            {Object.entries(levelConfig).map(([level, config]) => (
-              <div key={level} className="flex items-center gap-2">
-                <span className="text-2xl">{config.icon}</span>
-                <span className="text-[#A8B4C8] text-sm">{config.label}</span>
+        {/* Grille des catégories */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {categories.map((category, catIndex) => (
+            <motion.div
+              key={category.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: catIndex * 0.15, duration: 0.6 }}
+              className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors duration-300 group"
+            >
+              <h3 className="text-xl text-white font-bold mb-8 flex items-center gap-3">
+                <span className="w-2 h-8 bg-[#00BFFF] rounded-full" />
+                {category.title}
+              </h3>
+
+              <div className="space-y-6">
+                {category.skills.map((skill, skillIndex) => (
+                  <motion.div
+                    key={skill.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1), duration: 0.4 }}
+                    className="group/skill"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{skill.icon}</span>
+                        <span className="text-[#A8B4C8] font-medium group-hover/skill:text-white transition-colors">
+                          {skill.name}
+                        </span>
+                      </div>
+                      <span className="text-[#00BFFF] font-mono text-sm">{skill.level}%</span>
+                    </div>
+                    
+                    {/* Barre de progression */}
+                    <div className="h-2 bg-[#0A0A1E] rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.level}%` }}
+                        viewport={{ once: true }}
+                        transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1) + 0.3, duration: 0.8, ease: "easeOut" }}
+                        className="h-full bg-gradient-to-r from-[#1A6FC4] to-[#00BFFF] rounded-full"
+                      />
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Note en bas */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mt-16 text-center"
+        >
+          <p className="text-[#4A5568] text-sm italic max-w-2xl mx-auto">
+            {isFr 
+              ? 'Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière.' 
+              : 'I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right.'}
+          </p>
         </motion.div>
       </div>
     </section>
   );
-});
-
-Skills.displayName = 'Skills';
+};
 
 export default Skills;

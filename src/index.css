@@ -855,3 +855,36 @@ html.light .mobile-menu-overlay {
 html {
   scroll-behavior: smooth;
 }
+
+/* ============================================
+   SKILLS SECTION ANIMATIONS
+   ============================================ */
+
+/* Effet de glow au hover sur les cartes skills */
+.group:hover {
+  box-shadow: 0 0 30px rgba(0, 191, 255, 0.1);
+}
+
+/* Animation de la barre de progression */
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress-width); }
+}
+
+/* Smooth scrollbar pour les sections */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A1E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1A2E;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00BFFF;
+}
