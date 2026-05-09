@@ -6,7 +6,6 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import SectionNumber from '../components/ui/SectionNumber';
 import { Link } from 'react-router-dom';
-import SocialShare from '../components/ui/SocialShare';
 
 interface ConvertedProject {
   id: number;
@@ -25,18 +24,13 @@ interface ConvertedProject {
 
 const CASE_STUDY_ICONS = {
   fr: ['🔍', '', '⚙️', '🚧', '🎯'],
-  en: ['🔍', '💡', '⚙️', '🚧', ''],
-};
-
-const defaultTitles = {
-  fr: ['Le problème', 'La solution', 'Fonctionnalités', 'Les obstacles', 'Le résultat'],
-  en: ['The problem', 'The solution', 'Features', 'Obstacles', 'The result'],
+  en: ['🔍', '', '⚙️', '🚧', ''],
 };
 
 const ProjectsPage: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
-  const { projects: rawProjects, loading, error } = useSupabaseData();
+  const { projects: rawProjects } = useSupabaseData();
   const [selectedProject, setSelectedProject] = useState<ConvertedProject | null>(null);
 
   const projects: ConvertedProject[] = rawProjects.map((p) => ({
@@ -66,6 +60,7 @@ const ProjectsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0A0A1E]">
       <Navbar />
+      
       <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 pt-24 pb-8">
         <Link 
           to="/#" 
@@ -79,8 +74,8 @@ const ProjectsPage: React.FC = () => {
           </span>
         </Link>
       </div>
-      
-      <section className="pt-32 pb-24 lg:pt-40 lg:pb-32">
+
+      <section className="pt-8 pb-24 lg:pt-16 lg:pb-32">
         <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12">
           
           {/* Header */}
@@ -99,12 +94,6 @@ const ProjectsPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {error && (
-            <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400 text-center mb-8">
-              {isFr ? 'Erreur de chargement' : 'Loading error'}
-            </div>
-          )}
 
           {projects.length === 0 ? (
             <div className="text-center py-24 border-t border-[#141430]">
