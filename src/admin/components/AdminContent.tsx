@@ -106,6 +106,16 @@ const AdminContent: React.FC = () => {
           maxSize={5}
         />
 
+        {/* Photo About (Section À propos) */}
+        <FileUpload 
+          label="👤 Photo À propos (Section About)"
+          bucket="portfolio-assets"
+          folder="about"
+          currentUrl={config['about_image_url']?.value_generic || ''}
+          onChange={(url) => handleSave('about_image_url', 'value_generic', url)}
+          maxSizeMB={5}
+        />
+
         {/* CV PDF */}
         <FileUpload 
           label="CV (PDF)"

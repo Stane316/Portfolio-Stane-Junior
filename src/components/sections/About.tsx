@@ -9,7 +9,10 @@ const About: React.FC = () => {
   const isFr = lang === 'fr';
   const { siteConfig } = useSupabaseData();
 
+  // Photo spécifique pour About (différente de Hero)
+  const aboutImageUrl = siteConfig['about_image_url']?.value_generic || '';
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
+  const displayImage = aboutImageUrl || heroImageUrl;
 
   const paragraphs = isFr
     ? [
@@ -83,7 +86,7 @@ const About: React.FC = () => {
 
           {/* Colonne Droite: Photo & Citation (5/12) */}
           <div className="lg:col-span-5 flex flex-col gap-8">
-            {/* Photo */}
+            {/* Photo - Utilise about_image_url si disponible, sinon hero_image_url */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -92,8 +95,8 @@ const About: React.FC = () => {
               className="relative"
             >
               <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-[#141430] border border-[#1A1A2E]">
-                {heroImageUrl ? (
-                  <img src={heroImageUrl} alt="Stane-Junior" className="w-full h-full object-cover" />
+                {displayImage ? (
+                  <img src={displayImage} alt="Stane-Junior" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] flex items-center justify-center">
                     <span className="text-8xl font-heading text-white opacity-50">SJ</span>

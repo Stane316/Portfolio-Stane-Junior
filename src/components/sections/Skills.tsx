@@ -1,54 +1,64 @@
-/**
- * Skills Section Component
- * 
- * Displays technical skills with 3 levels:
- * - Mastered (blue) - Production ready
- * - Learning (yellow) - Actively using
- * - Basics (white) - Understanding only
- * 
- * @see /src/contexts/LanguageContext.tsx
- */
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import SectionNumber from '../../components/ui/SectionNumber';
 
-interface SkillCategory {
-  title: string;
-  skills: { name: string; level: number; icon: string }[];
+interface SkillItem {
+  name: string;
+  level: 'mastered' | 'learning' | 'basics';
+  context: string;
 }
 
 const Skills: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
 
-  const categories: SkillCategory[] = [
+  const levelConfig = {
+    mastered: { 
+      label: isFr ? 'Maîtrisé' : 'Mastered', 
+      color: 'text-[#00BFFF]', 
+      dot: 'bg-[#00BFFF]' 
+    },
+    learning: { 
+      label: isFr ? 'En apprentissage actif' : 'Actively Learning', 
+      color: 'text-yellow-400', 
+      dot: 'bg-yellow-400' 
+    },
+    basics: { 
+      label: isFr ? 'Notion' : 'Basics', 
+      color: 'text-[#4A5568]', 
+      dot: 'bg-[#4A5568]' 
+    },
+  };
+
+  const categories = [
     {
       title: isFr ? 'Frontend' : 'Frontend',
       skills: [
-        { name: 'React / Next.js', level: 90, icon: '⚛️' },
-        { name: 'TypeScript', level: 85, icon: '🔷' },
-        { name: 'TailwindCSS', level: 95, icon: '🎨' },
-        { name: 'Framer Motion', level: 80, icon: '✨' },
+        { name: 'HTML5 / CSS3', level: 'mastered' as const, context: isFr ? 'Tous les projets' : 'All projects' },
+        { name: 'React / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients' : 'Portfolio, CRM, Client projects' },
+        { name: 'TypeScript', level: 'mastered' as const, context: isFr ? 'Architecture type-safe' : 'Type-safe architecture' },
+        { name: 'TailwindCSS', level: 'mastered' as const, context: isFr ? 'Design system complet' : 'Complete design system' },
+        { name: 'Three.js', level: 'learning' as const, context: isFr ? 'Scènes 3D basiques' : 'Basic 3D scenes' },
+        { name: 'Framer Motion', level: 'mastered' as const, context: isFr ? 'Animations fluides' : 'Smooth animations' },
       ],
     },
     {
-      title: isFr ? 'Backend & DB' : 'Backend & DB',
+      title: isFr ? 'Backend & Data' : 'Backend & Data',
       skills: [
-        { name: 'Node.js', level: 75, icon: '🟢' },
-        { name: 'Supabase', level: 85, icon: '🟣' },
-        { name: 'PostgreSQL', level: 70, icon: '🐘' },
-        { name: 'API REST', level: 80, icon: '🔗' },
+        { name: 'Node.js', level: 'learning' as const, context: isFr ? 'APIs REST en cours' : 'REST APIs in progress' },
+        { name: 'Supabase', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime' : 'Auth, DB, Storage, Realtime' },
+        { name: 'PostgreSQL', level: 'learning' as const, context: isFr ? 'Requêtes avancées' : 'Advanced queries' },
+        { name: 'API REST', level: 'mastered' as const, context: isFr ? 'Intégration complète' : 'Full integration' },
       ],
     },
     {
-      title: isFr ? 'Outils & Design' : 'Tools & Design',
+      title: isFr ? 'Outils & Workflow' : 'Tools & Workflow',
       skills: [
-        { name: 'Git / GitHub', level: 90, icon: '🐙' },
-        { name: 'Figma', level: 75, icon: '🎯' },
-        { name: 'Vercel / Netlify', level: 85, icon: '▲' },
-        { name: 'Three.js', level: 60, icon: '' },
+        { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versionning & collaboration' : 'Versioning & collaboration' },
+        { name: 'Figma', level: 'learning' as const, context: isFr ? 'Maquettes & prototypes' : 'Mockups & prototypes' },
+        { name: 'Vercel / Netlify', level: 'mastered' as const, context: isFr ? 'Déploiement continu' : 'Continuous deployment' },
+        { name: 'IA / Prompting', level: 'mastered' as const, context: isFr ? 'Accélération dev' : 'Dev acceleration' },
       ],
     },
   ];
@@ -79,7 +89,7 @@ const Skills: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: catIndex * 0.15, duration: 0.6 }}
-              className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors duration-300 group"
+              className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors duration-300"
             >
               <h3 className="text-xl text-white font-bold mb-8 flex items-center gap-3">
                 <span className="w-2 h-8 bg-[#00BFFF] rounded-full" />
@@ -87,43 +97,35 @@ const Skills: React.FC = () => {
               </h3>
 
               <div className="space-y-6">
-                {category.skills.map((skill, skillIndex) => (
-                  <motion.div
-                    key={skill.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1), duration: 0.4 }}
-                    className="group/skill"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{skill.icon}</span>
-                        <span className="text-[#A8B4C8] font-medium group-hover/skill:text-white transition-colors">
-                          {skill.name}
-                        </span>
+                {category.skills.map((skill, skillIndex) => {
+                  const level = levelConfig[skill.level];
+                  return (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1), duration: 0.4 }}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[#A8B4C8] font-medium">{skill.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${level.dot}`} />
+                          <span className={`text-xs ${level.color} uppercase tracking-wider`}>
+                            {level.label}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[#00BFFF] font-mono text-sm">{skill.level}%</span>
-                    </div>
-                    
-                    {/* Barre de progression */}
-                    <div className="h-2 bg-[#0A0A1E] rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1) + 0.3, duration: 0.8, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-[#1A6FC4] to-[#00BFFF] rounded-full"
-                      />
-                    </div>
-                  </motion.div>
-                ))}
+                      <p className="text-[#4A5568] text-xs">{skill.context}</p>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Note en bas */}
+        {/* Note honnêteté */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
