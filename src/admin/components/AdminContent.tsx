@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import ImageUploader from '../ui/ImageUploader';
+import FileUpload from './FileUpload';
 
 interface SiteConfig {
   key: string;

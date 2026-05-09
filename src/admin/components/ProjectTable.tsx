@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { validateProject } from '../../lib/validation';
 import CaseStudyEditor from './CaseStudyEditor';
+import FileUpload from './FileUpload';
 
 interface CaseStudyData {
   [key: string]: { title: string; content: string };
@@ -290,8 +291,15 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects, onRefresh, onToas
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="project-image" className="block text-sm font-semibold mb-1 text-white">Image URL</label>
-                  <input id="project-image" type="url" value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                  <FileUpload 
+                     label="Image du projet"
+                     bucket="portfolio-assets"
+                     folder="projects"
+                     currentUrl={formData.image_url}
+                     onChange={(url) => setFormData({ ...formData, image_url: url })}
+                     accept="image/*"
+                     maxSizeMB={5}
+                  />
                 </div>
                 <div>
                   <label htmlFor="project-order" className="block text-sm font-semibold mb-1 text-white">Ordre</label>

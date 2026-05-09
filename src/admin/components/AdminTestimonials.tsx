@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { validateTestimonial } from '../../lib/validation';
 import EmptyState from './EmptyState';
+import FileUpload from './FileUpload';
 
 interface Testimonial {
   id: string;
@@ -200,6 +201,17 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
                     <label htmlFor="test-content-en" className="block text-sm font-semibold mb-1 text-white">Contenu (EN) <span className="text-red-400">*</span></label>
                     <textarea id="test-content-en" value={formData.content_en} onChange={(e) => { setFormData({ ...formData, content_en: e.target.value }); setFormErrors({ ...formErrors, content_en: '' }); }} rows={3} required placeholder="Testimonial in English" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_en ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.content_en ? 'true' : 'false'} />
                     {formErrors.content_en && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.content_en}</p>}
+                  </div>
+                  <div>
+                    <FileUpload 
+                       label="Photo du témoin"
+                       bucket="portfolio-assets"
+                       folder="testimonials"
+                       currentUrl={formData.photo_url}
+                       onChange={(url) => setFormData({ ...formData, photo_url: url })}
+                       accept="image/*"
+                       maxSizeMB={2}
+                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
