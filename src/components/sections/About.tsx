@@ -87,25 +87,35 @@ const About: React.FC = () => {
           {/* Colonne Droite: Photo & Citation (5/12) */}
           <div className="lg:col-span-5 flex flex-col gap-8">
             {/* Photo - Utilise about_image_url si disponible, sinon hero_image_url */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative"
-            >
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-[#141430] border border-[#1A1A2E]">
-                {displayImage ? (
-                  <img src={displayImage} alt="Stane-Junior" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] flex items-center justify-center">
+            {/* Photo About Adaptée */}
+<motion.div
+    initial={{ opacity: 0, x: 30 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.8 }}
+    className="relative flex justify-center"
+>
+    <div className="w-auto h-auto max-w-[350px] lg:max-w-[400px]">
+        {/* Cadre principal */}
+        <div className="aspect-auto rounded-2xl overflow-hidden bg-[#141430] border border-[#1A1A2E]">
+            {displayImage ? (
+                // object-contain garantit que la photo entière est visible
+                <img 
+                    src={displayImage} 
+                    alt="Stane-Junior" 
+                    className="w-full h-auto object-contain" 
+                />
+            ) : (
+                // Fallback
+                <div className="w-[350px] h-[450px] flex items-center justify-center">
                     <span className="text-8xl font-heading text-white opacity-50">SJ</span>
-                  </div>
-                )}
-              </div>
-              {/* Élément décoratif */}
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-[#00BFFF] rounded-2xl -z-10" />
-            </motion.div>
+                </div>
+            )}
+        </div>
+        {/* Élément décoratif */}
+        <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-[#00BFFF] rounded-2xl -z-10" />
+    </div>
+</motion.div>
 
             {/* Citation */}
             <motion.div

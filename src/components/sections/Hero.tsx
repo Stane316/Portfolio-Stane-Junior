@@ -110,27 +110,33 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="hidden lg:flex justify-center items-center relative"
           >
-            <div className="absolute w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-cyan-400 rounded-full blur-[80px] sm:blur-[100px] opacity-20 sm:opacity-30 animate-pulse" />
-
-            <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96 animate-float">
-              <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl rotate-3 sm:rotate-6 opacity-60" />
-              <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl -rotate-3 sm:-rotate-6 opacity-60" />
-              <div className="relative w-full h-full glass rounded-2xl sm:rounded-3xl overflow-hidden">
-                {heroImageUrl ? (
-                  <img src={heroImageUrl} alt="Stane-Junior Aniambossou" className="w-full h-full object-cover" />
-                ) : (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-600 opacity-40" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg mb-3">
-                        <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">SJ</span>
-                      </div>
-                      <p className="text-white font-bold text-sm sm:text-base md:text-lg opacity-90">Stane-Junior</p>
-                      <p className="text-cyan-300 text-xs sm:text-sm font-mono opacity-70">@Stane316</p>
-                    </div>
-                  </>
-                )}
-              </div>
+            {/* Photo Hero Adaptée */}
+            <div className="flex justify-center items-center relative">
+               {/* Halo derrière */}
+               <div className="absolute w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-cyan-400 rounded-full blur-[80px] sm:blur-[100px] opacity-20 sm:opacity-30 animate-pulse" />
+    
+               {/* Container de l'image - S'adapte au contenu */}
+               <div className="relative w-auto h-auto max-w-[400px] max-h-[600px] animate-float">
+                   {/* Cadres décoratifs */}
+                   <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl rotate-3 sm:rotate-6 opacity-60" />
+                   <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl -rotate-3 sm:-rotate-6 opacity-60" />
+        
+                   <div className="relative bg-[#141430] border border-[#1A1A2E] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
+                       {heroImageUrl ? (
+                          // object-contain garantit que la photo entière est visible
+                           <img 
+                              src={heroImageUrl} 
+                              alt="Stane-Junior Aniambossou" 
+                              className="w-full h-auto max-h-[600px] object-contain" 
+                            />
+                     ) : (
+                          // Fallback si pas de photo
+                          <div className="w-[350px] h-[450px] flex items-center justify-center">
+                             <span className="text-8xl font-heading text-white opacity-50">SJ</span>
+                          </div>
+                      )}
+                   </div>
+                </div>
             </div>
           </motion.div>
         </div>
