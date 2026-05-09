@@ -778,3 +778,40 @@ html.light .mobile-menu-overlay {
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+
+/* ============================================
+   TYPOGRAPHIE EXPRESSIONNISTE
+   ============================================ */
+
+/* Titres de section massifs avec outline */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--text-secondary);
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Titres principaux avec mélange de polices */
+.heading-mixed {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.9;
+}
+
+.heading-mixed .label {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 8vw, 8rem);
+  color: #FFFFFF;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.heading-mixed .subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--accent-cyan);
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  max-width: 600px;
+}
