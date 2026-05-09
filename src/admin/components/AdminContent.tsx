@@ -105,6 +105,17 @@ const AdminContent: React.FC = () => {
           folder="hero"
           maxSize={5}
         />
+
+        {/* CV PDF */}
+        <FileUpload 
+          label="CV (PDF)"
+          bucket="portfolio-assets"
+          folder="cv"
+          currentUrl={config['cv_url']?.value_generic || ''}
+          onChange={(url) => handleSave('cv_url', 'value_generic', url)}
+          accept=".pdf"
+          maxSizeMB={10}
+        />
       </div>
 
       {/* TEXTES */}

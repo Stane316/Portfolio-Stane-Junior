@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useToast } from '../admin/hooks/useToast';
 import { ToastContainer } from '../admin/components/Toast';
 import ConfirmDialog from '../admin/components/ConfirmDialog';
+import ProtectedRoute from '../admin/components/ProtectedRoute'; // <--- NOUVEAU
 import Sidebar from '../admin/components/Sidebar';
 import Topbar from '../admin/components/Topbar';
 import AdminDashboard from '../admin/components/AdminDashboard';
@@ -13,6 +14,7 @@ import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
 import AdminBlog from '../admin/components/AdminBlog';
 
+// ... (Garde tes interfaces Project, Message, Testimonial, DashboardData ici) ...
 interface Project {
   id: string;
   title_fr: string;
@@ -242,8 +244,15 @@ const AdminLayout: React.FC = () => {
 const Admin: React.FC = () => {
   return (
     <Routes>
+      {/* La route Login est publique */}
       <Route path="/login" element={<AdminLogin />} />
-      <Route path="/*" element={<AdminLayout />} />
+      
+      {/* TOUTES les autres routes sont protégées par ProtectedRoute */}
+      <Route path="/*" element={
+        <ProtectedRoute>
+          <AdminLayout />
+        </ProtectedRoute>
+      } />
     </Routes>
   );
 };
