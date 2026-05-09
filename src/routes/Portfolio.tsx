@@ -1,14 +1,8 @@
-/**
- * Portfolio Main Route
- * 
- * Contains all portfolio sections with loading states.
- */
-
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import CustomCursor from '../components/layout/CustomCursor';
-import ParticlesBackground from '../components/ui/ParticlesBackground';
+import HeroScene from '../components/three/HeroScene'; // Nouvelle scène 3D
 import { SkeletonHero } from '../components/ui/Skeleton';
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
@@ -18,8 +12,6 @@ import GrowTech from '../components/sections/GrowTech';
 import Vision from '../components/sections/Vision';
 import Testimonials from '../components/sections/Testimonials';
 import Contact from '../components/sections/Contact';
-import Blog from '../components/sections/Blog';
-import Newsletter from '../components/ui/Newsletter';
 
 const Portfolio: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -49,9 +41,8 @@ const Portfolio: React.FC = () => {
   if (isLoading) {
     return (
       <div className="relative min-h-screen bg-[#0A0A1E]">
-        <ParticlesBackground />
-        <div className="noise-overlay" />
-        <div className="grid-bg" />
+        {/* On garde le canvas vide pour le chargement */}
+        <div className="absolute inset-0 z-0 bg-[#0A0A1E]" />
         <Navbar />
         <main className="relative z-10 pt-20">
           <div className="container-custom py-12">
@@ -64,7 +55,10 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-[#0A0A1E]">
-      <ParticlesBackground />
+      {/* Scène 3D en arrière-plan */}
+      <HeroScene />
+      
+      {/* Overlay de bruit/grille pour la texture */}
       <div className="noise-overlay" />
       <div className="grid-bg" />
       
@@ -103,13 +97,7 @@ const Portfolio: React.FC = () => {
         <section id="contact" aria-label="Contact">
           <Contact />
         </section>
-
-        <section id="blog" aria-label="Blog">
-          <Blog />
-       </section>
       </main>
-
-       <Newsletter />
       
       <Footer />
 
