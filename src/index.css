@@ -841,3 +841,17 @@ html.light .mobile-menu-overlay {
 .reveal-up.active {
   clip-path: inset(0 0 0 0);
 }
+
+/* Cacher la scrollbar pour la bande horizontale */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}

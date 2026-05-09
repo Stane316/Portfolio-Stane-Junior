@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
-import SectionNumber from '../ui/SectionNumber';
-import SocialShare from '../ui/SocialShare';
+import SectionNumber from '../../components/ui/SectionNumber';
 
 interface ConvertedProject {
   id: number;
@@ -36,7 +35,10 @@ const ProjectsDetails: React.FC = () => {
   const { projects: rawProjects, loading, error } = useSupabaseData();
   const [selectedProject, setSelectedProject] = useState<ConvertedProject | null>(null);
 
-  const projects: ConvertedProject[] = rawProjects.map((p) => ({
+  // Limitation à 3 projets pour l'accueil
+  const limitedProjects = rawProjects.slice(0, 3);
+
+  const projects: ConvertedProject[] = limitedProjects.map((p) => ({
     id: parseInt(p.id) || 0,
     title: { fr: p.title_fr, en: p.title_en },
     status: p.status,
@@ -62,14 +64,14 @@ const ProjectsDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="projects-details" className="min-h-screen flex items-center justify-center bg-[#0A0A1E]">
+      <section className="min-h-[40vh] flex items-center justify-center bg-[#0A0A1E]">
         <div className="w-8 h-8 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" />
       </section>
     );
   }
 
   return (
-    <section id="projects-details" className="bg-[#0A0A1E] py-24 lg:py-32">
+    <section className="bg-[#0A0A1E] py-24 lg:py-32">
       <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12">
         
         {/* Header */}
@@ -112,10 +114,7 @@ const ProjectsDetails: React.FC = () => {
                   transition={{ duration: 0.6 }}
                   className="group"
                 >
-                  {/* Layout asymétrique */}
                   <div className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center ${isEven ? '' : 'lg:flex-row-reverse'}`}>
-                    
-                    {/* Image */}
                     <div className="w-full lg:w-3/5 relative overflow-hidden rounded-lg aspect-[16/10]">
                       {project.imageUrl ? (
                         <img
@@ -130,7 +129,6 @@ const ProjectsDetails: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Info */}
                     <div className="w-full lg:w-2/5 flex flex-col justify-center">
                       <div className="space-y-4">
                         <div className="flex items-center gap-3">
@@ -186,6 +184,22 @@ const ProjectsDetails: React.FC = () => {
             })}
           </div>
         )}
+
+        {/* Bouton Voir tous les projets */}
+        <div className="mt-24 text-center">
+          <a 
+            href="/projects" 
+            className="inline-flex items-center gap-3 px-10 py-5 bg-[#00BFFF] text-black font-bold text-lg rounded hover:bg-opacity-80 transition-all duration-300 group hover:scale-105"
+          >
+            <span>{isFr ? 'Voir tous les projets' : 'View all projects'}</span>
+            <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <p className="text-[#4A5568] text-sm mt-4">
+            {isFr ? `(${rawProjects.length > 3 ? rawProjects.length - 3 : 0} projets supplémentaires)` : `(${rawProjects.length > 3 ? rawProjects.length - 3 : 0} more projects)`}
+          </p>
+        </div>
       </div>
 
       {/* MODAL ÉTUDE DE CAS */}

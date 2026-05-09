@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
 // Lazy loading pour la performance
+const ProjectsPage = lazy(() => import('./routes/ProjectsPage'));
 const Portfolio = lazy(() => import('./routes/Portfolio'));
 const Admin = lazy(() => import('./routes/Admin'));
 const IntroAnimation = lazy(() => import('./components/intro/IntroAnimation'));
@@ -54,6 +55,7 @@ const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Portfolio />} />
                   <Route path="/admin/*" element={<Admin />} />
+                  <Route path="/projects" element={<ProjectsPage />} />
                 </Routes>
               )}
             </Suspense>
