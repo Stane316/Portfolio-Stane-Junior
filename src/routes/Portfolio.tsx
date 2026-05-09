@@ -7,8 +7,8 @@ import { SkeletonHero } from '../components/ui/Skeleton';
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
 import Skills from '../components/sections/Skills';
-import ProjectsGallery from '../components/sections/ProjectsGallery';
-import GrowTech from '../components/sections/GrowTech';
+import ProjectsStrip from '../components/sections/ProjectsStrip';
+import ProjectsDetails from '../components/sections/ProjectsDetails';
 import Vision from '../components/sections/Vision';
 import Testimonials from '../components/sections/Testimonials';
 import Contact from '../components/sections/Contact';
@@ -79,11 +79,11 @@ const Portfolio: React.FC = () => {
         </section>
         
         <section id="projects" aria-label="Projets">
-          <ProjectsGallery />
+          <ProjectsStrip />
         </section>
-        
-        <section id="growtech" aria-label="GROW TECH">
-          <GrowTech />
+
+        <section id="projects-details" aria-label="Détails des projets">
+            <ProjectsDetails />
         </section>
         
         <section id="vision" aria-label="Vision">
