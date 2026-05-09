@@ -5,15 +5,19 @@ interface IntroAnimationProps {
   onFinish: () => void;
 }
 
-// Composant pour animer le texte lettre par lettre
-const AnimatedText: React.FC<{ text: string; className?: string }> = ({ text, className }) => {
+// Composant pour animer le texte avec effet courbe/arc
+const CurvedText: React.FC<{ text: string; className?: string; delayStart?: number }> = ({ 
+  text, 
+  className, 
+  delayStart = 0 
+}) => {
   const letters = Array.from(text);
 
   const container = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
-      transition: { staggerChildren: 0.04, delayChildren: 0.04 * i },
+      transition: { staggerChildren: 0.06, delayChildren: delayStart },
     }),
   };
 
@@ -21,19 +25,23 @@ const AnimatedText: React.FC<{ text: string; className?: string }> = ({ text, cl
     visible: {
       opacity: 1,
       y: 0,
+      rotateX: 0,
       transition: {
         type: "spring",
-        damping: 12,
-        stiffness: 100,
+        damping: 14,
+        stiffness: 120,
+        mass: 1.2,
       },
     },
     hidden: {
       opacity: 0,
-      y: 20,
+      y: 60,
+      rotateX: -45,
       transition: {
         type: "spring",
-        damping: 12,
-        stiffness: 100,
+        damping: 14,
+        stiffness: 120,
+        mass: 1.2,
       },
     },
   };
@@ -44,9 +52,14 @@ const AnimatedText: React.FC<{ text: string; className?: string }> = ({ text, cl
       initial="hidden"
       animate="visible"
       className={className}
+      style={{ display: 'inline-flex' }}
     >
       {letters.map((letter, index) => (
-        <motion.span variants={child} key={index}>
+        <motion.span 
+          key={index} 
+          variants={child}
+          style={{ display: 'inline-block', transformOrigin: 'bottom center' }}
+        >
           {letter === " " ? "\u00A0" : letter}
         </motion.span>
       ))}
@@ -56,15 +69,23 @@ const AnimatedText: React.FC<{ text: string; className?: string }> = ({ text, cl
 
 const IntroAnimation: React.FC<IntroAnimationProps> = ({ onFinish }) => {
   const [step, setStep] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
 
   // Séquence d'animation
   useEffect(() => {
     const timers = [
-      setTimeout(() => setStep(1), 300),       // "Welcome" apparaît lettre par lettre
-      setTimeout(() => setStep(2), 2500),      // "Welcome" part, Nom apparaît
-      setTimeout(() => setStep(3), 3800),      // Sous-titre apparaît
-      setTimeout(() => setStep(4), 4800),      // Barre de progression
-      setTimeout(() => onFinish(), 5800),      // Fin
+      setTimeout(() => setStep(1), 400),       // "Welcome" apparaît avec effet courbe
+      setTimeout(() => setStep(2), 2800),      // "Welcome" part, Nom apparaît
+      setTimeout(() => setStep(3), 4200),      // Sous-titre apparaît
+      setTimeout(() => {                         // Barre de progression
+        let p = 0;
+        const interval = setInterval(() => {
+          p += 2;
+          setProgress(p);
+          if (p >= 100) clearInterval(interval);
+        }, 15);
+      }, 4800),
+      setTimeout(() => onFinish(), 6200),      // Fin
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -73,35 +94,44 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onFinish }) => {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: 'easeInOut' }}
+      exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+      transition={{ duration: 0.8, ease: 'easeInOut' }}
       className="fixed inset-0 z-[9999] bg-[#0A0A1E] flex flex-col items-center justify-center overflow-hidden"
     >
       <div className="relative z-10 text-center flex flex-col items-center justify-center min-h-[300px]">
         
-        {/* ÉTAPE 1 : WELCOME */}
+        {/* ÉTAPE 1 : WELCOME AVEC EFFET COURBE */}
         <AnimatePresence>
           {step === 1 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              exit={{ opacity: 0, y: -40, scale: 0.95 }}
               transition={{ duration: 0.5 }}
-              className="absolute"
+              className="absolute flex flex-col items-center"
             >
-              <h1 className="font-heading text-6xl sm:text-8xl md:text-9xl text-[#00BFFF] tracking-tight mb-6">
-                <AnimatedText text="WELCOME" />
+              <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl lg:text-9xl text-white tracking-tight mb-6">
+                <CurvedText text="WELCOME" delayStart={0} />
               </h1>
-              <div className="flex justify-center gap-2 mb-8">
-                <div className="w-2 h-2 bg-[#00BFFF] rounded-full animate-pulse" />
-                <div className="w-2 h-2 bg-[#00BFFF] rounded-full animate-pulse delay-75" />
-                <div className="w-2 h-2 bg-[#00BFFF] rounded-full animate-pulse delay-150" />
-              </div>
+              <motion.div 
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 1.5, duration: 0.8, ease: 'easeInOut' }}
+                className="w-24 sm:w-32 h-0.5 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mb-4"
+              />
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2, duration: 0.5 }}
+                className="text-[#A8B4C8] text-xs uppercase tracking-[0.5em]"
+              >
+                Bienvenue dans mon univers
+              </motion.p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ÉTAPE 2 : NOM COMPLET */}
+        {/* ÉTAPE 2 : NOM COMPLET AVEC EFFET COURBE */}
         <AnimatePresence>
           {step >= 2 && (
             <div className="flex flex-col items-center">
@@ -110,21 +140,40 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onFinish }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="font-heading text-3xl sm:text-5xl md:text-6xl text-white tracking-wider mb-4"
+                className="font-heading text-2xl sm:text-4xl md:text-5xl text-[#00BFFF] tracking-widest mb-3"
               >
-                STANE-JUNIOR ANIAMBOSSOU
+                <CurvedText text="STANE-JUNIOR ANIAMBOSSOU" delayStart={0} />
               </motion.h2>
               
               {/* ÉTAPE 3 : SOUS-TITRE */}
               {step >= 3 && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-[#A8B4C8] text-xs sm:text-sm uppercase tracking-[0.4em] font-mono"
+                  className="flex flex-col items-center gap-2"
                 >
-                  Développeur · Fondateur · Bénin
-                </motion.p>
+                  <p className="text-[#A8B4C8] text-xs sm:text-sm uppercase tracking-[0.4em] font-mono">
+                    Développeur · Fondateur · Bénin
+                  </p>
+                  <div className="flex gap-1.5">
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5, delay: 0 }}
+                      className="w-1.5 h-1.5 bg-[#00BFFF] rounded-full"
+                    />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
+                      className="w-1.5 h-1.5 bg-[#00BFFF] rounded-full"
+                    />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5, delay: 0.6 }}
+                      className="w-1.5 h-1.5 bg-[#00BFFF] rounded-full"
+                    />
+                  </div>
+                </motion.div>
               )}
             </div>
           )}
@@ -132,20 +181,23 @@ const IntroAnimation: React.FC<IntroAnimationProps> = ({ onFinish }) => {
       </div>
 
       {/* BARRE DE PROGRESSION */}
-      {step >= 4 && (
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#141430] overflow-hidden">
-          <motion.div
-            initial={{ width: '0%' }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-            className="h-full bg-[#00BFFF]"
-          />
-        </div>
-      )}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-[#141430] overflow-hidden">
+        <motion.div
+          style={{ width: `${progress}%` }}
+          className="h-full bg-gradient-to-r from-[#0A0A1E] via-[#00BFFF] to-[#00BFFF]"
+        />
+      </div>
 
       {/* Effet de fond subtil */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00BFFF] rounded-full blur-[120px]" />
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00BFFF] rounded-full blur-[150px]" 
+        />
       </div>
     </motion.div>
   );
