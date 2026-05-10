@@ -27,11 +27,12 @@ const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { href: `${linkPrefix}hero`, label: isFr => isFr ? 'Accueil' : 'Home' },
-    { href: `${linkPrefix}about`, label: isFr => isFr ? 'À propos' : 'About' },
-    { href: `${linkPrefix}projects`, label: isFr => isFr ? 'Projets' : 'Projects' },
-    { href: `${linkPrefix}growtech`, label: isFr => isFr ? 'GROW TECH' : 'GROW TECH' },
-    { href: `${linkPrefix}contact`, label: isFr => isFr ? 'Contact' : 'Contact' },
+    { href: `${linkPrefix}hero`, label: (isFr: boolean) => isFr ? 'Accueil' : 'Home' },
+    { href: `${linkPrefix}about`, label: (isFr: boolean) => isFr ? 'À propos' : 'About' },
+    { href: `${linkPrefix}projects`, label: (isFr: boolean) => isFr ? 'Projets' : 'Projects' },
+    { href: `${linkPrefix}growtech`, label: (isFr: boolean) => isFr ? 'GROW TECH' : 'GROW TECH' },
+    { href: `${linkPrefix}contact`, label: (isFr: boolean) => isFr ? 'Contact' : 'Contact' },
+    { href: '#blog', label: (isFr: boolean) => isFr ? 'Blog' : 'Blog' },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

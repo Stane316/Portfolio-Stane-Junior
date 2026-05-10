@@ -56,6 +56,7 @@ const Footer: React.FC = memo(() => {
     { href: '#about', label: isFr ? 'À propos' : 'About' },
     { href: '#projects', label: isFr ? 'Projets' : 'Projects' },
     { href: '#contact', label: isFr ? 'Contact' : 'Contact' },
+    { href: '/blog', label: isFr ? 'Blog' : 'Blog' },
   ];
 
   return (
