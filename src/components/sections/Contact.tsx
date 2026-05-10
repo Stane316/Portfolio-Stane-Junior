@@ -107,7 +107,7 @@ const Contact: React.FC = () => {
           
           {/* Colonne Gauche : Info & Liens */}
           <div className="relative">
-            <SectionNumber number="05" />
+            <SectionNumber number="06" />
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10 mb-6">
               CONTACT
             </h2>

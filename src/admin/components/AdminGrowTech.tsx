@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import FileUpload from './FileUpload';
+import CaseStudyEditor from './CaseStudyEditor';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // Données par défaut avec structure complète
 const DEFAULT_DATA = {
@@ -32,6 +34,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<any | null>(null);
   // Structure projet complète
+  const [showCaseStudyEditor, setShowCaseStudyEditor] = useState(false);
   const [projectForm, setProjectForm] = useState({
     title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
     case_study: {
@@ -42,6 +45,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
       step5: { title: 'RÉSULTAT', content: '' }
     }
   });
+  const { lang } = useLanguage();
 
   const fetchData = async () => {
     if (!isSupabaseConfigured()) { setLoading(false); return; }
@@ -200,34 +204,34 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               
               <FileUpload label="Image Projet" bucket="portfolio-assets" folder="growtech-projects" currentUrl={projectForm.image_url} onChange={(url) => setProjectForm({...projectForm, image_url: url})} />
 
-              {/* Étude de cas */}
-              <div className="space-y-2 pt-4 border-t border-[#1A1A2E]">
-                <p className="text-[#A8B4C8] text-xs uppercase font-bold">Étude de Cas (5 Étapes)</p>
-                {['step1', 'step2', 'step3', 'step4', 'step5'].map((stepKey, idx) => (
-                  <div key={stepKey} className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center">
-                    <input 
-                      placeholder={`Étape ${idx+1} Titre`} 
-                      value={(projectForm.case_study as any)[stepKey].title} 
-                      onChange={(e) => {
-                        const newCS = {...projectForm.case_study};
-                        (newCS as any)[stepKey].title = e.target.value;
-                        setProjectForm({...projectForm, case_study: newCS});
-                      }}
-                      className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-xs" 
-                    />
-                    <input 
-                      placeholder="Contenu" 
-                      value={(projectForm.case_study as any)[stepKey].content} 
-                      onChange={(e) => {
-                        const newCS = {...projectForm.case_study};
-                        (newCS as any)[stepKey].content = e.target.value;
-                        setProjectForm({...projectForm, case_study: newCS});
-                      }}
-                      className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-xs" 
-                    />
-                  </div>
-                ))}
-              </div>
+            {/* Étude de cas */}
+            <div className="border-t border-[#1A1A2E] pt-4 mt-4">
+                <div className="flex justify-between items-center mb-2">
+                   <h4 className="text-white font-bold text-sm">Étude de Cas (5 Étapes)</h4>
+                   <button 
+                      type="button"
+                      onClick={() => setShowCaseStudyEditor(true)} 
+                      className="text-xs bg-[#141430] border border-[#00BFFF] text-[#00BFFF] px-3 py-1 rounded hover:bg-[#00BFFF] hover:text-black transition-all"
+                    >
+                      Ouvrir l'éditeur visuel
+                   </button>
+               </div>
+               <p className="text-[#4A5568] text-xs italic">Cliquez pour structurer les 5 étapes avec le design amélioré.</p>
+           </div>
+
+            {/* Modal Éditeur */}
+            {showCaseStudyEditor && (
+              <CaseStudyEditor
+                 lang={lang}
+                 data={projectForm.case_study}
+                 onChange={(newData) => setProjectForm({...projectForm, case_study: newData})}
+                 onClose={() => setShowCaseStudyEditor(false)}
+                 onSave={() => {
+                      setShowCaseStudyEditor(false);
+                      onToast('info', 'Étude de cas mise à jour');
+                 }}
+               />
+           )}
 
               <div className="flex gap-3 pt-2">
                 <button onClick={handleSaveProject} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingProject ? 'Modifier le projet' : 'Enregistrer le projet'}</button>

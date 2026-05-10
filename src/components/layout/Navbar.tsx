@@ -16,21 +16,24 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Configuration intelligente des liens
-  // Si on est sur une sous-page, les ancres pointent vers /#section
-  // Si on est sur l'accueil, elles pointent vers #section
-  const getAnchorLink = (anchor: string) => {
-    const isHome = location.pathname === '/' || location.pathname === '';
-    return isHome ? anchor : `/${anchor}`;
+  // Détection de la page d'accueil
+  const isHomePage = location.pathname === '/' || location.pathname === '';
+
+  // Fonction pour obtenir le bon chemin
+  const getNavPath = (path: string, isAnchor: boolean) => {
+    if (!isAnchor) return path; // C'est une page (/blog), on retourne le path tel quel
+    // C'est une ancre (#about)
+    if (isHomePage) return path; // Si on est sur l'accueil, simple ancre
+    return `/${path}`; // Sinon, on force le retour à l'accueil avec l'ancre
   };
 
-  const navLinks = [
-    { label: isFr ? 'Accueil' : 'Home', href: '/' },
-    { label: isFr ? 'À propos' : 'About', href: getAnchorLink('#about') },
-    { label: isFr ? 'Projets' : 'Projects', href: getAnchorLink('#projects') },
-    { label: 'GROW TECH', href: '/growtech' },
-    { label: 'Blog', href: '/blog' },
-    { label: isFr ? 'Contact' : 'Contact', href: getAnchorLink('#contact') },
+  const navItems = [
+    { label: isFr ? 'Accueil' : 'Home', path: '/', isAnchor: false },
+    { label: isFr ? 'À propos' : 'About', path: '#about', isAnchor: true },
+    { label: isFr ? 'Projets' : 'Projects', path: '#projects', isAnchor: true },
+    { label: 'GROW TECH', path: '/growtech', isAnchor: false },
+    { label: 'Blog', path: '/blog', isAnchor: false },
+    { label: isFr ? 'Contact' : 'Contact', path: '#contact', isAnchor: true },
   ];
 
   return (
@@ -51,21 +54,28 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href + link.label}
-                to={link.href}
-                className={`text-sm font-medium transition-colors relative group ${
-                  (link.href === '/' && (location.pathname === '/' || location.pathname === '')) || 
-                  (link.href !== '/' && location.pathname + location.hash === link.href) ||
-                  (link.href.startsWith('/#') && location.pathname === '/' && location.hash === link.href.substring(1))
-                    ? 'text-[#00BFFF]'
-                    : 'text-[#A8B4C8] hover:text-white'
-                }`}
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00BFFF] group-hover:w-full transition-all duration-300" />
-              </Link>
+            {navItems.map((item) => (
+              item.isAnchor ? (
+                <a
+                  key={item.path}
+                  href={getNavPath(item.path, true)}
+                  className="text-sm font-medium text-[#A8B4C8] hover:text-white transition-colors relative group"
+                >
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00BFFF] group-hover:w-full transition-all duration-300" />
+                </a>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors relative group ${
+                    location.pathname === item.path ? 'text-[#00BFFF]' : 'text-[#A8B4C8] hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00BFFF] group-hover:w-full transition-all duration-300" />
+                </Link>
+              )
             ))}
           </div>
 
@@ -93,15 +103,26 @@ const Navbar: React.FC = () => {
             className="lg:hidden fixed top-16 left-0 right-0 bg-[#0A0A1E] border-b border-[#141430] z-40 overflow-hidden"
           >
             <div className="flex flex-col p-6 gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href + link.label}
-                  to={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-lg text-[#A8B4C8] hover:text-[#00BFFF] transition-colors"
-                >
-                  {link.label}
-                </Link>
+              {navItems.map((item) => (
+                item.isAnchor ? (
+                  <a
+                    key={item.path}
+                    href={getNavPath(item.path, true)}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-lg text-[#A8B4C8] hover:text-[#00BFFF] transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-lg text-[#A8B4C8] hover:text-[#00BFFF] transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )
               ))}
             </div>
           </motion.div>
