@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import FileUpload from './FileUpload';
 import CaseStudyEditor from './CaseStudyEditor';
 import { useLanguage } from '../../contexts/LanguageContext';
+import BilingualInput from './BilingualInput';
 
 // Données par défaut avec structure complète
 const DEFAULT_DATA = {

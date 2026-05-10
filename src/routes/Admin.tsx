@@ -14,6 +14,8 @@ import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
 import AdminBlog from '../admin/components/AdminBlog';
 import AdminGrowTech from '../admin/components/AdminGrowTech';
+import AdminVision from '../admin/components/AdminVision';
+import AdminProjectsNew from '../admin/components/AdminProjectsNew';
 
 // ... [Tes interfaces Project, Message, etc. restent ici] ...
 interface Project {
@@ -213,6 +215,7 @@ const AdminLayout: React.FC = () => {
     if (path.includes('/content')) return { title: 'Contenu', breadcrumb: ['Contenu'] };
     if (path.includes('/blog')) return { title: 'Blog', breadcrumb: ['Blog'] };
     if (path.includes('/growtech')) return { title: 'GROW TECH', breadcrumb: ['GROW TECH'] };
+    if (path.includes('/vision')) return { title: 'Vision', breadcrumb: ['Vision'] };
     return { title: 'Vue d\'ensemble', breadcrumb: [] };
   };
 
@@ -235,7 +238,8 @@ const AdminLayout: React.FC = () => {
             <Route path="content" element={<AdminContent />} />
             <Route path="blog" element={<AdminBlog onToast={addToast} />} />
             <Route path="growtech" element={<AdminGrowTech onToast={addToast} />} />
-
+            <Route path="projects" element={<AdminProjectsNew onToast={addToast} />} />
+            <Route path="vision" element={<AdminVision onToast={addToast} />} />
           </Routes>
         </div>
       </main>
