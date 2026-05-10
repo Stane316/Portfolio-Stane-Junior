@@ -161,8 +161,14 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
         <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Identité & Description</h3>
         <FileUpload label="Logo de l'agence" bucket="portfolio-assets" folder="growtech" currentUrl={data.logo_url} onChange={(url) => saveData({...data, logo_url: url})} accept="image/*" maxSizeMB={5} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <textarea placeholder="Description (FR)" value={data.description_fr} onChange={(e) => saveData({...data, description_fr: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" rows={4} />
-          <textarea placeholder="Description (EN)" value={data.description_en} onChange={(e) => saveData({...data, description_en: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" rows={4} />
+          <BilingualInput 
+            label="Description de l'agence"
+            valueFr={data.description_fr}
+            valueEn={data.description_en}
+            onChangeFr={(val) => saveData({...data, description_fr: val})}
+            onChangeEn={(val) => saveData({...data, description_en: val})}
+            rows={4}
+          />
         </div>
       </div>
 
@@ -170,12 +176,25 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
       <div className="glass-card p-6 space-y-4">
         <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Vision</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input placeholder="Titre Vision (FR)" value={data.vision.title_fr} onChange={(e) => saveData({...data, vision: {...data.vision, title_fr: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" />
-          <input placeholder="Vision Title (EN)" value={data.vision.title_en} onChange={(e) => saveData({...data, vision: {...data.vision, title_en: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" />
+          <BilingualInput 
+              label="Titre de la Vision"
+              valueFr={data.vision.title_fr}
+              valueEn={data.vision.title_en}
+              onChangeFr={(val) => saveData({...data, vision: {...data.vision, title_fr: val}})}
+              onChangeEn={(val) => saveData({...data, vision: {...data.vision, title_en: val}})}
+              type="input"
+           />
+
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <textarea placeholder="Contenu Vision (FR)" value={data.vision.content_fr} onChange={(e) => saveData({...data, vision: {...data.vision, content_fr: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" rows={3} />
-          <textarea placeholder="Vision Content (EN)" value={data.vision.content_en} onChange={(e) => saveData({...data, vision: {...data.vision, content_en: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" rows={3} />
+          <BilingualInput 
+             label="Contenu de la Vision"
+             valueFr={data.vision.content_fr}
+             valueEn={data.vision.content_en}
+             onChangeFr={(val) => saveData({...data, vision: {...data.vision, content_fr: val}})}
+             onChangeEn={(val) => saveData({...data, vision: {...data.vision, content_en: val}})}
+             rows={3}
+          />
         </div>
       </div>
 
@@ -190,8 +209,14 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
           {showProjectForm && (
             <motion.div initial={{height:0, opacity:0}} animate={{height:'auto', opacity:1}} exit={{height:0, opacity:0}} className="overflow-hidden space-y-4 bg-[#0A0A1E] p-4 rounded-xl border border-[#1A1A2E]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input placeholder="Titre (FR)" value={projectForm.title_fr} onChange={e => setProjectForm({...projectForm, title_fr: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
-                <input placeholder="Title (EN)" value={projectForm.title_en} onChange={e => setProjectForm({...projectForm, title_en: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
+                <BilingualInput 
+                   label="Titre du Projet"
+                   valueFr={projectForm.title_fr}
+                   valueEn={projectForm.title_en}
+                   onChangeFr={(val) => setProjectForm({...projectForm, title_fr: val})}
+                   onChangeEn={(val) => setProjectForm({...projectForm, title_en: val})}
+                   type="input"
+                />
                 <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm">
                   <option value="concept">Concept</option>
                   <option value="in_progress">En cours</option>
@@ -199,7 +224,14 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
                 </select>
                 <input placeholder="Lien Live (URL)" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               </div>
-              <textarea placeholder="Description courte" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" rows={2} />
+              <BilingualInput 
+                 label="Description du Projet"
+                 valueFr={projectForm.description}
+                 valueEn={projectForm.description_en || ''} // Assure-toi que description_en existe dans le state
+                 onChangeFr={(val) => setProjectForm({...projectForm, description: val})}
+                 onChangeEn={(val) => setProjectForm({...projectForm, description_en: val})}
+                 rows={3}
+              />
               <input placeholder="Stack (ex: React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               
               <FileUpload label="Image Projet" bucket="portfolio-assets" folder="growtech-projects" currentUrl={projectForm.image_url} onChange={(url) => setProjectForm({...projectForm, image_url: url})} />

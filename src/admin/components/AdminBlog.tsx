@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import FileUpload from './FileUpload';
+import BilingualInput from './BilingualInput';
 
 interface BlogPost {
   id: string;
@@ -203,7 +204,14 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Titre (FR)</label>
-                    <input type="text" value={formData.title_fr} onChange={(e) => handleTitleChange('title_fr', e.target.value)} required placeholder="Titre de l'article" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                    <BilingualInput 
+                       label="Titre de l'article"
+                       valueFr={formData.title_fr}
+                       valueEn={formData.title_en}
+                       onChangeFr={(val) => setFormData({...formData, title_fr: val})}
+                       onChangeEn={(val) => setFormData({...formData, title_en: val})}
+                       type="input"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Titre (EN)</label>
@@ -220,7 +228,14 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Extrait (FR)</label>
-                    <textarea value={formData.excerpt_fr} onChange={(e) => setFormData({ ...formData, excerpt_fr: e.target.value })} rows={2} placeholder="Court résumé..." className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
+                    <BilingualInput 
+                        label="Extrait (Résumé)"
+                        valueFr={formData.excerpt_fr}
+                        valueEn={formData.excerpt_en}
+                        onChangeFr={(val) => setFormData({...formData, excerpt_fr: val})}
+                        onChangeEn={(val) => setFormData({...formData, excerpt_en: val})}
+                        rows={2}
+                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Extrait (EN)</label>
@@ -231,7 +246,14 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Contenu (FR)</label>
-                    <textarea value={formData.content_fr} onChange={(e) => setFormData({ ...formData, content_fr: e.target.value })} rows={6} placeholder="Contenu complet..." className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
+                    <BilingualInput 
+                        label="Contenu de l'article"
+                        valueFr={formData.content_fr}
+                        valueEn={formData.content_en}
+                        onChangeFr={(val) => setFormData({...formData, content_fr: val})}
+                        onChangeEn={(val) => setFormData({...formData, content_en: val})}
+                        rows={8}
+                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-1 text-white">Contenu (EN)</label>
