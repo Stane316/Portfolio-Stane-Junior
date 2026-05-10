@@ -6,12 +6,83 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import SectionNumber from '../components/ui/SectionNumber';
 
+// Composant Animation Intro GROW TECH
+const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: { duration: 0.5, ease: 'easeOut' }
+    },
+  };
+
+  const text = "GROW TECH";
+  const slogan = "Votre Vision, Notre Technologie";
+
+  useEffect(() => {
+    const timer = setTimeout(onComplete, 3500); // Durée totale de l'intro
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -50, transition: { duration: 0.8, ease: 'easeInOut' } }}
+      className="fixed inset-0 z-[100] bg-[#0A0A1E] flex flex-col items-center justify-center"
+    >
+      <div className="text-center">
+        {/* Titre Principal Lettre par Lettre */}
+        <motion.h1 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter mb-6"
+        >
+          {text.split('').map((char, i) => (
+            <motion.span key={i} variants={letterVariants} className="inline-block">
+              {char === ' ' ? '\u00A0' : char}
+            </motion.span>
+          ))}
+        </motion.h1>
+
+        {/* Slogan avec effet de brillance */}
+        <motion.p
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+          className="text-[#00BFFF] text-lg sm:text-xl md:text-2xl font-light tracking-widest uppercase"
+        >
+          {slogan}
+        </motion.p>
+
+        {/* Barre de progression */}
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: '100%' }}
+          transition={{ duration: 3, ease: 'easeInOut', delay: 0.5 }}
+          className="h-1 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mx-auto mt-12 w-64"
+        />
+      </div>
+    </motion.div>
+  );
+};
+
 const GrowTechPage: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
   const [showAllMembers, setShowAllMembers] = useState(false);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -23,6 +94,17 @@ const GrowTechPage: React.FC = () => {
     fetch();
   }, []);
 
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+  };
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const amount = 300;
+      scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
   if (!data) return <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center text-[#A8B4C8]">Données non disponibles</div>;
 
@@ -31,11 +113,16 @@ const GrowTechPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A1E]">
+      {/* Animation Intro */}
+      <AnimatePresence>
+        {showIntro && <GrowTechIntro onComplete={handleIntroComplete} />}
+      </AnimatePresence>
+
       <Navbar />
-      <main className="pt-32 pb-24">
+      <main className={`pt-32 pb-24 transition-opacity duration-1000 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
         <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 space-y-32">
           
-          {/* Header Agence : Description Gauche / Logo Droite */}
+          {/* Header Agence */}
           <section>
             <div className="relative mb-12">
               <SectionNumber number="AG" />
