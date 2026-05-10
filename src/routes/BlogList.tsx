@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useSupabaseData } from '../hooks/useSupabaseData';
+import { supabase } from '../lib/supabase'; // Importation corrigée
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import SectionNumber from '../components/ui/SectionNumber';
@@ -26,13 +26,12 @@ interface BlogPost {
 const BlogList: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
-  // On récupère les posts depuis Supabase via le hook existant ou on fait un fetch direct
-  // Pour simplifier, on va utiliser un fetch direct ici pour avoir tous les champs
-  const [posts, setPosts] = React.useState<BlogPost[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const { supabase } = React.useContext(import('../lib/supabase').then(m => ({ supabase: m.supabase })));
+  
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('all');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchPosts = async () => {
       try {
         const { data, error } = await supabase
@@ -52,15 +51,12 @@ const BlogList: React.FC = () => {
     fetchPosts();
   }, []);
 
-  // Catégories pour le filtre
   const categories = [
     { id: 'all', label: isFr ? 'Tous' : 'All' },
     { id: 'tech', label: isFr ? 'Technologie' : 'Technology' },
     { id: 'growtech', label: isFr ? 'GROW TECH' : 'GROW TECH' },
     { id: 'africa', label: isFr ? 'Afrique' : 'Africa' },
   ];
-
-  const [activeCategory, setActiveCategory] = React.useState('all');
 
   const filteredPosts = useMemo(() => {
     if (activeCategory === 'all') return posts;
