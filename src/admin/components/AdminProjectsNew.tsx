@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import BilingualInput from './BilingualInput';
 import FileUpload from './FileUpload';
 import CaseStudyEditor from './CaseStudyEditor';
+import ProjectRow from './ProjectRow'; // Import du nouveau design
 
 interface Project {
   id: string;
@@ -30,7 +31,7 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
   const [showCaseStudy, setShowCaseStudy] = useState(false);
   
   const [formData, setFormData] = useState({
-    title_fr: '', title_en: '', status: 'concept' as 'delivered' | 'in_progress' | 'concept', description_fr: '', description_en: '',
+    title_fr: '', title_en: '', status: 'concept' as const, description_fr: '', description_en: '',
     stack: '', live_url: '', image_url: '', is_visible: true, is_featured: false,
     case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
   });
@@ -101,17 +102,17 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-white">Projets ({projects.length})</h2>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="btn-primary flex items-center gap-2">
           <span className="text-xl">+</span> Nouveau Projet
         </button>
       </div>
 
-      {/* Formulaire */}
+      {/* Formulaire (Caché par défaut) */}
       <AnimatePresence>
         {showForm && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-6">
             <div className="glass-card p-6 space-y-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold text-white">{editingProject ? 'Modifier' : 'Nouveau'} Projet</h3>
@@ -160,75 +161,47 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
         />
       )}
 
-      {/* Liste des Projets - Style Carte Moderne */}
-      <div className="space-y-4">
+      {/* LISTE DES PROJETS - NOUVEAU DESIGN PREMIUM */}
+      <div className="bg-[#0A0A1E] border border-[#1A1A2E] rounded-2xl overflow-hidden shadow-lg">
+        {/* Header Tableau */}
+        <div className="flex items-center gap-5 p-4 bg-[#141430] border-b border-[#1A1A2E] text-xs font-bold text-[#4A5568] uppercase tracking-wider">
+          <div className="w-14">Image</div>
+          <div className="flex-1">Projet</div>
+          <div className="hidden md:block w-24 text-center">Statut</div>
+          <div className="w-20 text-center">Options</div>
+          <div className="w-28 text-right">Actions</div>
+        </div>
+
+        {/* Rows */}
         {projects.map((proj) => (
-          <motion.div key={proj.id} layout className="glass-card group hover:border-[#00BFFF] transition-all duration-300 relative overflow-hidden">
-            {/* Barre de couleur statut */}
-            <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-              proj.status === 'delivered' ? 'bg-green-500' : 
-              proj.status === 'in_progress' ? 'bg-yellow-500' : 'bg-blue-500'
-            }`} />
-            
-            <div className="flex items-center gap-6 pl-4">
-              {/* Image Thumbnail */}
-              <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-[#0A0A1E] border border-[#1A1A2E]">
-                {proj.image_url ? (
-                  <img src={proj.image_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl">🚀</div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-white font-bold text-lg truncate">{proj.title_fr}</h3>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    proj.status === 'delivered' ? 'bg-green-500/20 text-green-400' : 
-                    proj.status === 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'
-                  }`}>
-                    {proj.status === 'delivered' ? 'Livré' : proj.status === 'in_progress' ? 'En cours' : 'Concept'}
-                  </span>
-                </div>
-                <p className="text-[#4A5568] text-sm truncate">{proj.title_en}</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {Array.isArray(proj.stack) && proj.stack.map((tech, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-[#141430] border border-[#1A1A2E] rounded text-[#A8B4C8] text-xs">{tech}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Toggles */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[#4A5568] text-xs">Visible</span>
-                  <button onClick={() => toggleField(proj.id, 'is_visible', proj.is_visible)} className={`w-10 h-5 rounded-full transition-colors ${proj.is_visible ? 'bg-[#00BFFF]' : 'bg-[#1A1A2E]'}`}>
-                    <span className={`block w-4 h-4 bg-white rounded-full transition-transform ${proj.is_visible ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#4A5568] text-xs">Featured</span>
-                  <button onClick={() => toggleField(proj.id, 'is_featured', proj.is_featured)} className={`w-10 h-5 rounded-full transition-colors ${proj.is_featured ? 'bg-yellow-500' : 'bg-[#1A1A2E]'}`}>
-                    <span className={`block w-4 h-4 bg-white rounded-full transition-transform ${proj.is_featured ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-2">
-                <button onClick={() => handleEdit(proj)} className="p-2 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" title="Modifier">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                </button>
-                <button onClick={() => handleDelete(proj.id)} className="p-2 text-[#A8B4C8] hover:text-red-400 transition-colors" title="Supprimer">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
-              </div>
-            </div>
-          </motion.div>
+          <ProjectRow
+            key={proj.id}
+            id={proj.id}
+            title_fr={proj.title_fr}
+            title_en={proj.title_en}
+            status={proj.status}
+            image_url={proj.image_url}
+            stack={proj.stack}
+            is_visible={proj.is_visible}
+            is_featured={proj.is_featured}
+            onEdit={() => handleEdit(proj)}
+            onDelete={() => handleDelete(proj.id)}
+            onToggleVisible={() => toggleField(proj.id, 'is_visible', proj.is_visible)}
+            onToggleFeatured={() => toggleField(proj.id, 'is_featured', proj.is_featured)}
+            onEditCaseStudy={() => {
+              setEditingProject(proj);
+              setFormData({ ...proj, stack: Array.isArray(proj.stack) ? proj.stack.join(', ') : '', case_study: proj.case_study_fr || { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} } });
+              setShowCaseStudy(true);
+            }}
+          />
         ))}
+        
+        {projects.length === 0 && (
+          <div className="p-12 text-center text-[#4A5568] italic">
+            Aucun projet pour le moment.
+          </div>
+        )}
       </div>
-      {projects.length === 0 && <p className="text-[#4A5568] text-center italic">Aucun projet.</p>}
     </div>
   );
 };

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import BilingualInput from './BilingualInput';
 import FileUpload from './FileUpload';
 import CaseStudyEditor from './CaseStudyEditor';
-import { useLanguage } from '../../contexts/LanguageContext';
-import BilingualInput from './BilingualInput';
+import ProjectRow from './ProjectRow'; // Import du design unifié
 
-// Données par défaut avec structure complète
 const DEFAULT_DATA = {
   logo_url: '',
   description_fr: "GROW TECH est une agence digitale estudiantine co-fondée avec Godo Landron. Six personnes. Trois squads. On développe des solutions pour le Bénin et la sous-région OHADA.",
@@ -27,26 +26,19 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(DEFAULT_DATA);
   
-  // States pour les formulaires
+  // States Membres
   const [showMemberForm, setShowMemberForm] = useState(false);
   const [editingMember, setEditingMember] = useState<any | null>(null);
   const [memberForm, setMemberForm] = useState({ name: '', role_fr: '', role_en: '', initial: '', image_url: '' });
 
+  // States Projets
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<any | null>(null);
-  // Structure projet complète
-  const [showCaseStudyEditor, setShowCaseStudyEditor] = useState(false);
+  const [showCaseStudy, setShowCaseStudy] = useState(false);
   const [projectForm, setProjectForm] = useState({
     title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
-    case_study: {
-      step1: { title: 'PROBLÈME', content: '' },
-      step2: { title: 'SOLUTION', content: '' },
-      step3: { title: 'FONCTIONNALITÉS', content: '' },
-      step4: { title: 'OBSTACLE', content: '' },
-      step5: { title: 'RÉSULTAT', content: '' }
-    }
+    case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
   });
-  const { lang } = useLanguage();
 
   const fetchData = async () => {
     if (!isSupabaseConfigured()) { setLoading(false); return; }
@@ -69,7 +61,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     } catch (e: any) { onToast('error', e.message); }
   };
 
-  // --- MEMBRES ---
+  // --- Membres ---
   const handleOpenEditMember = (member: any) => {
     setEditingMember(member);
     setMemberForm(member);
@@ -97,21 +89,13 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     saveData({ ...data, members: data.members.filter((m: any) => m.id !== id) });
   };
 
-  // --- PROJETS ---
+  // --- Projets ---
   const handleOpenEditProject = (project: any) => {
     setEditingProject(project);
-    // Assurer que la structure case_study est correcte même pour les anciens projets
-    const defaultCS = {
-      step1: { title: 'PROBLÈME', content: '' },
-      step2: { title: 'SOLUTION', content: '' },
-      step3: { title: 'FONCTIONNALITÉS', content: '' },
-      step4: { title: 'OBSTACLE', content: '' },
-      step5: { title: 'RÉSULTAT', content: '' }
-    };
     setProjectForm({
       ...project,
       stack: Array.isArray(project.stack) ? project.stack.join(', ') : (project.stack || ''),
-      case_study: project.case_study || defaultCS
+      case_study: project.case_study || { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
     });
     setShowProjectForm(true);
   };
@@ -137,13 +121,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     setEditingProject(null);
     setProjectForm({
       title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
-      case_study: {
-        step1: { title: 'PROBLÈME', content: '' },
-        step2: { title: 'SOLUTION', content: '' },
-        step3: { title: 'FONCTIONNALITÉS', content: '' },
-        step4: { title: 'OBSTACLE', content: '' },
-        step5: { title: 'RÉSULTAT', content: '' }
-      }
+      case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
     });
   };
 
@@ -161,137 +139,91 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
       <div className="glass-card p-6 space-y-6">
         <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Identité & Description</h3>
         <FileUpload label="Logo de l'agence" bucket="portfolio-assets" folder="growtech" currentUrl={data.logo_url} onChange={(url) => saveData({...data, logo_url: url})} accept="image/*" maxSizeMB={5} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <BilingualInput 
-            label="Description de l'agence"
-            valueFr={data.description_fr}
-            valueEn={data.description_en}
-            onChangeFr={(val) => saveData({...data, description_fr: val})}
-            onChangeEn={(val) => saveData({...data, description_en: val})}
-            rows={4}
-          />
-        </div>
+        <BilingualInput label="Description" valueFr={data.description_fr} valueEn={data.description_en} onChangeFr={(v) => saveData({...data, description_fr: v})} onChangeEn={(v) => saveData({...data, description_en: v})} rows={4} />
       </div>
 
       {/* 2. Vision */}
       <div className="glass-card p-6 space-y-4">
         <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Vision</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <BilingualInput 
-              label="Titre de la Vision"
-              valueFr={data.vision.title_fr}
-              valueEn={data.vision.title_en}
-              onChangeFr={(val) => saveData({...data, vision: {...data.vision, title_fr: val}})}
-              onChangeEn={(val) => saveData({...data, vision: {...data.vision, title_en: val}})}
-              type="input"
-           />
-
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <BilingualInput 
-             label="Contenu de la Vision"
-             valueFr={data.vision.content_fr}
-             valueEn={data.vision.content_en}
-             onChangeFr={(val) => saveData({...data, vision: {...data.vision, content_fr: val}})}
-             onChangeEn={(val) => saveData({...data, vision: {...data.vision, content_en: val}})}
-             rows={3}
-          />
-        </div>
+        <BilingualInput label="Titre" valueFr={data.vision.title_fr} valueEn={data.vision.title_en} onChangeFr={(v) => saveData({...data, vision: {...data.vision, title_fr: v}})} onChangeEn={(v) => saveData({...data, vision: {...data.vision, title_en: v}})} type="input" />
+        <BilingualInput label="Contenu" valueFr={data.vision.content_fr} valueEn={data.vision.content_en} onChangeFr={(v) => saveData({...data, vision: {...data.vision, content_fr: v}})} onChangeEn={(v) => saveData({...data, vision: {...data.vision, content_en: v}})} rows={3} />
       </div>
 
-      {/* 3. Projets (Structure Complète) */}
+      {/* 3. Projets (Design Unifié) */}
       <div className="glass-card p-6 space-y-4">
         <div className="flex justify-between items-center border-b border-[#1A1A2E] pb-2">
           <h3 className="text-white font-semibold text-lg">Projets de l'agence</h3>
-          <button onClick={() => { resetProjectForm(); setShowProjectForm(true); }} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter / Modifier Projet</button>
+          <button onClick={() => { resetProjectForm(); setShowProjectForm(true); }} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter Projet</button>
         </div>
         
         <AnimatePresence>
           {showProjectForm && (
             <motion.div initial={{height:0, opacity:0}} animate={{height:'auto', opacity:1}} exit={{height:0, opacity:0}} className="overflow-hidden space-y-4 bg-[#0A0A1E] p-4 rounded-xl border border-[#1A1A2E]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <BilingualInput 
-                   label="Titre du Projet"
-                   valueFr={projectForm.title_fr}
-                   valueEn={projectForm.title_en}
-                   onChangeFr={(val) => setProjectForm({...projectForm, title_fr: val})}
-                   onChangeEn={(val) => setProjectForm({...projectForm, title_en: val})}
-                   type="input"
-                />
+              <div className="flex justify-between items-center mb-2">
+                 <h4 className="text-white font-bold text-sm">Éditer Projet</h4>
+                 <button type="button" onClick={() => setShowCaseStudy(true)} className="text-xs bg-[#141430] border border-[#00BFFF] text-[#00BFFF] px-3 py-1 rounded hover:bg-[#00BFFF] hover:text-black transition-all">
+                   📖 Étude de Cas
+                 </button>
+              </div>
+              
+              <BilingualInput label="Titre" valueFr={projectForm.title_fr} valueEn={projectForm.title_en} onChangeFr={(v) => setProjectForm({...projectForm, title_fr: v})} onChangeEn={(v) => setProjectForm({...projectForm, title_en: v})} type="input" />
+              <textarea placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" rows={2} />
+              <div className="grid grid-cols-2 gap-3">
+                <input placeholder="Stack (React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
+                <input placeholder="Lien Live" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
                 <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm">
                   <option value="concept">Concept</option>
                   <option value="in_progress">En cours</option>
                   <option value="delivered">Livré</option>
                 </select>
-                <input placeholder="Lien Live (URL)" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               </div>
-              <BilingualInput 
-                 label="Description du Projet"
-                 valueFr={projectForm.description}
-                 valueEn={projectForm.description_en || ''} // Assure-toi que description_en existe dans le state
-                 onChangeFr={(val) => setProjectForm({...projectForm, description: val})}
-                 onChangeEn={(val) => setProjectForm({...projectForm, description_en: val})}
-                 rows={3}
-              />
-              <input placeholder="Stack (ex: React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
-              
               <FileUpload label="Image Projet" bucket="portfolio-assets" folder="growtech-projects" currentUrl={projectForm.image_url} onChange={(url) => setProjectForm({...projectForm, image_url: url})} />
-
-            {/* Étude de cas */}
-            <div className="border-t border-[#1A1A2E] pt-4 mt-4">
-                <div className="flex justify-between items-center mb-2">
-                   <h4 className="text-white font-bold text-sm">Étude de Cas (5 Étapes)</h4>
-                   <button 
-                      type="button"
-                      onClick={() => setShowCaseStudyEditor(true)} 
-                      className="text-xs bg-[#141430] border border-[#00BFFF] text-[#00BFFF] px-3 py-1 rounded hover:bg-[#00BFFF] hover:text-black transition-all"
-                    >
-                      Ouvrir l'éditeur visuel
-                   </button>
-               </div>
-               <p className="text-[#4A5568] text-xs italic">Cliquez pour structurer les 5 étapes avec le design amélioré.</p>
-           </div>
-
-            {/* Modal Éditeur */}
-            {showCaseStudyEditor && (
-              <CaseStudyEditor
-                 lang={lang}
-                 data={projectForm.case_study}
-                 onChange={(newData) => setProjectForm({...projectForm, case_study: newData})}
-                 onClose={() => setShowCaseStudyEditor(false)}
-                 onSave={() => {
-                      setShowCaseStudyEditor(false);
-                      onToast('info', 'Étude de cas mise à jour');
-                 }}
-               />
-           )}
-
+              
               <div className="flex gap-3 pt-2">
-                <button onClick={handleSaveProject} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingProject ? 'Modifier le projet' : 'Enregistrer le projet'}</button>
+                <button onClick={handleSaveProject} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">Enregistrer</button>
                 <button onClick={resetProjectForm} className="px-4 bg-[#1A1A2E] text-white rounded hover:bg-red-500 hover:text-white">Annuler</button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Liste Projets */}
-        <div className="space-y-3">
+        {showCaseStudy && (
+           <CaseStudyEditor
+            lang="fr"
+            data={projectForm.case_study}
+            onChange={(data) => setProjectForm({...projectForm, case_study: data})}
+            onClose={() => setShowCaseStudy(false)}
+            onSave={() => { setShowCaseStudy(false); onToast('success', 'Étude de cas sauvegardée'); }}
+          />
+        )}
+
+        {/* LISTE DES PROJETS GROW TECH - DESIGN UNIFIÉ */}
+        <div className="bg-[#0A0A1E] border border-[#1A1A2E] rounded-2xl overflow-hidden shadow-lg mt-4">
+          <div className="flex items-center gap-5 p-4 bg-[#141430] border-b border-[#1A1A2E] text-xs font-bold text-[#4A5568] uppercase tracking-wider">
+            <div className="w-14">Image</div>
+            <div className="flex-1">Projet</div>
+            <div className="hidden md:block w-24 text-center">Statut</div>
+            <div className="w-28 text-right">Actions</div>
+          </div>
+
           {data.projects.map((proj: any) => (
-            <div key={proj.id} className="flex items-center justify-between bg-[#141430] p-3 rounded border border-[#1A1A2E]">
-              <div className="flex items-center gap-3">
-                {proj.image_url && <img src={proj.image_url} alt="" className="w-10 h-10 rounded object-cover" />}
-                <div>
-                  <p className="text-white text-sm font-medium">{proj.title_fr}</p>
-                  <p className="text-[#4A5568] text-xs">{proj.status} · {Array.isArray(proj.stack) ? proj.stack.length : 0} technos</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleOpenEditProject(proj)} className="text-[#00BFFF] hover:text-white text-xs font-bold">✏️ Éditer</button>
-                <button onClick={() => handleRemoveProject(proj.id)} className="text-red-400 hover:text-red-300 text-xs">✕</button>
-              </div>
-            </div>
+             <ProjectRow
+              key={proj.id}
+              id={proj.id}
+              title_fr={proj.title_fr}
+              title_en={proj.title_en}
+              status={proj.status}
+              image_url={proj.image_url}
+              stack={proj.stack}
+              is_visible={true} // Pour GROW TECH, on suppose visible par défaut ou géré ailleurs
+              is_featured={false}
+              onEdit={() => handleOpenEditProject(proj)}
+              onDelete={() => handleRemoveProject(proj.id)}
+              onToggleVisible={() => {}} // Pas utilisé ici
+              onToggleFeatured={() => {}} // Pas utilisé ici
+            />
           ))}
-          {data.projects.length === 0 && <p className="text-[#4A5568] text-sm italic">Aucun projet ajouté.</p>}
+          {data.projects.length === 0 && <div className="p-12 text-center text-[#4A5568] italic">Aucun projet.</div>}
         </div>
       </div>
 
