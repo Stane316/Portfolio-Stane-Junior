@@ -13,6 +13,7 @@ import MessageList from '../admin/components/MessageList';
 import AdminContent from '../admin/components/AdminContent';
 import AdminTestimonials from '../admin/components/AdminTestimonials';
 import AdminBlog from '../admin/components/AdminBlog';
+import AdminGrowTech from '../admin/components/AdminGrowTech';
 
 // ... [Tes interfaces Project, Message, etc. restent ici] ...
 interface Project {
@@ -211,6 +212,7 @@ const AdminLayout: React.FC = () => {
     if (path.includes('/messages')) return { title: 'Messages', breadcrumb: ['Messages'] };
     if (path.includes('/content')) return { title: 'Contenu', breadcrumb: ['Contenu'] };
     if (path.includes('/blog')) return { title: 'Blog', breadcrumb: ['Blog'] };
+    if (path.includes('/growtech')) return { title: 'GROW TECH', breadcrumb: ['GROW TECH'] };
     return { title: 'Vue d\'ensemble', breadcrumb: [] };
   };
 
@@ -232,6 +234,8 @@ const AdminLayout: React.FC = () => {
             <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
             <Route path="content" element={<AdminContent />} />
             <Route path="blog" element={<AdminBlog onToast={addToast} />} />
+            <Route path="growtech" element={<AdminGrowTech onToast={addToast} />} />
+
           </Routes>
         </div>
       </main>

@@ -77,7 +77,7 @@ const ProjectsDetails: React.FC = () => {
         {/* Header */}
         <div className="mb-24 lg:mb-32">
           <div className="relative">
-            <SectionNumber number="02" />
+            <SectionNumber number="03" />
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
               DÉTAILS
             </h2>

@@ -10,7 +10,7 @@
  * @see /src/contexts/LanguageContext.tsx
  */
 
-iimport React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import SectionNumber from '../../components/ui/SectionNumber';
