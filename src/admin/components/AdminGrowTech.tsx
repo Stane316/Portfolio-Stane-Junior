@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import FileUpload from './FileUpload';
 
+// Données par défaut avec structure complète
 const DEFAULT_DATA = {
   logo_url: '',
   description_fr: "GROW TECH est une agence digitale estudiantine co-fondée avec Godo Landron. Six personnes. Trois squads. On développe des solutions pour le Bénin et la sous-région OHADA.",
@@ -29,7 +30,18 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
   const [memberForm, setMemberForm] = useState({ name: '', role_fr: '', role_en: '', initial: '', image_url: '' });
 
   const [showProjectForm, setShowProjectForm] = useState(false);
-  const [projectForm, setProjectForm] = useState({ title_fr: '', title_en: '', description: '', image_url: '' });
+  const [editingProject, setEditingProject] = useState<any | null>(null);
+  // Structure projet complète
+  const [projectForm, setProjectForm] = useState({
+    title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
+    case_study: {
+      step1: { title: 'PROBLÈME', content: '' },
+      step2: { title: 'SOLUTION', content: '' },
+      step3: { title: 'FONCTIONNALITÉS', content: '' },
+      step4: { title: 'OBSTACLE', content: '' },
+      step5: { title: 'RÉSULTAT', content: '' }
+    }
+  });
 
   const fetchData = async () => {
     if (!isSupabaseConfigured()) { setLoading(false); return; }
@@ -52,6 +64,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     } catch (e: any) { onToast('error', e.message); }
   };
 
+  // --- MEMBRES ---
   const handleOpenEditMember = (member: any) => {
     setEditingMember(member);
     setMemberForm(member);
@@ -60,11 +73,9 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
 
   const handleSaveMember = () => {
     if (editingMember) {
-      // Mode Édition
       const updatedMembers = data.members.map((m: any) => m.id === editingMember.id ? { ...memberForm, id: editingMember.id } : m);
       saveData({ ...data, members: updatedMembers });
     } else {
-      // Mode Ajout
       const newMember = { id: Date.now().toString(), ...memberForm };
       saveData({ ...data, members: [...data.members, newMember] });
     }
@@ -81,11 +92,54 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     saveData({ ...data, members: data.members.filter((m: any) => m.id !== id) });
   };
 
+  // --- PROJETS ---
+  const handleOpenEditProject = (project: any) => {
+    setEditingProject(project);
+    // Assurer que la structure case_study est correcte même pour les anciens projets
+    const defaultCS = {
+      step1: { title: 'PROBLÈME', content: '' },
+      step2: { title: 'SOLUTION', content: '' },
+      step3: { title: 'FONCTIONNALITÉS', content: '' },
+      step4: { title: 'OBSTACLE', content: '' },
+      step5: { title: 'RÉSULTAT', content: '' }
+    };
+    setProjectForm({
+      ...project,
+      stack: Array.isArray(project.stack) ? project.stack.join(', ') : (project.stack || ''),
+      case_study: project.case_study || defaultCS
+    });
+    setShowProjectForm(true);
+  };
+
   const handleSaveProject = () => {
-    const newProject = { id: Date.now().toString(), ...projectForm };
-    saveData({ ...data, projects: [...data.projects, newProject] });
+    const newProjectData = {
+      ...projectForm,
+      id: editingProject ? editingProject.id : Date.now().toString(),
+      stack: projectForm.stack.split(',').map(s => s.trim()).filter(Boolean),
+    };
+
+    if (editingProject) {
+      const updatedProjects = data.projects.map((p: any) => p.id === editingProject.id ? newProjectData : p);
+      saveData({ ...data, projects: updatedProjects });
+    } else {
+      saveData({ ...data, projects: [...data.projects, newProjectData] });
+    }
+    resetProjectForm();
+  };
+
+  const resetProjectForm = () => {
     setShowProjectForm(false);
-    setProjectForm({ title_fr: '', title_en: '', description: '', image_url: '' });
+    setEditingProject(null);
+    setProjectForm({
+      title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
+      case_study: {
+        step1: { title: 'PROBLÈME', content: '' },
+        step2: { title: 'SOLUTION', content: '' },
+        step3: { title: 'FONCTIONNALITÉS', content: '' },
+        step4: { title: 'OBSTACLE', content: '' },
+        step5: { title: 'RÉSULTAT', content: '' }
+      }
+    });
   };
 
   const handleRemoveProject = (id: string) => {
@@ -95,12 +149,12 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
   if (loading) return <div className="flex justify-center p-10"><div className="w-6 h-6 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-5xl">
       <h2 className="text-2xl font-bold text-white">Gestion GROW TECH</h2>
 
-      {/* Logo & Description */}
+      {/* 1. Identité */}
       <div className="glass-card p-6 space-y-6">
-        <h3 className="text-white font-semibold text-lg">Identité & Description</h3>
+        <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Identité & Description</h3>
         <FileUpload label="Logo de l'agence" bucket="portfolio-assets" folder="growtech" currentUrl={data.logo_url} onChange={(url) => saveData({...data, logo_url: url})} accept="image/*" maxSizeMB={5} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <textarea placeholder="Description (FR)" value={data.description_fr} onChange={(e) => saveData({...data, description_fr: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" rows={4} />
@@ -108,9 +162,9 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
         </div>
       </div>
 
-      {/* Vision */}
+      {/* 2. Vision */}
       <div className="glass-card p-6 space-y-4">
-        <h3 className="text-white font-semibold text-lg">Vision de l'agence</h3>
+        <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Vision</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input placeholder="Titre Vision (FR)" value={data.vision.title_fr} onChange={(e) => saveData({...data, vision: {...data.vision, title_fr: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" />
           <input placeholder="Vision Title (EN)" value={data.vision.title_en} onChange={(e) => saveData({...data, vision: {...data.vision, title_en: e.target.value}})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-3 text-white text-sm" />
@@ -121,42 +175,92 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
         </div>
       </div>
 
-      {/* Projets Agence */}
+      {/* 3. Projets (Structure Complète) */}
       <div className="glass-card p-6 space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center border-b border-[#1A1A2E] pb-2">
           <h3 className="text-white font-semibold text-lg">Projets de l'agence</h3>
-          <button onClick={() => setShowProjectForm(!showProjectForm)} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter Projet</button>
+          <button onClick={() => { resetProjectForm(); setShowProjectForm(true); }} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter / Modifier Projet</button>
         </div>
+        
         <AnimatePresence>
           {showProjectForm && (
-            <motion.div initial={{height:0, opacity:0}} animate={{height:'auto', opacity:1}} exit={{height:0, opacity:0}} className="overflow-hidden border-t border-[#1A1A2E] pt-4 space-y-3">
+            <motion.div initial={{height:0, opacity:0}} animate={{height:'auto', opacity:1}} exit={{height:0, opacity:0}} className="overflow-hidden space-y-4 bg-[#0A0A1E] p-4 rounded-xl border border-[#1A1A2E]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input placeholder="Titre (FR)" value={projectForm.title_fr} onChange={e => setProjectForm({...projectForm, title_fr: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
                 <input placeholder="Title (EN)" value={projectForm.title_en} onChange={e => setProjectForm({...projectForm, title_en: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
+                <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm">
+                  <option value="concept">Concept</option>
+                  <option value="in_progress">En cours</option>
+                  <option value="delivered">Livré</option>
+                </select>
+                <input placeholder="Lien Live (URL)" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               </div>
-              <input placeholder="Description courte" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
+              <textarea placeholder="Description courte" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" rows={2} />
+              <input placeholder="Stack (ex: React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
+              
               <FileUpload label="Image Projet" bucket="portfolio-assets" folder="growtech-projects" currentUrl={projectForm.image_url} onChange={(url) => setProjectForm({...projectForm, image_url: url})} />
-              <button onClick={handleSaveProject} className="w-full bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">Enregistrer le projet</button>
+
+              {/* Étude de cas */}
+              <div className="space-y-2 pt-4 border-t border-[#1A1A2E]">
+                <p className="text-[#A8B4C8] text-xs uppercase font-bold">Étude de Cas (5 Étapes)</p>
+                {['step1', 'step2', 'step3', 'step4', 'step5'].map((stepKey, idx) => (
+                  <div key={stepKey} className="grid grid-cols-1 md:grid-cols-[100px_1fr] gap-2 items-center">
+                    <input 
+                      placeholder={`Étape ${idx+1} Titre`} 
+                      value={(projectForm.case_study as any)[stepKey].title} 
+                      onChange={(e) => {
+                        const newCS = {...projectForm.case_study};
+                        (newCS as any)[stepKey].title = e.target.value;
+                        setProjectForm({...projectForm, case_study: newCS});
+                      }}
+                      className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-xs" 
+                    />
+                    <input 
+                      placeholder="Contenu" 
+                      value={(projectForm.case_study as any)[stepKey].content} 
+                      onChange={(e) => {
+                        const newCS = {...projectForm.case_study};
+                        (newCS as any)[stepKey].content = e.target.value;
+                        setProjectForm({...projectForm, case_study: newCS});
+                      }}
+                      className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-xs" 
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button onClick={handleSaveProject} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingProject ? 'Modifier le projet' : 'Enregistrer le projet'}</button>
+                <button onClick={resetProjectForm} className="px-4 bg-[#1A1A2E] text-white rounded hover:bg-red-500 hover:text-white">Annuler</button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="space-y-2">
+
+        {/* Liste Projets */}
+        <div className="space-y-3">
           {data.projects.map((proj: any) => (
             <div key={proj.id} className="flex items-center justify-between bg-[#141430] p-3 rounded border border-[#1A1A2E]">
               <div className="flex items-center gap-3">
                 {proj.image_url && <img src={proj.image_url} alt="" className="w-10 h-10 rounded object-cover" />}
-                <p className="text-white text-sm">{proj.title_fr} / {proj.title_en}</p>
+                <div>
+                  <p className="text-white text-sm font-medium">{proj.title_fr}</p>
+                  <p className="text-[#4A5568] text-xs">{proj.status} · {Array.isArray(proj.stack) ? proj.stack.length : 0} technos</p>
+                </div>
               </div>
-              <button onClick={() => handleRemoveProject(proj.id)} className="text-red-400 hover:text-red-300">✕</button>
+              <div className="flex gap-2">
+                <button onClick={() => handleOpenEditProject(proj)} className="text-[#00BFFF] hover:text-white text-xs font-bold">✏️ Éditer</button>
+                <button onClick={() => handleRemoveProject(proj.id)} className="text-red-400 hover:text-red-300 text-xs">✕</button>
+              </div>
             </div>
           ))}
           {data.projects.length === 0 && <p className="text-[#4A5568] text-sm italic">Aucun projet ajouté.</p>}
         </div>
       </div>
 
-      {/* Équipe */}
+      {/* 4. Équipe */}
       <div className="glass-card p-6 space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center border-b border-[#1A1A2E] pb-2">
           <h3 className="text-white font-semibold text-lg">Équipe</h3>
           <button onClick={() => { resetMemberForm(); setShowMemberForm(true); }} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter / Modifier</button>
         </div>
@@ -171,8 +275,8 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               </div>
               <FileUpload label="Photo Membre" bucket="portfolio-assets" folder="team" currentUrl={memberForm.image_url} onChange={(url) => setMemberForm({...memberForm, image_url: url})} />
               <div className="flex gap-3 mt-3">
-                <button onClick={handleSaveMember} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingMember ? 'Modifier le membre' : 'Enregistrer le membre'}</button>
-                {editingMember && <button onClick={resetMemberForm} className="px-4 bg-[#1A1A2E] text-white rounded hover:bg-red-500 hover:text-white">Annuler</button>}
+                <button onClick={handleSaveMember} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingMember ? 'Modifier' : 'Enregistrer'}</button>
+                {editingMember && <button onClick={resetMemberForm} className="px-4 bg-[#1A1A2E] text-white rounded">Annuler</button>}
               </div>
             </motion.div>
           )}
@@ -188,8 +292,8 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => handleOpenEditMember(member)} className="text-[#00BFFF] hover:text-white text-sm">✏️ Modifier</button>
-                <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-300">✕</button>
+                <button onClick={() => handleOpenEditMember(member)} className="text-[#00BFFF] hover:text-white text-xs">✏️</button>
+                <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-300 text-xs">✕</button>
               </div>
             </div>
           ))}

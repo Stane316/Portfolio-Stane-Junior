@@ -10,30 +10,27 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Détection de la page actuelle
-  const isHomePage = location.pathname === '/' || location.pathname === '';
-
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Gestion intelligente des liens
-  const getLinkPath = (path: string) => {
-    // Si c'est une ancre (#) et qu'on est sur la page d'accueil, on garde l'ancre simple
-    if (path.startsWith('#') && isHomePage) return path;
-    // Sinon on force le chemin complet (ex: /#about)
-    return path.startsWith('#') ? `/${path}` : path;
+  // Configuration intelligente des liens
+  // Si on est sur une sous-page, les ancres pointent vers /#section
+  // Si on est sur l'accueil, elles pointent vers #section
+  const getAnchorLink = (anchor: string) => {
+    const isHome = location.pathname === '/' || location.pathname === '';
+    return isHome ? anchor : `/${anchor}`;
   };
 
   const navLinks = [
-    { label: isFr ? 'Accueil' : 'Home', path: '#hero' },
-    { label: isFr ? 'À propos' : 'About', path: '#about' },
-    { label: isFr ? 'Projets' : 'Projects', path: '#projects' },
-    { label: 'GROW TECH', path: '/growtech' }, // Lien vers la page dédiée
-    { label: 'Blog', path: '/blog' },
-    { label: isFr ? 'Contact' : 'Contact', path: '#contact' },
+    { label: isFr ? 'Accueil' : 'Home', href: '/' },
+    { label: isFr ? 'À propos' : 'About', href: getAnchorLink('#about') },
+    { label: isFr ? 'Projets' : 'Projects', href: getAnchorLink('#projects') },
+    { label: 'GROW TECH', href: '/growtech' },
+    { label: 'Blog', href: '/blog' },
+    { label: isFr ? 'Contact' : 'Contact', href: getAnchorLink('#contact') },
   ];
 
   return (
@@ -56,11 +53,12 @@ const Navbar: React.FC = () => {
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
-                key={link.path}
-                to={getLinkPath(link.path)}
+                key={link.href + link.label}
+                to={link.href}
                 className={`text-sm font-medium transition-colors relative group ${
-                  (link.path.startsWith('#') && isHomePage && location.hash === link.path) || 
-                  (!link.path.startsWith('#') && location.pathname === link.path)
+                  (link.href === '/' && (location.pathname === '/' || location.pathname === '')) || 
+                  (link.href !== '/' && location.pathname + location.hash === link.href) ||
+                  (link.href.startsWith('/#') && location.pathname === '/' && location.hash === link.href.substring(1))
                     ? 'text-[#00BFFF]'
                     : 'text-[#A8B4C8] hover:text-white'
                 }`}
@@ -97,8 +95,8 @@ const Navbar: React.FC = () => {
             <div className="flex flex-col p-6 gap-4">
               {navLinks.map((link) => (
                 <Link
-                  key={link.path}
-                  to={getLinkPath(link.path)}
+                  key={link.href + link.label}
+                  to={link.href}
                   onClick={() => setIsMenuOpen(false)}
                   className="text-lg text-[#A8B4C8] hover:text-[#00BFFF] transition-colors"
                 >
