@@ -11,6 +11,7 @@ const Admin = lazy(() => import('./routes/Admin'));
 const IntroAnimation = lazy(() => import('./components/intro/IntroAnimation'));
 const BlogList = lazy(() => import('./routes/BlogList'));
 const BlogArticle = lazy(() => import('./routes/BlogArticle'));
+const GrowTechPage = lazy(() => import('./routes/GrowTechPage'));
 
 // Loading fallback
 const LoadingFallback: React.FC = () => (
@@ -60,6 +61,7 @@ const App: React.FC = () => {
                   <Route path="/projects" element={<ProjectsPage />} />
                   <Route path="/blog" element={<BlogList />} />
                   <Route path="/blog/:slug" element={<BlogArticle />} />
+                  <Route path="/growtech" element={<GrowTechPage />} />
                </Routes>
               )}
             </Suspense>
