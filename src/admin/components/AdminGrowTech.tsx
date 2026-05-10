@@ -16,14 +16,16 @@ const DEFAULT_DATA = {
     { id: '6', name: 'OLAFA Mauricia', role_fr: 'Sales Manager', role_en: 'Sales Manager', initial: 'OM', image_url: '' },
   ],
   projects: [],
-  vision: { title_fr: '', title_en: '', content_fr: '', content_en: '' }
+  vision: { title_fr: 'Notre Vision', title_en: 'Our Vision', content_fr: 'Innover pour l\'Afrique.', content_en: 'Innovate for Africa.' }
 };
 
 const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'warning', msg: string) => void }> = ({ onToast }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(DEFAULT_DATA);
   
+  // States pour les formulaires
   const [showMemberForm, setShowMemberForm] = useState(false);
+  const [editingMember, setEditingMember] = useState<any | null>(null);
   const [memberForm, setMemberForm] = useState({ name: '', role_fr: '', role_en: '', initial: '', image_url: '' });
 
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -50,10 +52,28 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     } catch (e: any) { onToast('error', e.message); }
   };
 
-  const handleAddMember = () => {
-    const newMember = { id: Date.now().toString(), ...memberForm };
-    saveData({ ...data, members: [...data.members, newMember] });
+  const handleOpenEditMember = (member: any) => {
+    setEditingMember(member);
+    setMemberForm(member);
+    setShowMemberForm(true);
+  };
+
+  const handleSaveMember = () => {
+    if (editingMember) {
+      // Mode Édition
+      const updatedMembers = data.members.map((m: any) => m.id === editingMember.id ? { ...memberForm, id: editingMember.id } : m);
+      saveData({ ...data, members: updatedMembers });
+    } else {
+      // Mode Ajout
+      const newMember = { id: Date.now().toString(), ...memberForm };
+      saveData({ ...data, members: [...data.members, newMember] });
+    }
+    resetMemberForm();
+  };
+
+  const resetMemberForm = () => {
     setShowMemberForm(false);
+    setEditingMember(null);
     setMemberForm({ name: '', role_fr: '', role_en: '', initial: '', image_url: '' });
   };
 
@@ -61,7 +81,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     saveData({ ...data, members: data.members.filter((m: any) => m.id !== id) });
   };
 
-  const handleAddProject = () => {
+  const handleSaveProject = () => {
     const newProject = { id: Date.now().toString(), ...projectForm };
     saveData({ ...data, projects: [...data.projects, newProject] });
     setShowProjectForm(false);
@@ -116,7 +136,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               </div>
               <input placeholder="Description courte" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               <FileUpload label="Image Projet" bucket="portfolio-assets" folder="growtech-projects" currentUrl={projectForm.image_url} onChange={(url) => setProjectForm({...projectForm, image_url: url})} />
-              <button onClick={handleAddProject} className="w-full bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">Enregistrer le projet</button>
+              <button onClick={handleSaveProject} className="w-full bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">Enregistrer le projet</button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -138,7 +158,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
       <div className="glass-card p-6 space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-white font-semibold text-lg">Équipe</h3>
-          <button onClick={() => setShowMemberForm(!showMemberForm)} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter Membre</button>
+          <button onClick={() => { resetMemberForm(); setShowMemberForm(true); }} className="text-xs bg-[#00BFFF] text-black px-3 py-1 rounded font-bold">+ Ajouter / Modifier</button>
         </div>
         <AnimatePresence>
           {showMemberForm && (
@@ -150,7 +170,10 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
                 <input placeholder="Role (EN)" value={memberForm.role_en} onChange={e => setMemberForm({...memberForm, role_en: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
               </div>
               <FileUpload label="Photo Membre" bucket="portfolio-assets" folder="team" currentUrl={memberForm.image_url} onChange={(url) => setMemberForm({...memberForm, image_url: url})} />
-              <button onClick={handleAddMember} className="mt-3 w-full bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">Enregistrer le membre</button>
+              <div className="flex gap-3 mt-3">
+                <button onClick={handleSaveMember} className="flex-1 bg-[#00BFFF] text-black font-bold py-2 rounded hover:opacity-90">{editingMember ? 'Modifier le membre' : 'Enregistrer le membre'}</button>
+                {editingMember && <button onClick={resetMemberForm} className="px-4 bg-[#1A1A2E] text-white rounded hover:bg-red-500 hover:text-white">Annuler</button>}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -164,7 +187,10 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
                   <p className="text-[#4A5568] text-xs">{member.role_fr}</p>
                 </div>
               </div>
-              <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-300">✕</button>
+              <div className="flex gap-2">
+                <button onClick={() => handleOpenEditMember(member)} className="text-[#00BFFF] hover:text-white text-sm">✏️ Modifier</button>
+                <button onClick={() => handleRemoveMember(member.id)} className="text-red-400 hover:text-red-300">✕</button>
+              </div>
             </div>
           ))}
         </div>
