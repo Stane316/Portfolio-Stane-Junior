@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import NotFound from './routes/NotFound';
 
 // Lazy loading pour la performance
 const ProjectsPage = lazy(() => import('./routes/ProjectsPage'));
@@ -62,6 +63,7 @@ const App: React.FC = () => {
                   <Route path="/blog" element={<BlogList />} />
                   <Route path="/blog/:slug" element={<BlogArticle />} />
                   <Route path="/growtech" element={<GrowTechPage />} />
+                  <Route path="*" element={<NotFound />} />
                </Routes>
               )}
             </Suspense>

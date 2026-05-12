@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TeamMember } from '../types';
 import FileUpload from './FileUpload';
+import ImageWithLazyLoad from '../../components/ui/ImageWithLazyLoad';
 
 interface AdminGrowTechMembersProps {
   members: TeamMember[];
@@ -79,7 +80,7 @@ const AdminGrowTechMembers: React.FC<AdminGrowTechMembersProps> = ({ members, on
         {members.map((member) => (
           <div key={member.id} className="flex items-center justify-between bg-[#141430] p-3 rounded border border-[#1A1A2E]">
             <div className="flex items-center gap-3">
-              {member.image_url ? <img src={member.image_url} alt="" className="w-8 h-8 rounded-full object-cover" /> : <div className="w-8 h-8 rounded-full bg-[#0A0A1E] flex items-center justify-center text-xs font-bold text-[#00BFFF]">{member.initial}</div>}
+              {member.image_url ? <ImageWithLazyLoad src={member.image_url} alt={member.name} className="w-8 h-8 rounded-full" /> : <div className="w-8 h-8 rounded-full bg-[#0A0A1E] flex items-center justify-center text-xs font-bold text-[#00BFFF]">{member.initial}</div>}
               <div>
                 <p className="text-white text-sm font-medium">{member.name}</p>
                 <p className="text-[#4A5568] text-xs">{member.role_fr}</p>
