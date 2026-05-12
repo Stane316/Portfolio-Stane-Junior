@@ -153,7 +153,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               </>
             )}
           </div>
-          <input ref={fileInputRef} type="file" accept={accept} className="hidden" onChange={handleFileChange} />
+          <input ref={fileInputRef} type="file" accept={accept} className="hidden" onChange={handleFileChange} aria-label="File upload input" />
         </div>
       )}
 

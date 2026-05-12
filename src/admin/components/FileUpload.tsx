@@ -123,6 +123,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
           onChange={onFileChange}
           className="hidden"
           disabled={uploading}
+          title={label}
+          aria-label={label}
         />
         
         {uploading ? (

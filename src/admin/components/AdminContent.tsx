@@ -139,11 +139,11 @@ const AdminContent: React.FC = () => {
             const item = config[key];
             return (
               <div key={key} className="border border-[rgba(0,191,255,0.15)] rounded-lg p-4 bg-[#141430] bg-opacity-30">
-                <label className="block text-sm font-semibold mb-2 text-white">{label}</label>
+                <label htmlFor={key} className="block text-sm font-semibold mb-2 text-white">{label}</label>
                 {type === 'textarea' ? (
-                  <textarea value={item?.value_generic || ''} onChange={(e) => handleSave(key, 'value_generic', e.target.value)} rows={3} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
+                  <textarea id={key} placeholder={label} value={item?.value_generic || ''} onChange={(e) => handleSave(key, 'value_generic', e.target.value)} rows={3} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF]" />
                 ) : (
-                  <input type={type === 'url' ? 'url' : (type === 'email' ? 'email' : 'text')} value={item?.value_generic || ''} onChange={(e) => handleSave(key, 'value_generic', e.target.value)} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                  <input id={key} placeholder={label} type={type === 'url' ? 'url' : (type === 'email' ? 'email' : 'text')} value={item?.value_generic || ''} onChange={(e) => handleSave(key, 'value_generic', e.target.value)} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
                 )}
               </div>
             );

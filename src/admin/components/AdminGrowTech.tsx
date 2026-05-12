@@ -171,7 +171,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               <div className="grid grid-cols-2 gap-3">
                 <input placeholder="Stack (React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
                 <input placeholder="Lien Live" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
-                <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm">
+                <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" title="Statut du projet" aria-label="Statut du projet">
                   <option value="concept">Concept</option>
                   <option value="in_progress">En cours</option>
                   <option value="delivered">Livré</option>
@@ -189,9 +189,8 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
 
         {showCaseStudy && (
            <CaseStudyEditor
-            lang="fr"
             data={projectForm.case_study}
-            onChange={(data) => setProjectForm({...projectForm, case_study: data})}
+            onChange={(data: any) => setProjectForm({...projectForm, case_study: data})}
             onClose={() => setShowCaseStudy(false)}
             onSave={() => { setShowCaseStudy(false); onToast('success', 'Étude de cas sauvegardée'); }}
           />

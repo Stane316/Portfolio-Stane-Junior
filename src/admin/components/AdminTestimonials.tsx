@@ -178,12 +178,12 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="test-name" className="block text-sm font-semibold mb-1 text-white">Nom <span className="text-red-400">*</span></label>
-                    <input id="test-name" type="text" value={formData.person_name} onChange={(e) => { setFormData({ ...formData, person_name: e.target.value }); setFormErrors({ ...formErrors, person_name: '' }); }} required placeholder="Nom de la personne" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_name ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.person_name ? 'true' : 'false'} />
+                    <input id="test-name" type="text" value={formData.person_name} onChange={(e) => { setFormData({ ...formData, person_name: e.target.value }); setFormErrors({ ...formErrors, person_name: '' }); }} required placeholder="Nom de la personne" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_name ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.person_name} />
                     {formErrors.person_name && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.person_name}</p>}
                   </div>
                   <div>
                     <label htmlFor="test-role" className="block text-sm font-semibold mb-1 text-white">Rôle <span className="text-red-400">*</span></label>
-                    <input id="test-role" type="text" value={formData.person_role} onChange={(e) => { setFormData({ ...formData, person_role: e.target.value }); setFormErrors({ ...formErrors, person_role: '' }); }} required placeholder="Rôle/Poste" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_role ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.person_role ? 'true' : 'false'} />
+                    <input id="test-role" type="text" value={formData.person_role} onChange={(e) => { setFormData({ ...formData, person_role: e.target.value }); setFormErrors({ ...formErrors, person_role: '' }); }} required placeholder="Rôle/Poste" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${formErrors.person_role ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.person_role} />
                     {formErrors.person_role && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.person_role}</p>}
                   </div>
                 </div>
@@ -194,12 +194,12 @@ const AdminTestimonials: React.FC<AdminTestimonialsProps> = ({ testimonials, onR
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="test-content-fr" className="block text-sm font-semibold mb-1 text-white">Contenu (FR) <span className="text-red-400">*</span></label>
-                    <textarea id="test-content-fr" value={formData.content_fr} onChange={(e) => { setFormData({ ...formData, content_fr: e.target.value }); setFormErrors({ ...formErrors, content_fr: '' }); }} rows={3} required placeholder="Témoignage en français" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_fr ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.content_fr ? 'true' : 'false'} />
+                    <textarea id="test-content-fr" value={formData.content_fr} onChange={(e) => { setFormData({ ...formData, content_fr: e.target.value }); setFormErrors({ ...formErrors, content_fr: '' }); }} rows={3} required placeholder="Témoignage en français" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_fr ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.content_fr} />
                     {formErrors.content_fr && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.content_fr}</p>}
                   </div>
                   <div>
                     <label htmlFor="test-content-en" className="block text-sm font-semibold mb-1 text-white">Contenu (EN) <span className="text-red-400">*</span></label>
-                    <textarea id="test-content-en" value={formData.content_en} onChange={(e) => { setFormData({ ...formData, content_en: e.target.value }); setFormErrors({ ...formErrors, content_en: '' }); }} rows={3} required placeholder="Testimonial in English" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_en ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={formErrors.content_en ? 'true' : 'false'} />
+                    <textarea id="test-content-en" value={formData.content_en} onChange={(e) => { setFormData({ ...formData, content_en: e.target.value }); setFormErrors({ ...formErrors, content_en: '' }); }} rows={3} required placeholder="Testimonial in English" className={`w-full px-3 py-2 bg-[#141430] border rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${formErrors.content_en ? 'border-red-500' : 'border-[rgba(0,191,255,0.15)]'}`} aria-invalid={!!formErrors.content_en} />
                     {formErrors.content_en && <p className="text-red-400 text-xs mt-1" role="alert">{formErrors.content_en}</p>}
                   </div>
                   <div>

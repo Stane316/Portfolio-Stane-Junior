@@ -6,13 +6,13 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import SectionNumber from '../components/ui/SectionNumber';
 
-// --- Composant Animation Intro ---
+// --- Composant Animation Intro GROW TECH (CORRIGÉ RESPONSIVE) ---
 const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
-      transition: { staggerChildren: 0.15 } 
+      transition: { staggerChildren: 0.1 } 
     },
     exit: {
       opacity: 0,
@@ -23,7 +23,7 @@ const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => 
   const letterVariants = {
     hidden: { 
       opacity: 0, 
-      y: 30, 
+      y: 20, 
       filter: 'blur(10px)',
       color: '#00BFFF'
     },
@@ -33,15 +33,16 @@ const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => 
       filter: 'blur(0px)',
       color: '#FFFFFF',
       transition: { 
-        duration: 0.6, 
+        duration: 0.5, 
         ease: "easeOut",
-        color: { duration: 0.4, delay: 0.2 } // Transition vers blanc après apparition
+        color: { duration: 0.4, delay: 0.2 }
       }
     },
   };
 
-  const text = "GROW TECH";
-  const slogan = "Votre Vision, Notre Technologie";
+  // Texte adapté : Ton nom complet
+  const text = "Stane-Junior Aniambossou";
+  const slogan = "Innover • Développer • Grandir";
 
   useEffect(() => {
     // L'intro dure 4 secondes avant de disparaître
@@ -51,42 +52,45 @@ const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => 
 
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      variants={containerVariants}
-      className="fixed inset-0 z-[100] bg-[#0A0A1E] flex flex-col items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -50, transition: { duration: 0.8, ease: 'easeInOut' } }}
+      className="fixed inset-0 z-[100] bg-[#0A0A1E] flex flex-col items-center justify-center px-4 sm:px-6"
     >
-      <div className="text-center relative z-10">
+      <div className="text-center w-full max-w-full overflow-hidden">
         {/* Titre Principal Lettre par Lettre */}
-        <h1 className="text-6xl sm:text-8xl lg:text-9xl font-heading tracking-tighter mb-8 flex justify-center">
+        <motion.h1 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          // Correction responsive : text-3xl sur mobile, augmente sur desktop
+          className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white tracking-tighter mb-4 sm:mb-6 break-words"
+        >
           {text.split('').map((char, i) => (
-            <motion.span 
-              key={i} 
-              variants={letterVariants} 
-              className="inline-block font-bold"
-            >
+            <motion.span key={i} variants={letterVariants} className="inline-block">
               {char === ' ' ? '\u00A0' : char}
             </motion.span>
           ))}
-        </h1>
+        </motion.h1>
 
-        {/* Slogan avec apparition latérale */}
+        {/* Slogan avec correction responsive */}
         <motion.p
-          initial={{ opacity: 0, x: -30, filter: 'blur(5px)' }}
-          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.8 }}
-          className="text-[#00BFFF] text-lg sm:text-2xl font-light tracking-[0.3em] uppercase"
+          className="w-full px-2"
         >
-          {slogan}
+          <span className="text-[#00BFFF] text-xs sm:text-lg md:text-2xl font-light tracking-wide sm:tracking-widest uppercase break-words">
+            {slogan}
+          </span>
         </motion.p>
 
         {/* Barre de progression */}
         <motion.div
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: '300px', opacity: 1 }}
+          initial={{ width: 0 }}
+          animate={{ width: '100%' }}
           transition={{ duration: 3, ease: "easeInOut", delay: 0.5 }}
-          className="h-1 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mx-auto mt-16"
+          className="h-1 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mx-auto mt-8 sm:mt-12 w-48 sm:w-80"
         />
       </div>
     </motion.div>
@@ -132,16 +136,8 @@ const GrowTechPage: React.FC = () => {
   const members = data.members || [];
   const visibleMembers = showAllMembers ? members : members.slice(0, 3);
 
-  // Services Data
-  const services = [
-    { title: isFr ? 'Sites vitrines professionnels' : 'Professional Showcase Websites', icon: '🌐' },
-    { title: isFr ? 'Applications web sur mesure' : 'Custom Web Applications', icon: '💻' },
-    { title: isFr ? 'Solutions SaaS pour le marché africain' : 'SaaS Solutions for African Market', icon: '☁️' },
-    { title: isFr ? 'Accompagnement digital PME' : 'SME Digital Accompaniment', icon: '🚀' },
-  ];
-
   return (
-    <div className="min-h-screen bg-[#0A0A1E] text-white overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A1E]">
       {/* Animation Intro */}
       <AnimatePresence>
         {showIntro && <GrowTechIntro onComplete={handleIntroComplete} />}
@@ -159,7 +155,7 @@ const GrowTechPage: React.FC = () => {
             <section className="pt-10">
               <div className="relative mb-12">
                 <SectionNumber number="AG" />
-                <h1 className="text-6xl sm:text-8xl lg:text-9xl font-heading tracking-tighter relative z-10">GROW TECH</h1>
+                <h1 className="text-5xl sm:text-7xl lg:text-9xl font-heading tracking-tighter relative z-10">GROW TECH</h1>
               </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -168,7 +164,6 @@ const GrowTechPage: React.FC = () => {
                   <motion.p 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
                     className="text-[#A8B4C8] text-xl lg:text-2xl leading-relaxed font-light"
                   >
                     {isFr 
@@ -177,34 +172,28 @@ const GrowTechPage: React.FC = () => {
                   </motion.p>
                   
                   {data.vision.title_fr && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className="bg-[#141430] border-l-4 border-[#00BFFF] p-6 rounded-r-xl"
-                    >
+                    <div className="bg-[#141430] border-l-4 border-[#00BFFF] p-6 rounded-r-xl">
                       <h3 className="text-white font-bold text-xl mb-2">{isFr ? data.vision.title_fr : data.vision.title_en}</h3>
                       <p className="text-[#A8B4C8]">{isFr ? data.vision.content_fr : data.vision.content_en}</p>
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
                 {/* Logo */}
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="lg:col-span-5 flex justify-center lg:justify-end"
-                >
-                  <div className="w-full max-w-sm aspect-square bg-[#141430] rounded-3xl border border-[#1A1A2E] flex items-center justify-center p-8 relative overflow-hidden shadow-[0_0_50px_rgba(0,191,255,0.1)]">
+                <div className="lg:col-span-5 flex justify-center lg:justify-end">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full max-w-sm aspect-square bg-[#141430] rounded-3xl border border-[#1A1A2E] flex items-center justify-center p-8 relative overflow-hidden shadow-[0_0_50px_rgba(0,191,255,0.1)]"
+                  >
                     <div className="absolute inset-0 bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] opacity-10" />
                     {data.logo_url ? (
                       <img src={data.logo_url} alt="Logo GROW TECH" className="w-full h-full object-contain relative z-10" />
                     ) : (
                       <span className="text-8xl font-heading text-white opacity-20 relative z-10">GT</span>
                     )}
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </div>
             </section>
 
@@ -216,23 +205,28 @@ const GrowTechPage: React.FC = () => {
                 viewport={{ once: true }}
                 className="text-center mb-12"
               >
-                <h2 className="text-4xl lg:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Services' : 'Our Services'}</h2>
+                <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Services' : 'Our Services'}</h2>
                 <div className="w-24 h-1 bg-[#00BFFF] mx-auto rounded-full" />
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
-                {services.map((service, index) => (
+                {[
+                  { title: isFr ? 'Sites vitrines professionnels' : 'Professional Showcase Websites' },
+                  { title: isFr ? 'Applications web sur mesure' : 'Custom Web Applications' },
+                  { title: isFr ? 'Solutions SaaS pour le marché africain' : 'SaaS Solutions for African Market' },
+                  { title: isFr ? 'Accompagnement digital PME' : 'SME Digital Accompaniment' },
+                ].map((service, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="group bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 flex flex-col items-center text-center hover:border-[#00BFFF] hover:bg-[#141430]/80 transition-all duration-300 relative overflow-hidden"
+                    className="group bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center hover:border-[#00BFFF] hover:bg-[#141430]/80 transition-all duration-300 relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#00BFFF] rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-                    <div className="w-14 h-14 rounded-full bg-[#0A0A1E] border border-[#00BFFF]/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                      <svg className="w-6 h-6 text-[#00BFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0A0A1E] border border-[#00BFFF]/30 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#00BFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
@@ -248,12 +242,12 @@ const GrowTechPage: React.FC = () => {
                 viewport={{ once: true }}
                 className="flex flex-col sm:flex-row items-center justify-center gap-4"
               >
-                <div className="px-8 py-4 bg-[#141430] border border-[#1A1A2E] text-[#A8B4C8] rounded-xl font-bold flex items-center gap-3 opacity-60 cursor-not-allowed">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <div className="px-6 sm:px-8 py-3 sm:py-4 bg-[#141430] border border-[#1A1A2E] text-[#A8B4C8] rounded-xl font-bold flex items-center gap-3 opacity-60 cursor-not-allowed text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                   {isFr ? 'Bientôt disponible' : 'Coming Soon'}
                 </div>
-                <a href="mailto:contact@growtech.bj" className="px-8 py-4 bg-[#00BFFF] text-black rounded-xl font-bold flex items-center gap-3 hover:bg-opacity-90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(0,191,255,0.3)]">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <a href="mailto:contact@growtech.bj" className="px-6 sm:px-8 py-3 sm:py-4 bg-[#00BFFF] text-black rounded-xl font-bold flex items-center gap-3 hover:bg-opacity-90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(0,191,255,0.3)] text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   {isFr ? 'Nous contacter' : 'Contact Us'}
                 </a>
               </motion.div>
@@ -263,12 +257,12 @@ const GrowTechPage: React.FC = () => {
             {data.projects && data.projects.length > 0 && (
               <section>
                 <div className="mb-12">
-                  <h2 className="text-4xl lg:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Réalisations' : 'Our Projects'}</h2>
+                  <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Réalisations' : 'Our Projects'}</h2>
                   <p className="text-[#A8B4C8]">{isFr ? 'Des solutions concrètes pour des problèmes réels.' : 'Concrete solutions for real problems.'}</p>
                 </div>
 
                 {/* Scroll Horizontal */}
-                <div className="flex gap-6 overflow-x-auto pb-8 mb-16 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+                <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 mb-16 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                   {data.projects.map((proj: any) => (
                     <div key={proj.id} className="min-w-[280px] md:min-w-[350px] snap-center bg-[#141430] border border-[#1A1A2E] rounded-2xl overflow-hidden group hover:border-[#00BFFF] transition-colors">
                       <div className="h-48 overflow-hidden bg-[#0A0A1E]">
@@ -305,8 +299,8 @@ const GrowTechPage: React.FC = () => {
                       </div>
                       <div className="w-full lg:w-2/5 space-y-4">
                         <span className="text-[#00BFFF] text-xs font-bold uppercase tracking-widest">{proj.status === 'delivered' ? (isFr ? 'Livré' : 'Delivered') : (isFr ? 'En cours' : 'In Progress')}</span>
-                        <h3 className="text-3xl font-heading text-white">{isFr ? proj.title_fr : proj.title_en}</h3>
-                        <p className="text-[#A8B4C8] leading-relaxed">{proj.description}</p>
+                        <h3 className="text-2xl sm:text-3xl font-heading text-white">{isFr ? proj.title_fr : proj.title_en}</h3>
+                        <p className="text-[#A8B4C8] leading-relaxed text-sm sm:text-base">{proj.description}</p>
                         
                         {proj.stack && proj.stack.length > 0 && (
                           <div className="flex flex-wrap gap-2 pt-2">
@@ -346,14 +340,14 @@ const GrowTechPage: React.FC = () => {
               </section>
             )}
 
-            {/* Équipe */}
+            {/* Équipe : Limité à 3 + Bouton */}
             {members.length > 0 && (
               <section>
                 <div className="text-center mb-12">
-                  <h2 className="text-4xl lg:text-5xl font-heading text-white mb-4">{isFr ? 'L\'Équipe' : 'The Team'}</h2>
+                  <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'L\'Équipe' : 'The Team'}</h2>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
                   {visibleMembers.map((member: any, i: number) => (
                     <motion.div 
                       key={member.id} 
@@ -361,17 +355,17 @@ const GrowTechPage: React.FC = () => {
                       whileInView={{ opacity: 1, y: 0 }} 
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.1 }}
-                      className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 text-center hover:border-[#00BFFF] transition-all group"
+                      className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 text-center hover:border-[#00BFFF] transition-all group"
                     >
-                      <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
                         {member.image_url ? (
                           <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
+                          <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-2xl sm:text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
                         )}
                       </div>
-                      <h3 className="text-white font-bold text-xl mb-2">{member.name}</h3>
-                      <p className="text-[#00BFFF] font-medium">{isFr ? member.role_fr : member.role_en}</p>
+                      <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2 break-words">{member.name}</h3>
+                      <p className="text-[#00BFFF] font-medium text-sm sm:text-base">{isFr ? member.role_fr : member.role_en}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -380,7 +374,7 @@ const GrowTechPage: React.FC = () => {
                   <div className="text-center">
                     <button 
                       onClick={() => setShowAllMembers(!showAllMembers)}
-                      className="inline-flex items-center gap-2 px-8 py-3 bg-[#141430] border border-[#1A1A2E] text-white rounded-full hover:border-[#00BFFF] hover:text-[#00BFFF] transition-all"
+                      className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 bg-[#141430] border border-[#1A1A2E] text-white rounded-full hover:border-[#00BFFF] hover:text-[#00BFFF] transition-all text-sm sm:text-base"
                     >
                       {showAllMembers ? (isFr ? 'Voir moins' : 'See less') : (isFr ? `Voir les ${members.length} membres` : `See all ${members.length} members`)}
                       <svg className={`w-4 h-4 transition-transform ${showAllMembers ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -396,24 +390,24 @@ const GrowTechPage: React.FC = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 pt-8 border-t border-[#1A1A2E]">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-8 pt-8 border-t border-[#1A1A2E]">
                         {members.slice(3).map((member: any, i: number) => (
                           <motion.div 
                             key={member.id} 
                             initial={{ opacity: 0, y: 20 }} 
                             animate={{ opacity: 1, y: 0 }} 
                             transition={{ delay: i * 0.1 }}
-                            className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 text-center hover:border-[#00BFFF] transition-all group"
+                            className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 text-center hover:border-[#00BFFF] transition-all group"
                           >
-                            <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
                               {member.image_url ? (
                                 <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
+                                <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-2xl sm:text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
                               )}
                             </div>
-                            <h3 className="text-white font-bold text-xl mb-2">{member.name}</h3>
-                            <p className="text-[#00BFFF] font-medium">{isFr ? member.role_fr : member.role_en}</p>
+                            <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2 break-words">{member.name}</h3>
+                            <p className="text-[#00BFFF] font-medium text-sm sm:text-base">{isFr ? member.role_fr : member.role_en}</p>
                           </motion.div>
                         ))}
                       </div>

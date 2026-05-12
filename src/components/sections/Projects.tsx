@@ -236,7 +236,7 @@ const Projects: React.FC = () => {
               className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#141430] border border-[#1A1A2E] rounded-xl shadow-2xl z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <button onClick={() => setSelectedProject(null)} className="absolute top-4 right-4 p-2 text-[#A8B4C8] hover:text-white z-20">
+              <button type="button" aria-label="Close" onClick={() => setSelectedProject(null)} className="absolute top-4 right-4 p-2 text-[#A8B4C8] hover:text-white z-20">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
 

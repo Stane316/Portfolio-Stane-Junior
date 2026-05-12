@@ -263,8 +263,8 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-1 text-white">Catégorie</label>
-                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]">
+                    <label htmlFor="category" className="block text-sm font-semibold mb-1 text-white">Catégorie</label>
+                    <select id="category" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} title="Sélectionnez une catégorie" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]">
                       <option value="tech">Technologie</option>
                       <option value="growtech">GROW TECH</option>
                       <option value="africa">Afrique</option>
@@ -272,8 +272,8 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-1 text-white">Ordre</label>
-                    <input type="number" value={formData.display_order} onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })} className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
+                    <label htmlFor="display_order" className="block text-sm font-semibold mb-1 text-white">Ordre</label>
+                    <input id="display_order" type="number" value={formData.display_order} onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })} placeholder="0" className="w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF]" />
                   </div>
                   <div className="flex items-end pb-2">
                     <label className="flex items-center gap-2 cursor-pointer">

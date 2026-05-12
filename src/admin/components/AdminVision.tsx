@@ -21,9 +21,16 @@ const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'wa
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title_fr: string;
+    title_en: string;
+    description_fr: string;
+    description_en: string;
+    status: VisionItem['status'];
+    image_url: string;
+  }>({
     title_fr: '', title_en: '', description_fr: '', description_en: '',
-    status: 'concept' as const, image_url: ''
+    status: 'concept', image_url: ''
   });
 
   const fetchData = async () => {
@@ -66,7 +73,7 @@ const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'wa
     setFormData({
       title_fr: item.title_fr, title_en: item.title_en,
       description_fr: item.description_fr, description_en: item.description_en,
-      status: item.status, image_url: item.image_url
+      status: item.status as 'concept' | 'in_progress' | 'paused', image_url: item.image_url
     });
     setShowForm(true);
   };
@@ -101,8 +108,8 @@ const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'wa
                 <BilingualInput label="Description" valueFr={formData.description_fr} valueEn={formData.description_en} onChangeFr={(v) => setFormData({...formData, description_fr: v})} onChangeEn={(v) => setFormData({...formData, description_en: v})} rows={4} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-white mb-1">Statut</label>
-                    <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as any})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
+                    <label htmlFor="vision-status" className="block text-sm text-white mb-1">Statut</label>
+                    <select id="vision-status" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as any})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
                       <option value="concept">Concept</option>
                       <option value="in_progress">En développement</option>
                       <option value="paused">En pause</option>
