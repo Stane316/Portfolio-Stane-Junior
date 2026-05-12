@@ -1,65 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { useAdminData } from '../hooks/useAdminData';
+import { VisionItem } from '../types';
 import BilingualInput from './BilingualInput';
 import FileUpload from './FileUpload';
 
-interface VisionItem {
-  id: string;
-  title_fr: string;
-  title_en: string;
-  description_fr: string;
-  description_en: string;
-  status: 'concept' | 'in_progress' | 'paused';
-  image_url: string;
-  order: number;
-}
-
 const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'warning', msg: string) => void }> = ({ onToast }) => {
-  const [visions, setVisions] = useState<VisionItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: visions, loading, saveItem, deleteItem } = useAdminData<VisionItem>({
+    table: 'vision_items',
+    orderBy: 'order',
+    orderAsc: true
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState<{
-    title_fr: string;
-    title_en: string;
-    description_fr: string;
-    description_en: string;
-    status: VisionItem['status'];
-    image_url: string;
-  }>({
+  const [formData, setFormData] = useState({
     title_fr: '', title_en: '', description_fr: '', description_en: '',
-    status: 'concept', image_url: ''
+    status: 'concept' as VisionItem['status'], image_url: ''
   });
 
-  const fetchData = async () => {
-    if (!isSupabaseConfigured()) { setLoading(false); return; }
-    try {
-      const { data, error } = await supabase.from('vision_items').select('*').order('order', { ascending: true });
-      if (!error) setVisions((data as VisionItem[]) || []);
-    } catch (e) { console.error(e); } finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchData(); }, []);
-
-  const saveData = async (newData: any) => {
-    if (!isSupabaseConfigured()) return;
-    try {
-      if (editingId) {
-        await supabase.from('vision_items').update(newData).eq('id', editingId);
-      } else {
-        await supabase.from('vision_items').insert([newData]);
-      }
-      onToast('success', 'Sauvegardé !');
-      fetchData();
-    } catch (e: any) { onToast('error', e.message); }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    saveData({ ...formData, order: visions.length });
-    resetForm();
+    const result = await saveItem({ ...formData, order: visions.length }, editingId || undefined);
+    if (result.success) {
+      onToast('success', editingId ? 'Concept modifié !' : 'Concept créé !');
+      resetForm();
+    } else {
+      onToast('error', result.error || 'Erreur');
+    }
   };
 
   const resetForm = () => {
@@ -73,18 +42,19 @@ const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'wa
     setFormData({
       title_fr: item.title_fr, title_en: item.title_en,
       description_fr: item.description_fr, description_en: item.description_en,
-      status: item.status as 'concept' | 'in_progress' | 'paused', image_url: item.image_url
+      status: item.status, image_url: item.image_url
     });
     setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer ce concept ?')) return;
-    try {
-      await supabase.from('vision_items').delete().eq('id', id);
-      onToast('success', 'Supprimé !');
-      fetchData();
-    } catch (e: any) { onToast('error', e.message); }
+    const result = await deleteItem(id);
+    if (result.success) {
+      onToast('success', 'Concept supprimé !');
+    } else {
+      onToast('error', result.error || 'Erreur');
+    }
   };
 
   if (loading) return <div className="flex justify-center p-10"><div className="w-6 h-6 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
@@ -109,7 +79,7 @@ const AdminVision: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'wa
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="vision-status" className="block text-sm text-white mb-1">Statut</label>
-                    <select id="vision-status" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as any})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
+                    <select id="vision-status" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as VisionItem['status']})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
                       <option value="concept">Concept</option>
                       <option value="in_progress">En développement</option>
                       <option value="paused">En pause</option>

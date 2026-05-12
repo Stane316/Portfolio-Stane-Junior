@@ -1,73 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { useAdminData } from '../hooks/useAdminData';
+import { Project, CaseStudyData } from '../types';
 import BilingualInput from './BilingualInput';
 import FileUpload from './FileUpload';
 import CaseStudyEditor from './CaseStudyEditor';
-import ProjectRow from './ProjectRow'; // Import du nouveau design
+import ProjectRow from './ProjectRow';
 
-interface Project {
-  id: string;
+const DEFAULT_CASE_STUDY: CaseStudyData = {
+  step1: { title: 'PROBLÈME', content: '' },
+  step2: { title: 'SOLUTION', content: '' },
+  step3: { title: 'FONCTIONNALITÉS', content: '' },
+  step4: { title: 'OBSTACLE', content: '' },
+  step5: { title: 'RÉSULTAT', content: '' }
+};
+
+interface FormData {
   title_fr: string;
   title_en: string;
-  status: 'delivered' | 'in_progress' | 'concept';
+  status: Project['status'];
   description_fr: string;
   description_en: string;
-  stack: string[];
+  stack: string;
   live_url: string;
   image_url: string;
-  case_study_fr: any;
-  case_study_en: any;
   is_visible: boolean;
   is_featured: boolean;
-  display_order: number;
+  case_study: CaseStudyData;
 }
 
 const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'warning', msg: string) => void }> = ({ onToast }) => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects, loading, saveItem, deleteItem, fetchData } = useAdminData<Project>({
+    table: 'projects',
+    orderBy: 'display_order',
+    orderAsc: true,
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showCaseStudy, setShowCaseStudy] = useState(false);
   
-  const [formData, setFormData] = useState({
-    title_fr: '', title_en: '', status: 'concept' as const, description_fr: '', description_en: '',
+  const [formData, setFormData] = useState<FormData>({
+    title_fr: '', title_en: '', status: 'concept', description_fr: '', description_en: '',
     stack: '', live_url: '', image_url: '', is_visible: true, is_featured: false,
-    case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
+    case_study: DEFAULT_CASE_STUDY
   });
 
-  const fetchData = async () => {
-    if (!isSupabaseConfigured()) { setLoading(false); return; }
-    try {
-      const { data, error } = await supabase.from('projects').select('*').order('display_order', { ascending: true });
-      if (!error) setProjects((data as Project[]) || []);
-    } catch (e) { console.error(e); } finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchData(); }, []);
-
-  const saveData = async (newData: any) => {
-    if (!isSupabaseConfigured()) return;
-    try {
-      if (editingProject) {
-        await supabase.from('projects').update(newData).eq('id', editingProject.id);
-      } else {
-        await supabase.from('projects').insert([newData]);
-      }
-      onToast('success', 'Projet sauvegardé !');
-      fetchData();
-    } catch (e: any) { onToast('error', e.message); }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const stackArray = formData.stack.split(',').map(s => s.trim()).filter(Boolean);
-    saveData({ ...formData, stack: stackArray });
-    resetForm();
+    
+    const projectData: Partial<Project> = {
+      title_fr: formData.title_fr,
+      title_en: formData.title_en,
+      status: formData.status,
+      description_fr: formData.description_fr,
+      description_en: formData.description_en,
+      stack: stackArray,
+      live_url: formData.live_url,
+      image_url: formData.image_url,
+      is_visible: formData.is_visible,
+      is_featured: formData.is_featured,
+      case_study_fr: formData.case_study,
+      case_study_en: formData.case_study,
+    };
+
+    const result = await saveItem(projectData, editingProject?.id);
+    if (result.success) {
+      onToast('success', editingProject ? 'Projet modifié !' : 'Projet créé !');
+      resetForm();
+    } else {
+      onToast('error', result.error || 'Erreur lors de la sauvegarde');
+    }
   };
 
   const resetForm = () => {
-    setFormData({ title_fr: '', title_en: '', status: 'concept', description_fr: '', description_en: '', stack: '', live_url: '', image_url: '', is_visible: true, is_featured: false, case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} } });
+    setFormData({
+      title_fr: '', title_en: '', status: 'concept', description_fr: '', description_en: '',
+      stack: '', live_url: '', image_url: '', is_visible: true, is_featured: false,
+      case_study: DEFAULT_CASE_STUDY
+    });
     setEditingProject(null);
     setShowForm(false);
   };
@@ -75,27 +87,36 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
   const handleEdit = (project: Project) => {
     setEditingProject(project);
     setFormData({
-      ...project,
+      title_fr: project.title_fr,
+      title_en: project.title_en,
+      status: project.status,
+      description_fr: project.description_fr,
+      description_en: project.description_en,
       stack: Array.isArray(project.stack) ? project.stack.join(', ') : '',
-      case_study: project.case_study_fr || { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
+      live_url: project.live_url,
+      image_url: project.image_url,
+      is_visible: project.is_visible,
+      is_featured: project.is_featured,
+      case_study: project.case_study_fr || DEFAULT_CASE_STUDY
     });
     setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer ce projet ?')) return;
-    try {
-      await supabase.from('projects').delete().eq('id', id);
+    const result = await deleteItem(id);
+    if (result.success) {
       onToast('success', 'Projet supprimé !');
-      fetchData();
-    } catch (e: any) { onToast('error', e.message); }
+    } else {
+      onToast('error', result.error || 'Erreur lors de la suppression');
+    }
   };
 
-  const toggleField = async (id: string, field: string, current: boolean) => {
-    try {
-      await supabase.from('projects').update({ [field]: !current }).eq('id', id);
-      fetchData();
-    } catch (e: any) { onToast('error', e.message); }
+  const toggleField = async (id: string, field: 'is_visible' | 'is_featured', current: boolean) => {
+    const result = await saveItem({ [field]: !current }, id);
+    if (!result.success) {
+      onToast('error', result.error || 'Erreur lors de la modification');
+    }
   };
 
   if (loading) return <div className="flex justify-center p-10"><div className="w-6 h-6 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
@@ -109,7 +130,6 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
         </button>
       </div>
 
-      {/* Formulaire (Caché par défaut) */}
       <AnimatePresence>
         {showForm && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-6">
@@ -126,7 +146,7 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm text-white mb-1">Statut</label>
-                    <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as any})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
+                    <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as Project['status']})} className="w-full bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white">
                       <option value="concept">Concept</option>
                       <option value="in_progress">En cours</option>
                       <option value="delivered">Livré</option>
@@ -150,20 +170,17 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
         )}
       </AnimatePresence>
 
-      {/* Modal Étude de Cas */}
       {showCaseStudy && (
         <CaseStudyEditor
           lang="fr"
           data={formData.case_study}
           onChange={(data) => setFormData({...formData, case_study: data})}
           onClose={() => setShowCaseStudy(false)}
-          onSave={() => { setShowCaseStudy(false); onToast('success', 'Étude de cas sauvegardée'); }}
+          onSave={() => { setShowCaseStudy(false); onToast('success', 'Étude de cas mise à jour'); }}
         />
       )}
 
-      {/* LISTE DES PROJETS - NOUVEAU DESIGN PREMIUM */}
       <div className="bg-[#0A0A1E] border border-[#1A1A2E] rounded-2xl overflow-hidden shadow-lg">
-        {/* Header Tableau */}
         <div className="flex items-center gap-5 p-4 bg-[#141430] border-b border-[#1A1A2E] text-xs font-bold text-[#4A5568] uppercase tracking-wider">
           <div className="w-14">Image</div>
           <div className="flex-1">Projet</div>
@@ -172,7 +189,6 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
           <div className="w-28 text-right">Actions</div>
         </div>
 
-        {/* Rows */}
         {projects.map((proj) => (
           <ProjectRow
             key={proj.id}
@@ -190,7 +206,11 @@ const AdminProjectsNew: React.FC<{ onToast: (type: 'success' | 'error' | 'info' 
             onToggleFeatured={() => toggleField(proj.id, 'is_featured', proj.is_featured)}
             onEditCaseStudy={() => {
               setEditingProject(proj);
-              setFormData({ ...proj, stack: Array.isArray(proj.stack) ? proj.stack.join(', ') : '', case_study: proj.case_study_fr || { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} } });
+              setFormData({
+                ...proj,
+                stack: Array.isArray(proj.stack) ? proj.stack.join(', ') : '',
+                case_study: proj.case_study_fr || DEFAULT_CASE_STUDY
+              });
               setShowCaseStudy(true);
             }}
           />

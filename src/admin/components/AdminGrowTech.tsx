@@ -1,79 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { useAdminData } from '../hooks/useAdminData';
+import { GrowTechData, TeamMember, Project as GrowTechProject, CaseStudyData } from '../types';
 import BilingualInput from './BilingualInput';
 import FileUpload from './FileUpload';
 import CaseStudyEditor from './CaseStudyEditor';
-import ProjectRow from './ProjectRow'; // Import du design unifié
+import ProjectRow from './ProjectRow';
 
-const DEFAULT_DATA = {
+const DEFAULT_DATA: GrowTechData = {
   logo_url: '',
   description_fr: "GROW TECH est une agence digitale estudiantine co-fondée avec Godo Landron. Six personnes. Trois squads. On développe des solutions pour le Bénin et la sous-région OHADA.",
   description_en: "GROW TECH is a student digital agency co-founded with Godo Landron. Six people. Three squads. We build solutions for Benin and the OHADA sub-region.",
   members: [
-    { id: '1', name: 'Stane-Junior Aniambossou', role_fr: 'Fondateur & Tech Lead', role_en: 'Founder & Tech Lead', initial: 'SJ', image_url: '' },
-    { id: '2', name: 'Godo Landron', role_fr: 'Co-fondateur & Biz Dev', role_en: 'Co-founder & Biz Dev', initial: 'GL', image_url: '' },
-    { id: '3', name: 'Huriel DENAKPO', role_fr: 'Lead Backend', role_en: 'Lead Backend', initial: 'HD', image_url: '' },
-    { id: '4', name: 'Espanedi', role_fr: 'Lead Frontend', role_en: 'Lead Frontend', initial: 'ES', image_url: '' },
-    { id: '5', name: 'Expedy', role_fr: 'Sales Manager', role_en: 'Sales Manager', initial: 'EX', image_url: '' },
-    { id: '6', name: 'OLAFA Mauricia', role_fr: 'Sales Manager', role_en: 'Sales Manager', initial: 'OM', image_url: '' },
+    { id: '1', name: 'Stane-Junior Aniambossou', role_fr: 'Fondateur & Tech Lead', role_en: 'Founder & Tech Lead', initial: 'SJ', image_url: '', order: 0 },
+    { id: '2', name: 'Godo Landron', role_fr: 'Co-fondateur & Biz Dev', role_en: 'Co-founder & Biz Dev', initial: 'GL', image_url: '', order: 1 },
+    { id: '3', name: 'Huriel DENAKPO', role_fr: 'Lead Backend', role_en: 'Lead Backend', initial: 'HD', image_url: '', order: 2 },
+    { id: '4', name: 'Espanedi', role_fr: 'Lead Frontend', role_en: 'Lead Frontend', initial: 'ES', image_url: '', order: 3 },
+    { id: '5', name: 'Expedy', role_fr: 'Sales Manager', role_en: 'Sales Manager', initial: 'EX', image_url: '', order: 4 },
+    { id: '6', name: 'OLAFA Mauricia', role_fr: 'Sales Manager', role_en: 'Sales Manager', initial: 'OM', image_url: '', order: 5 },
   ],
   projects: [],
   vision: { title_fr: 'Notre Vision', title_en: 'Our Vision', content_fr: 'Innover pour l\'Afrique.', content_en: 'Innovate for Africa.' }
 };
 
+const DEFAULT_CASE_STUDY: CaseStudyData = {
+  step1: { title: 'PROBLÈME', content: '' },
+  step2: { title: 'SOLUTION', content: '' },
+  step3: { title: 'FONCTIONNALITÉS', content: '' },
+  step4: { title: 'OBSTACLE', content: '' },
+  step5: { title: 'RÉSULTAT', content: '' }
+};
+
 const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | 'warning', msg: string) => void }> = ({ onToast }) => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(DEFAULT_DATA);
+  // Utilisation du hook pour récupérer les données de site_config
+  const { data: configData, loading, saveItem } = useAdminData<any>({
+    table: 'site_config',
+    filter: { column: 'key', value: 'growtech_data' },
+    selectAll: true
+  });
+
+  const [data, setData] = useState<GrowTechData>(DEFAULT_DATA);
   
   // States Membres
   const [showMemberForm, setShowMemberForm] = useState(false);
-  const [editingMember, setEditingMember] = useState<any | null>(null);
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [memberForm, setMemberForm] = useState({ name: '', role_fr: '', role_en: '', initial: '', image_url: '' });
 
   // States Projets
   const [showProjectForm, setShowProjectForm] = useState(false);
-  const [editingProject, setEditingProject] = useState<any | null>(null);
+  const [editingProject, setEditingProject] = useState<GrowTechProject | null>(null);
   const [showCaseStudy, setShowCaseStudy] = useState(false);
   const [projectForm, setProjectForm] = useState({
-    title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
-    case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
+    title_fr: '', title_en: '', status: 'concept' as const, description: '', stack: '', live_url: '', image_url: '',
+    case_study: DEFAULT_CASE_STUDY
   });
 
-  const fetchData = async () => {
-    if (!isSupabaseConfigured()) { setLoading(false); return; }
-    try {
-      const { data: configData, error } = await supabase.from('site_config').select('*').eq('key', 'growtech_data').single();
-      if (!error && configData?.value_generic) {
-        setData(JSON.parse(configData.value_generic));
+  // Charger les données depuis configData
+  React.useEffect(() => {
+    if (configData.length > 0 && configData[0].value_generic) {
+      try {
+        const parsed = JSON.parse(configData[0].value_generic);
+        setData({ ...DEFAULT_DATA, ...parsed });
+      } catch (e) {
+        console.error('Erreur parsing growtech_data:', e);
       }
-    } catch (e) { console.error(e); } finally { setLoading(false); }
-  };
+    }
+  }, [configData]);
 
-  useEffect(() => { fetchData(); }, []);
-
-  const saveData = async (newData: any) => {
-    if (!isSupabaseConfigured()) return;
-    try {
-      await supabase.from('site_config').upsert({ key: 'growtech_data', value_generic: JSON.stringify(newData) });
+  const saveData = async (newData: GrowTechData) => {
+    const result = await saveItem({ key: 'growtech_data', value_generic: JSON.stringify(newData) }, configData[0]?.id);
+    if (result.success) {
       setData(newData);
       onToast('success', 'Données GROW TECH sauvegardées !');
-    } catch (e: any) { onToast('error', e.message); }
+    } else {
+      onToast('error', result.error || 'Erreur lors de la sauvegarde');
+    }
   };
 
   // --- Membres ---
-  const handleOpenEditMember = (member: any) => {
+  const handleOpenEditMember = (member: TeamMember) => {
     setEditingMember(member);
-    setMemberForm(member);
+    setMemberForm({ name: member.name, role_fr: member.role_fr, role_en: member.role_en, initial: member.initial, image_url: member.image_url });
     setShowMemberForm(true);
   };
 
   const handleSaveMember = () => {
+    const newMember: TeamMember = {
+      id: editingMember ? editingMember.id : Date.now().toString(),
+      ...memberForm,
+      order: data.members.length
+    };
+
     if (editingMember) {
-      const updatedMembers = data.members.map((m: any) => m.id === editingMember.id ? { ...memberForm, id: editingMember.id } : m);
+      const updatedMembers = data.members.map((m) => m.id === editingMember.id ? newMember : m);
       saveData({ ...data, members: updatedMembers });
     } else {
-      const newMember = { id: Date.now().toString(), ...memberForm };
       saveData({ ...data, members: [...data.members, newMember] });
     }
     resetMemberForm();
@@ -86,29 +107,46 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
   };
 
   const handleRemoveMember = (id: string) => {
-    saveData({ ...data, members: data.members.filter((m: any) => m.id !== id) });
+    saveData({ ...data, members: data.members.filter((m) => m.id !== id) });
   };
 
   // --- Projets ---
-  const handleOpenEditProject = (project: any) => {
+  const handleOpenEditProject = (project: GrowTechProject) => {
     setEditingProject(project);
     setProjectForm({
-      ...project,
+      title_fr: project.title_fr,
+      title_en: project.title_en,
+      status: project.status,
+      description: project.description_fr,
       stack: Array.isArray(project.stack) ? project.stack.join(', ') : (project.stack || ''),
-      case_study: project.case_study || { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
+      live_url: project.live_url,
+      image_url: project.image_url,
+      case_study: project.case_study_fr || DEFAULT_CASE_STUDY
     });
     setShowProjectForm(true);
   };
 
   const handleSaveProject = () => {
-    const newProjectData = {
-      ...projectForm,
+    const newProjectData: GrowTechProject = {
       id: editingProject ? editingProject.id : Date.now().toString(),
+      title_fr: projectForm.title_fr,
+      title_en: projectForm.title_en,
+      status: projectForm.status,
+      description_fr: projectForm.description,
+      description_en: projectForm.description, // Simplifié pour l'exemple
       stack: projectForm.stack.split(',').map(s => s.trim()).filter(Boolean),
+      live_url: projectForm.live_url,
+      image_url: projectForm.image_url,
+      case_study_fr: projectForm.case_study,
+      case_study_en: projectForm.case_study,
+      is_visible: true,
+      is_featured: false,
+      display_order: data.projects.length,
+      created_at: new Date().toISOString()
     };
 
     if (editingProject) {
-      const updatedProjects = data.projects.map((p: any) => p.id === editingProject.id ? newProjectData : p);
+      const updatedProjects = data.projects.map((p) => p.id === editingProject.id ? newProjectData : p);
       saveData({ ...data, projects: updatedProjects });
     } else {
       saveData({ ...data, projects: [...data.projects, newProjectData] });
@@ -121,12 +159,12 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     setEditingProject(null);
     setProjectForm({
       title_fr: '', title_en: '', status: 'concept', description: '', stack: '', live_url: '', image_url: '',
-      case_study: { step1: {title:'',content:''}, step2: {title:'',content:''}, step3: {title:'',content:''}, step4: {title:'',content:''}, step5: {title:'',content:''} }
+      case_study: DEFAULT_CASE_STUDY
     });
   };
 
   const handleRemoveProject = (id: string) => {
-    saveData({ ...data, projects: data.projects.filter((p: any) => p.id !== id) });
+    saveData({ ...data, projects: data.projects.filter((p) => p.id !== id) });
   };
 
   if (loading) return <div className="flex justify-center p-10"><div className="w-6 h-6 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
@@ -171,7 +209,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               <div className="grid grid-cols-2 gap-3">
                 <input placeholder="Stack (React, Supabase)" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
                 <input placeholder="Lien Live" value={projectForm.live_url} onChange={e => setProjectForm({...projectForm, live_url: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" />
-                <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm" title="Statut du projet" aria-label="Statut du projet">
+                <select value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value as any})} className="bg-[#141430] border border-[#1A1A2E] rounded p-2 text-white text-sm">
                   <option value="concept">Concept</option>
                   <option value="in_progress">En cours</option>
                   <option value="delivered">Livré</option>
@@ -189,14 +227,14 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
 
         {showCaseStudy && (
            <CaseStudyEditor
+            lang="fr"
             data={projectForm.case_study}
-            onChange={(data: any) => setProjectForm({...projectForm, case_study: data})}
+            onChange={(data: CaseStudyData) => setProjectForm({...projectForm, case_study: data})}
             onClose={() => setShowCaseStudy(false)}
             onSave={() => { setShowCaseStudy(false); onToast('success', 'Étude de cas sauvegardée'); }}
           />
         )}
 
-        {/* LISTE DES PROJETS GROW TECH - DESIGN UNIFIÉ */}
         <div className="bg-[#0A0A1E] border border-[#1A1A2E] rounded-2xl overflow-hidden shadow-lg mt-4">
           <div className="flex items-center gap-5 p-4 bg-[#141430] border-b border-[#1A1A2E] text-xs font-bold text-[#4A5568] uppercase tracking-wider">
             <div className="w-14">Image</div>
@@ -205,7 +243,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
             <div className="w-28 text-right">Actions</div>
           </div>
 
-          {data.projects.map((proj: any) => (
+          {data.projects.map((proj: GrowTechProject) => (
              <ProjectRow
               key={proj.id}
               id={proj.id}
@@ -214,12 +252,12 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
               status={proj.status}
               image_url={proj.image_url}
               stack={proj.stack}
-              is_visible={true} // Pour GROW TECH, on suppose visible par défaut ou géré ailleurs
+              is_visible={true}
               is_featured={false}
               onEdit={() => handleOpenEditProject(proj)}
               onDelete={() => handleRemoveProject(proj.id)}
-              onToggleVisible={() => {}} // Pas utilisé ici
-              onToggleFeatured={() => {}} // Pas utilisé ici
+              onToggleVisible={() => {}}
+              onToggleFeatured={() => {}}
             />
           ))}
           {data.projects.length === 0 && <div className="p-12 text-center text-[#4A5568] italic">Aucun projet.</div>}
@@ -250,7 +288,7 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
           )}
         </AnimatePresence>
         <div className="space-y-2">
-          {data.members.map((member: any) => (
+          {data.members.map((member: TeamMember) => (
             <div key={member.id} className="flex items-center justify-between bg-[#141430] p-3 rounded border border-[#1A1A2E]">
               <div className="flex items-center gap-3">
                 {member.image_url ? <img src={member.image_url} alt="" className="w-8 h-8 rounded-full object-cover" /> : <div className="w-8 h-8 rounded-full bg-[#0A0A1E] flex items-center justify-center text-xs font-bold text-[#00BFFF]">{member.initial}</div>}
