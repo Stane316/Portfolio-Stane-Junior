@@ -1,35 +1,33 @@
+/**
+ * Hook pour gérer les notifications toast dans l'admin
+ */
+
 import { useState, useCallback } from 'react';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
-export interface Toast {
+interface Toast {
   id: string;
   type: ToastType;
   message: string;
   duration?: number;
 }
 
-interface UseToastReturn {
-  toasts: Toast[];
-  addToast: (type: ToastType, message: string, duration?: number) => void;
-  removeToast: (id: string) => void;
-}
-
-export const useToast = (): UseToastReturn => {
+export function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((type: ToastType, message: string, duration: number = 4000): void => {
-    const id: string = Date.now().toString() + Math.random().toString(36).substring(7);
-    setToasts((prev: Toast[]) => [...prev, { id, type, message, duration }]);
+  const addToast = useCallback((type: ToastType, message: string, duration = 4000) => {
+    const id = Date.now().toString() + Math.random().toString(36).substring(7);
+    setToasts((prev) => [...prev, { id, type, message, duration }]);
     
-    setTimeout((): void => {
-      setToasts((prev: Toast[]) => prev.filter((t: Toast) => t.id !== id));
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, duration);
   }, []);
 
-  const removeToast = useCallback((id: string): void => {
-    setToasts((prev: Toast[]) => prev.filter((t: Toast) => t.id !== id));
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   return { toasts, addToast, removeToast };
-};
+}

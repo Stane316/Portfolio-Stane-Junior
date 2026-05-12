@@ -16,6 +16,7 @@ import AdminBlog from '../admin/components/AdminBlog';
 import AdminGrowTech from '../admin/components/AdminGrowTech';
 import AdminVision from '../admin/components/AdminVision';
 import AdminProjectsNew from '../admin/components/AdminProjectsNew';
+import GlobalLoadingIndicator from '../admin/components/GlobalLoadingIndicator';
 
 // ... [Tes interfaces Project, Message, etc. restent ici] ...
 interface Project {
@@ -222,42 +223,44 @@ const AdminLayout: React.FC = () => {
   const { title, breadcrumb } = getPageInfo();
 
   return (
-    <div className="min-h-screen bg-[#0A0A1E] flex">
-      <Sidebar unreadCount={dashboardData.unreadMessages} onLogout={handleLogout} isMobileOpen={isMobileOpen} onMobileClose={() => setIsMobileOpen(false)} />
+  <div className="min-h-screen bg-[#0A0A1E] flex">
+    {/* Loading Global */}
+    <GlobalLoadingIndicator isLoading={loading} />
+    
+    <Sidebar unreadCount={dashboardData.unreadMessages} onLogout={handleLogout} isMobileOpen={isMobileOpen} onMobileClose={() => setIsMobileOpen(false)} />
+    
+    <main className="flex-1 flex flex-col min-w-0">
+      <Topbar title={title} breadcrumb={breadcrumb} unreadCount={dashboardData.unreadMessages} onMobileMenuClick={() => setIsMobileOpen(true)} onLogout={handleLogout} />
       
-      <main className="flex-1 flex flex-col min-w-0">
-        <Topbar title={title} breadcrumb={breadcrumb} unreadCount={dashboardData.unreadMessages} onMobileMenuClick={() => setIsMobileOpen(true)} onLogout={handleLogout} />
-        
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6" role="main">
-          <Routes>
-            <Route index element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
-            <Route path="dashboard" element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
-            <Route path="projects" element={<ProjectTable projects={projects} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le projet', `Êtes-vous sûr de vouloir supprimer "${name}" ? Cette action est irréversible.`, onDone, 'danger')} />} />
-            <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le témoignage', `Êtes-vous sûr de vouloir supprimer le témoignage de "${name}" ?`, onDone, 'danger')} />} />
-            <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
-            <Route path="content" element={<AdminContent />} />
-            <Route path="blog" element={<AdminBlog onToast={addToast} />} />
-            <Route path="growtech" element={<AdminGrowTech onToast={addToast} />} />
-            <Route path="projects" element={<AdminProjectsNew onToast={addToast} />} />
-            <Route path="vision" element={<AdminVision onToast={addToast} />} />
-          </Routes>
-        </div>
-      </main>
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6" role="main">
+        <Routes>
+          <Route index element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
+          <Route path="dashboard" element={<AdminDashboard data={dashboardData} loading={loading} onToast={addToast} />} />
+          <Route path="projects" element={<AdminProjectsNew onToast={addToast} />} />
+          <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le témoignage', `Êtes-vous sûr de vouloir supprimer le témoignage de "${name}" ?`, onDone, 'danger')} />} />
+          <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
+          <Route path="content" element={<AdminContent />} />
+          <Route path="blog" element={<AdminBlog onToast={addToast} />} />
+          <Route path="growtech" element={<AdminGrowTech onToast={addToast} />} />
+          <Route path="vision" element={<AdminVision onToast={addToast} />} />
+        </Routes>
+      </div>
+    </main>
 
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
-      <ConfirmDialog
-        isOpen={confirmDialog.isOpen}
-        title={confirmDialog.title}
-        message={confirmDialog.message}
-        onConfirm={() => {
-          confirmDialog.onConfirm();
-          closeConfirm();
-        }}
-        onCancel={closeConfirm}
-        type={confirmDialog.type}
-      />
-    </div>
-  );
+    <ToastContainer toasts={toasts} onRemove={removeToast} />
+    <ConfirmDialog
+      isOpen={confirmDialog.isOpen}
+      title={confirmDialog.title}
+      message={confirmDialog.message}
+      onConfirm={() => {
+        confirmDialog.onConfirm();
+        closeConfirm();
+      }}
+      onCancel={closeConfirm}
+      type={confirmDialog.type}
+    />
+  </div>
+);
 };
 
 const Admin: React.FC = () => {

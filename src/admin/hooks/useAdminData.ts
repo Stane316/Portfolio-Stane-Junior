@@ -3,6 +3,11 @@
  * Réduit la duplication de code dans tous les composants admin
  */
 
+/**
+ * Hook personnalisé pour centraliser la logique de fetch/save/delete
+ * Réduit la duplication de code dans tous les composants admin
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
@@ -11,7 +16,7 @@ interface UseAdminDataOptions<T> {
   orderBy?: string;
   orderAsc?: boolean;
   filter?: { column: string; value: any };
-  selectAll?: boolean; // Pour les tables comme site_config où on veut tout récupérer
+  selectAll?: boolean;
 }
 
 interface UseAdminDataResult<T> {
