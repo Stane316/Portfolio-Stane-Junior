@@ -14,14 +14,17 @@
     <meta name="theme-color" content="#0A0A1E" />
     <meta name="color-scheme" content="dark" />
     
-    <!-- Structured Data JSON-LD -->
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://staneaniambossou.netlify.app/" />
+    
+    <!-- Structured Data JSON-LD — Person -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Stane-Junior Aniambossou",
       "alternateName": "Stane316",
-      "url": "https://stanejunior.netlify.app",
+      "url": "https://staneaniambossou.netlify.app",
       "jobTitle": "Étudiant Développeur & Fondateur d'Agence",
       "worksFor": {
         "@type": "Organization",
@@ -58,13 +61,13 @@
     }
     </script>
 
-    <!-- WebSite Structured Data -->
+    <!-- Structured Data JSON-LD — WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Stane-Junior Aniambossou - Portfolio",
-      "url": "https://stanejunior.netlify.app",
+      "url": "https://staneaniambossou.netlify.app",
       "description": "Portfolio professionnel de Stane-Junior Aniambossou, étudiant développeur et fondateur de GROW TECH",
       "author": {
         "@type": "Person",
@@ -73,21 +76,24 @@
       "inLanguage": ["fr", "en"],
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://stanejunior.netlify.app/#projects",
+        "target": "https://staneaniambossou.netlify.app/projects",
         "query-input": "required name=search_term_string"
       }
     }
     </script>
 
-    <!-- Google Analytics -->
+    <!-- Google Analytics — Remplacer GA_MEASUREMENT_ID par votre vrai ID (G-XXXXXXXXXX) -->
+    <!-- Décommentez le bloc ci-dessous une fois votre ID configuré -->
+    <!--
     <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.hash || '/', send_page_view: true });
-      window.addEventListener('hashchange', function() { gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.hash || '/' }); });
+      gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.pathname, send_page_view: true });
+      window.addEventListener('hashchange', function() { gtag('config', 'GA_MEASUREMENT_ID', { page_path: window.location.pathname }); });
     </script>
+    -->
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -96,26 +102,30 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://stanejunior.netlify.app/" />
+    <meta property="og:url" content="https://staneaniambossou.netlify.app/" />
     <meta property="og:title" content="Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence" />
     <meta property="og:description" content="Portfolio de Stane-Junior Aniambossou, fondateur de GROW TECH. Solutions digitales pour le marché africain." />
+    <meta property="og:image" content="https://staneaniambossou.netlify.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Stane-Junior Aniambossou — Portfolio Professionnel" />
     <meta property="og:site_name" content="Stane-Junior Aniambossou" />
     <meta property="og:locale" content="fr_FR" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://stanejunior.netlify.app/" />
+    <meta property="twitter:url" content="https://staneaniambossou.netlify.app/" />
     <meta property="twitter:title" content="Stane-Junior Aniambossou | Étudiant Développeur & Fondateur d'Agence" />
     <meta property="twitter:description" content="Portfolio de Stane-Junior Aniambossou, fondateur de GROW TECH." />
+    <meta property="twitter:image" content="https://staneaniambossou.netlify.app/og-image.png" />
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=DM+Mono:opsz,wght@9..40,400;500;600&family=Syne:wght@700;800&display=swap" as="style" />
+    <!-- Google Fonts — Optimized loading (single request, no duplicate preload) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:opsz,wght@9..40,400;9..40,500;9..40,600&family=Syne:wght@700;800&display=swap" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e4a5003f462f4e',t:'MTc4MTg5NDI0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

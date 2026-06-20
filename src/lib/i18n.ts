@@ -17,6 +17,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.growtech': 'GROW TECH',
     'nav.vision': 'Vision',
     'nav.contact': 'Contact',
+    'nav.blog': 'Blog',
     
     // Hero Section
     'hero.badge': 'Disponible pour missions freelance',
@@ -227,6 +228,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.growtech': 'GROW TECH',
     'nav.vision': 'Vision',
     'nav.contact': 'Contact',
+    'nav.blog': 'Blog',
     
     // Hero Section
     'hero.badge': 'Available for freelance missions',

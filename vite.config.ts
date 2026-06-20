@@ -14,17 +14,18 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'site.webmanifest'],
+      includeAssets: ['favicon.svg', 'robots.txt', 'og-image.png'],
       manifest: {
-        name: 'Stane-Junior Aniambossou - Portfolio',
+        name: 'Stane-Junior Aniambossou — Portfolio',
         short_name: 'SJ Portfolio',
-        description: 'Portfolio professionnel - Étudiant Développeur & Fondateur de GROW TECH',
+        description: 'Portfolio professionnel — Étudiant Développeur & Fondateur de GROW TECH',
         theme_color: '#0A0A1E',
         background_color: '#0A0A1E',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
+        lang: 'fr',
         icons: [
           {
             src: '/favicon.svg',

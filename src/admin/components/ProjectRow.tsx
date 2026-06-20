@@ -17,6 +17,24 @@ interface ProjectData {
   onEditCaseStudy?: () => void;
 }
 
+// Ajoute l'interface:
+interface ProjectRowProps {
+  id: string;
+  title_fr: string;
+  title_en: string;
+  status: 'delivered' | 'in_progress' | 'concept';
+  image_url?: string;
+  imageComponent?: React.ReactNode;
+  stack?: string[];
+  is_visible: boolean;
+  is_featured: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggleVisible: () => void;
+  onToggleFeatured: () => void;
+  onEditCaseStudy?: () => void;
+}
+
 const ProjectRow: React.FC<ProjectData> = ({
   id, title_fr, title_en, status, image_url, stack,
   is_visible, is_featured, onEdit, onDelete, onToggleVisible, onToggleFeatured, onEditCaseStudy

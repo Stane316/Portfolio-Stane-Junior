@@ -1,11 +1,13 @@
 {
-  "name": "Stane-Junior Aniambossou",
+  "name": "Stane-Junior Aniambossou — Portfolio",
   "short_name": "SJ Portfolio",
-  "description": "Portfolio professionnel - Étudiant Développeur & Fondateur de GROW TECH",
+  "description": "Portfolio professionnel — Étudiant Développeur & Fondateur de GROW TECH",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A1E",
   "theme_color": "#0A0A1E",
+  "lang": "fr",
+  "scope": "/",
   "orientation": "portrait-primary",
   "icons": [
     {

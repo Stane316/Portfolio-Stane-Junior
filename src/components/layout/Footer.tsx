@@ -7,7 +7,7 @@
  * - Social media links
  * - Copyright information
  * 
- * @see /src/contexts/LanguageContext.tsx
+ * Uses i18n translations via useLanguage hook.
  */
 
 import React, { memo } from 'react';
@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const Footer: React.FC = memo(() => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
 
   const socialLinks = [
@@ -52,37 +52,35 @@ const Footer: React.FC = memo(() => {
   ];
 
   const footerLinks = [
-    { href: '#hero', label: isFr ? 'Accueil' : 'Home' },
-    { href: '#about', label: isFr ? 'À propos' : 'About' },
-    { href: '#projects', label: isFr ? 'Projets' : 'Projects' },
-    { href: '#contact', label: isFr ? 'Contact' : 'Contact' },
-    { href: '/blog', label: isFr ? 'Blog' : 'Blog' },
+    { href: '#hero', label: t('nav.home') },
+    { href: '#about', label: t('nav.about') },
+    { href: '#projects', label: t('nav.projects') },
+    { href: '#contact', label: t('nav.contact') },
+    { href: '/blog', label: t('nav.blog') || 'Blog' },
   ];
 
   return (
     <footer className="relative z-10 glass border-t border-[rgba(0,191,255,0.15)]" role="contentinfo">
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="font-heading text-2xl text-white">SJ</span>
               <span className="w-2 h-2 bg-[#00BFFF] rounded-full" />
             </div>
             <p className="text-[#A8B4C8] text-sm">
-              {lang === 'fr' 
-                ? "Étudiant Développeur & Fondateur d'Agence"
-                : 'Developer Student & Agency Founder'}
+              {t('footer.tagline')}
             </p>
             <p className="text-[#4A5568] text-xs">
-              {lang === 'fr' 
-                ? 'Fondateur de GROW TECH · Abomey-Calavi, Bénin'
-                : 'Founder of GROW TECH · Abomey-Calavi, Benin'}
+              {t('footer.founder')}
             </p>
           </div>
 
+          {/* Navigation */}
           <div>
             <h4 className="font-heading text-lg mb-4">
-              {lang === 'fr' ? 'Navigation' : 'Navigation'}
+              {isFr ? 'Navigation' : 'Navigation'}
             </h4>
             <ul className="space-y-2">
               {footerLinks.map((link) => (
@@ -98,9 +96,10 @@ const Footer: React.FC = memo(() => {
             </ul>
           </div>
 
+          {/* Social */}
           <div>
             <h4 className="font-heading text-lg mb-4">
-              {lang === 'fr' ? 'Suivez-moi' : 'Follow me'}
+              {isFr ? 'Suivez-moi' : 'Follow me'}
             </h4>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -119,6 +118,7 @@ const Footer: React.FC = memo(() => {
           </div>
         </div>
 
+        {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-[rgba(0,191,255,0.15)] text-center">
           <motion.p
             initial={{ opacity: 0 }}
@@ -126,9 +126,7 @@ const Footer: React.FC = memo(() => {
             viewport={{ once: true }}
             className="text-[#4A5568] text-sm"
           >
-            © 2025 Stane-Junior Aniambossou. {lang === 'fr' 
-              ? 'Tous droits réservés.' 
-              : 'All rights reserved.'}
+            © {new Date().getFullYear()} Stane-Junior Aniambossou. {t('footer.rights')}
           </motion.p>
         </div>
       </div>
