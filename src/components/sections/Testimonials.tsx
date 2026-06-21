@@ -2,6 +2,7 @@
  * Testimonials Section Component
  * 
  * Displays testimonials loaded from Supabase.
+ * P-15 FIX: Uses SkeletonTestimonials instead of simple spinner
  */
 
 import React, { useState } from 'react';
@@ -9,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 import SectionNumber from '../../components/ui/SectionNumber';
+import { SkeletonTestimonials } from '../../components/ui/Skeleton';
 
 // Composant Modal Vidéo
 const VideoModal: React.FC<{ url: string; onClose: () => void }> = ({ url, onClose }) => {
@@ -33,8 +35,8 @@ const VideoModal: React.FC<{ url: string; onClose: () => void }> = ({ url, onClo
       onClick={onClose}
     >
       <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-[#141430]">
-        <button onClick={onClose} className="absolute top-4 right-4 z-10 text-white bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-80 transition-colors">
-          ✕
+        <button onClick={onClose} className="absolute top-4 right-4 z-10 text-white bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-80 transition-colors" aria-label="Fermer">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <iframe 
           src={getEmbedUrl(url)} 
@@ -55,9 +57,19 @@ const Testimonials: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="py-24 lg:py-32 bg-[#0A0A1E]">
-        <div className="container-custom text-center">
-          <div className="w-8 h-8 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin mx-auto" />
+      <section className="py-24 lg:py-32 bg-[#0A0A1E] relative overflow-hidden">
+        <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
+          <div className="mb-16 lg:mb-24">
+            <div className="relative">
+              <h2 className="text-5xl sm:text-7xl lg:text-8xl font-heading text-white tracking-tighter relative z-10">
+                TÉMOIGNAGES
+              </h2>
+              <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
+                {isFr ? 'Ce que disent ceux qui m\'ont fait confiance.' : 'What those who trusted me say.'}
+              </p>
+            </div>
+          </div>
+          <SkeletonTestimonials />
         </div>
       </section>
     );
@@ -107,13 +119,13 @@ const Testimonials: React.FC = () => {
                       <img src={t.photo_url} alt={t.person_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-[#1A1A2E] to-[#0A0A1E] flex items-center justify-center">
-                        <span className="text-4xl opacity-30">🎥</span>
+                        <svg className="w-10 h-10 text-[#4A5568] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                       </div>
                     )}
                     {/* Overlay Play */}
                     <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="w-16 h-16 rounded-full bg-[#00BFFF] bg-opacity-90 flex items-center justify-center text-black pl-1 shadow-lg transform group-hover:scale-110 transition-transform">
-                        ▶
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                       </div>
                     </div>
                   </div>

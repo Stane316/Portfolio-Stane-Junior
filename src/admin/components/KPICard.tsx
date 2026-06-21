@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * KPICard — Admin dashboard metric card
+ *
+ * P-13 FIX: Replaced emoji icons with SVG icons for consistency
+ */
+
 interface KPICardProps {
   icon: React.ReactNode;
   value: number;
@@ -46,15 +52,15 @@ const KPICard: React.FC<KPICardProps> = ({ icon, value, label, color, delay = 0 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
-      className="relative overflow-hidden rounded-xl border border-[rgba(0,191,255,0.15)] bg-[#141430] bg-opacity-50 backdrop-blur-sm p-5 group hover:border-[rgba(0,191,255,0.3)] transition-all duration-300"
+      className="kpi-card relative overflow-hidden rounded-xl border border-[rgba(0,191,255,0.15)] bg-[#141430] bg-opacity-50 backdrop-blur-sm p-5 group hover:border-[rgba(0,191,255,0.3)] transition-all duration-300"
     >
       {/* Background gradient */}
       <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${colors.bg} opacity-10 rounded-bl-full group-hover:opacity-20 transition-opacity`} />
       
       <div className="relative">
         {/* Icon */}
-        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.bg} flex items-center justify-center mb-3`}>
-          <span className="text-white">{icon}</span>
+        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colors.bg} flex items-center justify-center mb-3`} aria-hidden="true">
+          {icon}
         </div>
         
         {/* Value */}

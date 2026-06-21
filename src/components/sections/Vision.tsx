@@ -1,78 +1,118 @@
-/**
- * Vision Section Component
- * 
- * Shows future projects and ideas:
- * - FacturaPro (OHADA invoicing SaaS)
- * - BeninPro (professional marketplace)
- * 
- * Demonstrates product thinking and market research.
- * 
- * @see /src/contexts/LanguageContext.tsx
- */
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import SectionNumber from '../../components/ui/SectionNumber';
+import { SkeletonVision } from '../../components/ui/Skeleton';
 
-interface VisionProject {
-  title: string;
-  subtitle: string;
-  description: string;
-  features: string[];
-  status: 'concept' | 'development' | 'beta';
-  icon: string;
+/**
+ * Vision Section — Public display of future projects/concepts
+ *
+ * P-15 FIX: Uses SkeletonVision instead of simple spinner
+ */
+
+interface VisionItem {
+  id: string;
+  title_fr: string;
+  title_en: string;
+  description_fr: string;
+  description_en: string;
+  status: 'concept' | 'in_progress' | 'paused';
+  image_url: string;
+  order: number;
+  created_at: string;
 }
+
+// ============================================================
+// Fallback data — when Supabase is unavailable
+// ============================================================
+
+const FALLBACK_VISIONS: VisionItem[] = [
+  {
+    id: '1',
+    title_fr: 'FacturaPro',
+    title_en: 'FacturaPro',
+    description_fr: "SaaS de facturation conçu pour les entrepreneurs d'Afrique francophone. Résout le problème de gestion des factures observé dans les agences Mobile Money.",
+    description_en: 'Invoicing SaaS designed for entrepreneurs in French-speaking Africa. Solves the invoicing management problem observed in Mobile Money agencies.',
+    status: 'concept',
+    image_url: '',
+    order: 1,
+    created_at: '',
+  },
+  {
+    id: '2',
+    title_fr: 'BeninPro',
+    title_en: 'BeninPro',
+    description_fr: 'Marketplace dédiée aux professionnels et services béninois. Connecte clients et prestataires sur une plateforme adaptée au contexte local.',
+    description_en: 'Marketplace dedicated to Beninese professionals and services. Connects clients and providers on a platform adapted to the local context.',
+    status: 'in_progress',
+    image_url: '',
+    order: 2,
+    created_at: '',
+  },
+  {
+    id: '3',
+    title_fr: 'EduConnect',
+    title_en: 'EduConnect',
+    description_fr: "Plateforme de mentorat et de partage de ressources pour les étudiants en informatique de l'UAC. Facilite l'entraide et l'apprentissage collaboratif.",
+    description_en: 'Mentorship and resource sharing platform for UAC computer science students. Facilitates peer support and collaborative learning.',
+    status: 'concept',
+    image_url: '',
+    order: 3,
+    created_at: '',
+  },
+];
+
+// ============================================================
+// Component
+// ============================================================
 
 const Vision: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
+  const [visions, setVisions] = useState<VisionItem[]>(FALLBACK_VISIONS);
+  const [loading, setLoading] = useState(true);
 
-  const projects: VisionProject[] = [
-    {
-      title: 'FacturaPro',
-      subtitle: isFr ? 'Facturation OHADA' : 'OHADA Invoicing',
-      description: isFr 
-        ? 'SaaS de facturation conçu pour les entrepreneurs d\'Afrique francophone. Résout le problème de gestion des factures observé dans les agences Mobile Money.'
-        : 'Invoicing SaaS designed for entrepreneurs in French-speaking Africa. Solves the invoicing management problem observed in Mobile Money agencies.',
-      features: ['Conformité OHADA', 'Multi-devises', 'Facture PDF', 'Suivi paiements'],
-      status: 'concept',
-      icon: '📄',
-    },
-    {
-      title: 'BeninPro',
-      subtitle: isFr ? 'Marketplace Pro' : 'Pro Marketplace',
-      description: isFr
-        ? 'Marketplace dédiée aux professionnels et services béninois. Connecte clients et prestataires sur une plateforme adaptée au contexte local.'
-        : 'Marketplace dedicated to Beninese professionals and services. Connects clients and providers on a platform adapted to the local context.',
-      features: ['Paiement Mobile Money', 'Géolocalisation', 'Avis vérifiés', 'Chat intégré'],
-      status: 'development',
-      icon: '🌍',
-    },
-    {
-      title: 'EduConnect',
-      subtitle: isFr ? 'Éducation Numérique' : 'Digital Education',
-      description: isFr
-        ? 'Plateforme de mentorat et de partage de ressources pour les étudiants en informatique de l\'UAC. Facilite l\'entraide et l\'apprentissage collaboratif.'
-        : 'Mentorship and resource sharing platform for UAC computer science students. Facilitates peer support and collaborative learning.',
-      features: ['Forum étudiant', 'Ressources cours', 'Mentorat', 'Projets open source'],
-      status: 'concept',
-      icon: '🎓',
-    },
-  ];
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchVisions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('vision_items')
+          .select('*')
+          .order('order', { ascending: true });
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setVisions(data as VisionItem[]);
+        }
+      } catch (err) {
+        console.error('Error fetching visions:', err);
+        // Keep fallback data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVisions();
+  }, []);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'development': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
-      case 'beta': return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
+      case 'in_progress': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
+      case 'paused': return 'bg-orange-500/20 text-orange-400 border-orange-500/50';
       default: return 'bg-purple-500/20 text-purple-400 border-purple-500/50';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'development': return isFr ? 'En développement' : 'In Development';
-      case 'beta': return 'Beta';
+      case 'in_progress': return isFr ? 'En développement' : 'In Development';
+      case 'paused': return isFr ? 'En pause' : 'Paused';
       default: return isFr ? 'Concept' : 'Concept';
     }
   };
@@ -94,52 +134,59 @@ const Vision: React.FC = () => {
           </div>
         </div>
 
-        {/* Grille des Projets */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15, duration: 0.6 }}
-              className="group relative bg-[#141430] border border-[#1A1A2E] rounded-3xl p-8 lg:p-10 overflow-hidden hover:border-[#00BFFF] transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,191,255,0.15)]"
-            >
-              {/* Background Glow Effect */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#00BFFF] rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 -mr-16 -mt-16" />
+        {/* P-15 FIX: Skeleton loading */}
+        {loading ? (
+          <SkeletonVision />
+        ) : (
+          /* Grille des Projets */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {visions.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15, duration: 0.6 }}
+                className="group relative bg-[#141430] border border-[#1A1A2E] rounded-3xl p-8 lg:p-10 overflow-hidden hover:border-[#00BFFF] transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,191,255,0.15)]"
+              >
+                {/* Background Glow Effect */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00BFFF] rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 -mr-16 -mt-16" />
 
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Header Carte */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <span className="text-5xl">{project.icon}</span>
-                    <div>
-                      <h3 className="text-2xl lg:text-3xl font-heading text-white">{project.title}</h3>
-                      <p className="text-[#00BFFF] text-sm font-medium uppercase tracking-widest">{project.subtitle}</p>
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Header Carte */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      {item.image_url ? (
+                        <img 
+                          src={item.image_url} 
+                          alt={isFr ? item.title_fr : item.title_en}
+                          className="w-16 h-16 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-[#0A0A1E] border border-[#1A1A2E] flex items-center justify-center">
+                          <svg className="w-8 h-8 text-[#00BFFF] opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-2xl lg:text-3xl font-heading text-white">
+                          {isFr ? item.title_fr : item.title_en}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyle(project.status)}`}>
-                    {getStatusLabel(project.status)}
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className="text-[#A8B4C8] leading-relaxed mb-8 flex-1">
-                  {project.description}
-                </p>
-
-                {/* Features List */}
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  {project.features.map((feature, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-[#0A0A1E] border border-[#1A1A2E] rounded-lg text-[#A8B4C8] text-xs font-medium">
-                      {feature}
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyle(item.status)}`}>
+                      {getStatusLabel(item.status)}
                     </span>
-                  ))}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-[#A8B4C8] leading-relaxed mb-8 flex-1">
+                    {isFr ? item.description_fr : item.description_en}
+                  </p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

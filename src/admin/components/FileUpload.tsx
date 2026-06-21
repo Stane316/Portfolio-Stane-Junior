@@ -1,6 +1,12 @@
 import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
+/**
+ * FileUpload — Drag & drop file upload to Supabase Storage
+ *
+ * P-13 FIX: Replaced 📁 emoji with SVG icon
+ */
+
 interface FileUploadProps {
   label: string;
   bucket: string;
@@ -98,8 +104,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
             onClick={() => onChange('')}
             className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
             type="button"
+            aria-label="Supprimer l'image"
           >
-            ✕
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
       )}
@@ -134,7 +141,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
           </div>
         ) : (
           <div className="text-center pointer-events-none">
-            <span className="text-2xl mb-2 block">📁</span>
+            {/* P-13 FIX: SVG icon replacing 📁 emoji */}
+            <svg className="w-8 h-8 mx-auto mb-2 text-[#4A5568]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
             <p className="text-sm text-[#A8B4C8]">
               Glisser une image ici ou <span className="text-[#00BFFF] underline">parcourir</span>
             </p>

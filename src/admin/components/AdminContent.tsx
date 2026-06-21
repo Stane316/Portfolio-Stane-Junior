@@ -1,5 +1,16 @@
-import React, { useEffect, useState } from 'react';
+/**
+ * AdminContent — Manages all site_config content (Hero, About, Footer, Links)
+ *
+ * Features:
+ * - Debounced auto-save (800ms) via configRef for stale-closure safety (P-04 FIX)
+ * - Immediate save for file uploads
+ * - P-13 FIX: Replaced emoji in labels (📸, 👤, 📄) with text-only labels
+ * - P-05 FIX: Unsaved changes detection with beforeunload + router blocking
+ */
+
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { useUnsavedChanges } from '../hooks/useUnsavedChanges';
 import ImageUploader from '../ui/ImageUploader';
 import FileUpload from './FileUpload';
 
@@ -18,6 +29,20 @@ const AdminContent: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'footer' | 'links'>('hero');
 
+  // P-05: Unsaved changes detection
+  const { isBlocked, proceed, cancel } = useUnsavedChanges();
+
+  // Track whether any field has been modified since last save
+  const dirtyRef = useRef(false);
+  const markDirty = useCallback(() => {
+    if (!dirtyRef.current) {
+      dirtyRef.current = true;
+    }
+  }, []);
+
+  // Debounce refs — store timeout IDs per config key+field
+  const debounceRefs = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
   const fetchConfig = async () => {
     try {
       setLoading(true);
@@ -26,6 +51,8 @@ const AdminContent: React.FC = () => {
       if (error) throw error;
       const configMap = (data || []).reduce((acc, item) => { acc[item.key] = item; return acc; }, {} as Record<string, SiteConfig>);
       setConfig(configMap);
+      // Data just loaded = no dirty state
+      dirtyRef.current = false;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erreur de chargement';
       setError(message);
@@ -36,11 +63,74 @@ const AdminContent: React.FC = () => {
 
   useEffect(() => { fetchConfig(); }, []);
 
-  const handleSave = async (key: string, field: 'value_fr' | 'value_en' | 'value_generic', value: string) => {
+  // Cleanup debounce timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(debounceRefs.current).forEach(clearTimeout);
+    };
+  }, []);
+
+  // ---- Debounced save: updates local state immediately, saves to Supabase after 800ms of inactivity ----
+  // P-04 FIX: Use functional config access via ref to avoid stale closure
+  const configRef = useRef(config);
+  useEffect(() => { configRef.current = config; }, [config]);
+
+  const handleSave = useCallback((key: string, field: 'value_fr' | 'value_en' | 'value_generic', value: string) => {
+    // 1. Optimistic local update (instant)
+    setConfig(prev => ({
+      ...prev,
+      [key]: { ...(prev[key] || { key }), [field]: value } as SiteConfig,
+    }));
+
+    // 2. Mark as dirty
+    markDirty();
+
+    // 3. Clear previous debounce for this key+field
+    const debounceKey = `${key}_${field}`;
+    if (debounceRefs.current[debounceKey]) {
+      clearTimeout(debounceRefs.current[debounceKey]);
+    }
+
+    // 4. Debounce the Supabase upsert — reads latest config from ref
+    debounceRefs.current[debounceKey] = setTimeout(async () => {
+      try {
+        setSaving(true);
+        if (!isSupabaseConfigured()) {
+          setSuccess('Sauvegardé localement');
+          setTimeout(() => setSuccess(''), 3000);
+          setSaving(false);
+          return;
+        }
+        // Read latest config from ref to avoid stale values
+        const currentConfig = configRef.current;
+        const existing = currentConfig[key];
+        const { error } = await supabase.from('site_config').upsert({
+          key,
+          value_fr: field === 'value_fr' ? value : existing?.value_fr || '',
+          value_en: field === 'value_en' ? value : existing?.value_en || '',
+          value_generic: field === 'value_generic' ? value : existing?.value_generic || '',
+        });
+        if (error) throw error;
+        // After save, mark as clean
+        dirtyRef.current = false;
+        setSuccess('Sauvegardé !');
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Erreur de sauvegarde';
+        setError(message);
+      } finally {
+        setSaving(false);
+      }
+    }, 800);
+  }, [markDirty]);
+
+  // ---- Immediate save for image/file uploads (no debounce — these are explicit actions) ----
+  const handleImmediateSave = useCallback(async (key: string, field: 'value_fr' | 'value_en' | 'value_generic', value: string) => {
     try {
       setSaving(true);
+      markDirty();
       if (!isSupabaseConfigured()) {
-        setConfig({ ...config, [key]: { ...(config[key] || { key }), [field]: value } });
+        setConfig(prev => ({ ...prev, [key]: { ...(prev[key] || { key }), [field]: value } as SiteConfig }));
         setSuccess('Sauvegardé localement');
         setTimeout(() => setSuccess(''), 3000);
         setSaving(false);
@@ -54,7 +144,9 @@ const AdminContent: React.FC = () => {
         value_generic: field === 'value_generic' ? value : existing?.value_generic || '',
       });
       if (error) throw error;
-      setConfig({ ...config, [key]: { ...existing, [field]: value } as SiteConfig });
+      setConfig(prev => ({ ...prev, [key]: { ...existing, [field]: value } as SiteConfig }));
+      // After save, mark as clean
+      dirtyRef.current = false;
       setSuccess('Sauvegardé !');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err: unknown) {
@@ -63,7 +155,7 @@ const AdminContent: React.FC = () => {
     } finally {
       setSaving(false);
     }
-  };
+  }, [config, markDirty]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
@@ -80,8 +172,27 @@ const AdminContent: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-display font-bold text-white">Gestion du contenu</h2>
-        {saving && <span className="text-[#00BFFF] text-sm animate-pulse">Sauvegarde...</span>}
+        {saving && <span className="text-[#00BFFF] text-sm animate-pulse flex items-center gap-2"><div className="w-3 h-3 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /> Sauvegarde...</span>}
       </div>
+
+      {/* P-05: Unsaved changes navigation blocker */}
+      {isBlocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Modifications non sauvegardées">
+          <div className="bg-[#141430] border border-[rgba(0,191,255,0.3)] rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-yellow-500 bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              </div>
+              <h3 className="text-lg font-bold text-white">Modifications non sauvegardées</h3>
+            </div>
+            <p className="text-[#A8B4C8] text-sm mb-6">Vous avez des modifications en cours de sauvegarde. Quitter cette page pourrait entraîner une perte de données.</p>
+            <div className="flex gap-3">
+              <button onClick={cancel} className="btn-secondary text-sm py-2 px-4">Rester</button>
+              <button onClick={proceed} className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition-colors">Quitter sans sauvegarder</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && <div className="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400" role="alert">{error}</div>}
       {success && <div className="p-4 bg-green-500 bg-opacity-20 border border-green-500 rounded-lg text-green-400" role="alert">{success}</div>}
@@ -116,27 +227,27 @@ const AdminContent: React.FC = () => {
             </h3>
             <div className="space-y-4">
               <ImageUploader
-                label="📸 Photo professionnelle (Hero)"
+                label="Photo professionnelle (Hero)"
                 currentUrl={config['hero_image_url']?.value_generic || ''}
-                onChange={(url) => handleSave('hero_image_url', 'value_generic', url)}
-                onRemove={() => handleSave('hero_image_url', 'value_generic', '')}
+                onChange={(url) => handleImmediateSave('hero_image_url', 'value_generic', url)}
+                onRemove={() => handleImmediateSave('hero_image_url', 'value_generic', '')}
                 folder="hero"
                 maxSize={5}
               />
               <FileUpload
-                label="👤 Photo À propos"
+                label="Photo À propos"
                 bucket="portfolio-assets"
                 folder="about"
                 currentUrl={config['about_image_url']?.value_generic || ''}
-                onChange={(url) => handleSave('about_image_url', 'value_generic', url)}
+                onChange={(url) => handleImmediateSave('about_image_url', 'value_generic', url)}
                 maxSizeMB={5}
               />
               <FileUpload
-                label="📄 CV (PDF)"
+                label="CV (PDF)"
                 bucket="portfolio-assets"
                 folder="cv"
                 currentUrl={config['cv_url']?.value_generic || ''}
-                onChange={(url) => handleSave('cv_url', 'value_generic', url)}
+                onChange={(url) => handleImmediateSave('cv_url', 'value_generic', url)}
                 accept=".pdf"
                 maxSizeMB={10}
               />
@@ -255,6 +366,8 @@ const AdminContent: React.FC = () => {
 
 // ============================================================
 // Composant réutilisable pour les champs de configuration
+// With debounced save — updates local state on every keystroke
+// but only persists to Supabase after debounce (handled by parent)
 // ============================================================
 
 interface ConfigFieldProps {
@@ -289,7 +402,7 @@ const ConfigField: React.FC<ConfigFieldProps> = ({ config, label, configKey, fie
           value={value}
           onChange={(e) => onSave(configKey, field, e.target.value)}
           rows={compact ? 2 : 3}
-          className={`w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] ${compact ? 'text-xs' : ''}`}
+          className={`w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm resize-none focus:outline-none focus:border-[#00BFFF] transition-colors ${compact ? 'text-xs' : ''}`}
         />
       ) : (
         <input
@@ -298,7 +411,7 @@ const ConfigField: React.FC<ConfigFieldProps> = ({ config, label, configKey, fie
           type={inputType}
           value={value}
           onChange={(e) => onSave(configKey, field, e.target.value)}
-          className={`w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] ${compact ? 'text-xs' : ''}`}
+          className={`w-full px-3 py-2 bg-[#141430] border border-[rgba(0,191,255,0.15)] rounded-lg text-white text-sm focus:outline-none focus:border-[#00BFFF] transition-colors ${compact ? 'text-xs' : ''}`}
         />
       )}
     </div>

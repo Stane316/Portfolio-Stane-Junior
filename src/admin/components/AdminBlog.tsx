@@ -4,6 +4,12 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import FileUpload from './FileUpload';
 import BilingualInput from './BilingualInput';
 
+/**
+ * AdminBlog — CRUD for blog posts
+ *
+ * P-13 FIX: Replaced emoji (✅, 📄, ✏️, 🗑, 📝) with SVG icons
+ */
+
 interface BlogPost {
   id: string;
   title_fr: string;
@@ -30,7 +36,6 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  // Formulaire
   const [formData, setFormData] = useState({
     title_fr: '',
     title_en: '',
@@ -61,7 +66,6 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
 
   useEffect(() => { fetchPosts(); }, []);
 
-  // Génération automatique du slug
   const generateSlug = (text: string) => {
     return text
       .toLowerCase()
@@ -74,7 +78,6 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
   const handleTitleChange = (field: 'title_fr' | 'title_en', value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      // Si on édite le titre FR et que le slug est vide ou ressemble au titre FR précédent, on met à jour le slug
       if (field === 'title_fr' && (!prev.slug || prev.slug === generateSlug(prev.title_fr))) {
         newData.slug = generateSlug(value);
       }
@@ -190,7 +193,6 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
               <h3 className="text-lg font-bold text-white mb-4">{editingId ? 'Modifier l\'article' : 'Nouvel article'}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 
-                {/* Upload Image */}
                 <FileUpload 
                   label="Image de couverture"
                   bucket="portfolio-assets"
@@ -208,7 +210,7 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                        label="Titre de l'article"
                        valueFr={formData.title_fr}
                        valueEn={formData.title_en}
-                       onChangeFr={(val) => setFormData({...formData, title_fr: val})}
+                       onChangeFr={(val) => handleTitleChange('title_fr', val)}
                        onChangeEn={(val) => setFormData({...formData, title_en: val})}
                        type="input"
                     />
@@ -304,7 +306,8 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                   <img src={post.image_url} alt={post.title_fr} className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
                 ) : (
                   <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">📝</span>
+                    {/* P-13 FIX: SVG icon replacing 📝 emoji */}
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
@@ -321,11 +324,22 @@ const AdminBlog: React.FC<AdminBlogProps> = ({ onToast }) => {
                   <p className="text-[#4A5568] text-[10px] mt-1 font-mono">/blog/{post.slug}</p>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
-                  <button onClick={() => togglePublish(post.id, post.is_published)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF]" title={post.is_published ? 'Dépublier' : 'Publier'}>
-                    {post.is_published ? '✅' : '📄'}
+                  {/* Toggle publish — P-13 FIX: SVG icons replacing ✅/📄 */}
+                  <button onClick={() => togglePublish(post.id, post.is_published)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" title={post.is_published ? 'Dépublier' : 'Publier'} aria-label={post.is_published ? 'Dépublier l\'article' : 'Publier l\'article'}>
+                    {post.is_published ? (
+                      <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    )}
                   </button>
-                  <button onClick={() => handleEdit(post)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF]">✏️</button>
-                  <button onClick={() => handleDelete(post.id, post.title_fr)} className="p-1.5 text-[#A8B4C8] hover:text-red-400">🗑</button>
+                  {/* Edit — P-13 FIX: SVG icon replacing ✏️ */}
+                  <button onClick={() => handleEdit(post)} className="p-1.5 text-[#A8B4C8] hover:text-[#00BFFF] transition-colors" aria-label="Modifier l'article">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </button>
+                  {/* Delete — P-13 FIX: SVG icon replacing 🗑 */}
+                  <button onClick={() => handleDelete(post.id, post.title_fr)} className="p-1.5 text-[#A8B4C8] hover:text-red-400 transition-colors" aria-label="Supprimer l'article">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
                 </div>
               </div>
             </div>

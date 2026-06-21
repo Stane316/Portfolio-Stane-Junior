@@ -3,6 +3,12 @@ import KPICard from './KPICard';
 import EmptyState from './EmptyState';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
+/**
+ * AdminDashboard — Admin overview with KPIs and recent activity
+ *
+ * P-13 FIX: Replaced emoji icons with SVG icons
+ */
+
 interface DashboardData {
   projects: number;
   testimonials: number;
@@ -17,6 +23,37 @@ interface AdminDashboardProps {
   loading: boolean;
   onToast: (type: 'success' | 'error' | 'info' | 'warning', message: string) => void;
 }
+
+// SVG Icon components for KPI cards
+const IconFolder: React.FC = () => (
+  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+  </svg>
+);
+
+const IconChat: React.FC = () => (
+  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
+);
+
+const IconMail: React.FC = () => (
+  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const IconBell: React.FC = () => (
+  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+  </svg>
+);
+
+const IconInbox: React.FC = () => (
+  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+  </svg>
+);
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ data, loading, onToast }) => {
   const markAsRead = async (id: string) => {
@@ -48,10 +85,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ data, loading, onToast 
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard icon="📁" value={data.projects} label="Projets publiés" color="cyan" delay={0} />
-        <KPICard icon="💬" value={data.testimonials} label="Témoignages actifs" color="blue" delay={0.1} />
-        <KPICard icon="📧" value={data.messages} label="Messages reçus" color="green" delay={0.2} />
-        <KPICard icon="🔔" value={data.unreadMessages} label="Messages non lus" color={data.unreadMessages > 0 ? 'red' : 'yellow'} delay={0.3} />
+        <KPICard icon={<IconFolder />} value={data.projects} label="Projets publiés" color="cyan" delay={0} />
+        <KPICard icon={<IconChat />} value={data.testimonials} label="Témoignages actifs" color="blue" delay={0.1} />
+        <KPICard icon={<IconMail />} value={data.messages} label="Messages reçus" color="green" delay={0.2} />
+        <KPICard icon={<IconBell />} value={data.unreadMessages} label="Messages non lus" color={data.unreadMessages > 0 ? 'red' : 'yellow'} delay={0.3} />
       </div>
 
       {/* Recent Messages */}
@@ -59,7 +96,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ data, loading, onToast 
         <h3 className="text-lg font-display font-bold text-white mb-4">Derniers messages</h3>
         {data.recentMessages.length === 0 ? (
           <EmptyState
-            icon="📭"
+            icon={<IconInbox />}
             title="Aucun message"
             description="Votre portfolio est en ligne et prêt à recevoir des contacts."
           />
@@ -94,7 +131,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ data, loading, onToast 
         <h3 className="text-lg font-display font-bold text-white mb-4">Derniers projets</h3>
         {data.recentProjects.length === 0 ? (
           <EmptyState
-            icon="📁"
+            icon={<IconFolder />}
             title="Aucun projet"
             description="Commencez par créer votre premier projet."
           />

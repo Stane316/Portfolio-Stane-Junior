@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
@@ -27,10 +27,22 @@ const BlogArticle: React.FC = () => {
   
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        // P-12 FIX: If slug is missing or Supabase not configured, show 404
+        if (!slug) {
+          setNotFound(true);
+          return;
+        }
+
+        if (!isSupabaseConfigured()) {
+          setNotFound(true);
+          return;
+        }
+
         const { data, error } = await supabase
           .from('blog_posts')
           .select('*')
@@ -38,16 +50,32 @@ const BlogArticle: React.FC = () => {
           .eq('is_published', true)
           .single();
         
-        if (error) throw error;
+        if (error) {
+          // PGRST116 = no rows returned (not found)
+          if (error.code === 'PGRST116' || error.message?.includes('0 rows')) {
+            setNotFound(true);
+          } else {
+            console.error('Erreur fetch post:', error);
+            setNotFound(true);
+          }
+          return;
+        }
+
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
+
         setPost(data as BlogPost);
       } catch (err) {
         console.error('Erreur fetch post:', err);
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
     };
 
-    if (slug) fetchPost();
+    fetchPost();
   }, [slug]);
 
   if (loading) {
@@ -58,11 +86,66 @@ const BlogArticle: React.FC = () => {
     );
   }
 
-  if (!post) {
+  // P-12 FIX: Redirect to NotFound route instead of inline fallback
+  if (notFound || !post) {
     return (
-      <div className="min-h-screen bg-[#0A0A1E] flex flex-col items-center justify-center gap-6">
-        <h1 className="text-4xl text-white font-bold">Article non trouvé</h1>
-        <Link to="/blog" className="text-[#00BFFF] hover:underline">← Retour au blog</Link>
+      <div className="min-h-screen bg-[#0A0A1E]">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center gap-8 pt-32 pb-24">
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
+            <span className="text-8xl font-heading text-[#00BFFF] block mb-4">404</span>
+            <div className="h-1 w-24 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mx-auto rounded-full mb-8" />
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-3xl text-white font-display"
+          >
+            {isFr ? 'Article non trouvé' : 'Article not found'}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-[#A8B4C8] text-lg text-center max-w-md"
+          >
+            {isFr
+              ? "L'article que vous recherchez n'existe pas ou a été supprimé."
+              : "The article you're looking for doesn't exist or has been removed."}
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            <Link
+              to="/blog"
+              className="btn-primary inline-flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              {isFr ? 'Retour au blog' : 'Back to blog'}
+            </Link>
+            <Link
+              to="/"
+              className="btn-secondary inline-flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              {isFr ? "Retour à l'accueil" : 'Back to home'}
+            </Link>
+          </motion.div>
+        </div>
+        <Footer />
       </div>
     );
   }

@@ -9,23 +9,34 @@ interface FormFieldProps {
   type?: 'text' | 'email' | 'url' | 'number' | 'textarea' | 'select';
   options?: { value: string; label: string }[];
   required?: boolean;
+  id?: string;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
-  label, value, onChange, error, placeholder, type = 'text', options, required
+  label,
+  value,
+  onChange,
+  error,
+  placeholder,
+  type = 'text',
+  options,
+  required = false,
+  id,
 }) => {
-  const inputClasses = `w-full bg-[#141430] border rounded p-2 text-white text-sm focus:outline-none focus:border-[#00BFFF] transition-colors ${error ? 'border-red-500' : 'border-[#1A1A2E]'
-    }`;
+  const inputClasses = `w-full bg-[#141430] border rounded p-2 text-white text-sm focus:outline-none focus:border-[#00BFFF] transition-colors ${
+    error ? 'border-red-500' : 'border-[#1A1A2E]'
+  }`;
 
   return (
     <div className="space-y-1">
-      <label className="block text-sm text-white">
+      <label htmlFor={id} className="block text-sm text-white">
         {label}
         {required && <span className="text-red-400 ml-1">*</span>}
       </label>
 
       {type === 'textarea' ? (
         <textarea
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
@@ -34,6 +45,7 @@ const FormField: React.FC<FormFieldProps> = ({
         />
       ) : type === 'select' && options ? (
         <select
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={inputClasses}
@@ -44,6 +56,7 @@ const FormField: React.FC<FormFieldProps> = ({
         </select>
       ) : (
         <input
+          id={id}
           type={type === 'number' ? 'number' : type === 'email' ? 'email' : type === 'url' ? 'url' : 'text'}
           value={value}
           onChange={(e) => onChange(e.target.value)}

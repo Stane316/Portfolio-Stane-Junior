@@ -111,7 +111,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
 
       {filteredMessages.length === 0 ? (
         <div className="glass-card text-center py-12">
-          <span className="text-4xl mb-4 block">📭</span>
+          <svg className="w-10 h-10 text-[#4A5568] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
           <p className="text-[#A8B4C8]">Aucun message pour l'instant.</p>
         </div>
       ) : (

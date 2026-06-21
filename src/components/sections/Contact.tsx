@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 import { supabase } from '../../lib/supabase';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,6 +11,7 @@ import SectionNumber from '../../components/ui/SectionNumber';
 const Contact: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
+  const { siteConfig } = useSupabaseData();
 
   // Schema de validation (Conservé)
   const schema = yup.object({
@@ -71,7 +73,7 @@ const Contact: React.FC = () => {
 
   const socialLinks = [
     {
-      href: 'https://wa.me/2290199218112',
+      href: siteConfig['whatsapp']?.value_generic || 'https://wa.me/2290199218112',
       label: 'WhatsApp',
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -80,7 +82,7 @@ const Contact: React.FC = () => {
       ),
     },
     {
-      href: 'https://www.linkedin.com/in/stane-aniambossou-2a412b3b8/',
+      href: siteConfig['linkedin']?.value_generic || 'https://www.linkedin.com/in/stane-aniambossou-2a412b3b8/',
       label: 'LinkedIn',
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -89,7 +91,7 @@ const Contact: React.FC = () => {
       ),
     },
     {
-      href: 'https://github.com/Stane316/',
+      href: siteConfig['github']?.value_generic || 'https://github.com/Stane316/',
       label: 'GitHub',
       icon: (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -254,8 +256,18 @@ const Contact: React.FC = () => {
                 )}
               </button>
 
-              {submitStatus === 'success' && <p className="text-green-400 text-sm text-center">✅ {isFr ? 'Message envoyé !' : 'Message sent!'}</p>}
-              {submitStatus === 'error' && <p className="text-red-400 text-sm text-center">❌ {isFr ? 'Erreur lors de l\'envoi.' : 'Error sending.'}</p>}
+              {submitStatus === 'success' && (
+                <p className="text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  {isFr ? 'Message envoyé !' : 'Message sent!'}
+                </p>
+              )}
+              {submitStatus === 'error' && (
+                <p className="text-red-400 text-sm text-center flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {isFr ? "Erreur lors de l'envoi." : 'Error sending.'}
+                </p>
+              )}
             </form>
           </motion.div>
         </div>
