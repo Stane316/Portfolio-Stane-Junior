@@ -1,6 +1,6 @@
 /**
  * Global Styles for Stane-Junior Portfolio
- * 
+ *
  * Design System:
  * - Primary BG: #0A0A1E (bleu nuit profond)
  * - Secondary BG: #0F0F2E
@@ -9,17 +9,14 @@
  * - Accent Cyan: #00BFFF
  * - Text Primary: #FFFFFF
  * - Text Secondary: #A8B4C8
- * 
+ *
  * CORRECTIONS APPLIQUÉES:
  * - Safari/iOS compatibility (-webkit prefixes)
  * - Fallback for backdrop-filter
  * - Safe area support for iOS
  * - Smooth scroll polyfill
  * - 100vh fix for iOS
- */
-
-/**
- * Global Styles for Stane-Junior Portfolio
+ * - P-07/P-08: CSS deduplication — unified duplicate rules
  */
 
 @import "tailwindcss";
@@ -134,7 +131,7 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .animate-float,
   .animate-pulse,
   .animate-gradient {
@@ -199,6 +196,7 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
 }
 
+/* P-07/P-08 FIX: Unified .btn-primary — single definition with all transitions */
 .btn-primary {
   padding: 0.75rem 1.5rem;
   min-height: 44px;
@@ -206,25 +204,23 @@ h1, h2, h3, h4, h5, h6 {
   color: black;
   font-weight: 600;
   border-radius: 0.5rem;
-  transition: all 0.3s;
-  -webkit-transition: all 0.3s;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   box-shadow: 0 0 20px var(--glow-cyan);
   -webkit-box-shadow: 0 0 20px var(--glow-cyan);
-  cursor: pointer;
 }
 
 .btn-primary:hover {
   box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
   -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
-  transform: translateY(-3px);
-  -webkit-transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active {
   transform: translateY(0px);
-  -webkit-transform: translateY(0px);
 }
 
+/* P-07/P-08 FIX: Unified .btn-secondary — single definition with all transitions */
 .btn-secondary {
   padding: 0.75rem 1.5rem;
   min-height: 44px;
@@ -232,24 +228,22 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--accent-cyan);
   font-weight: 600;
   border-radius: 0.5rem;
-  transition: all 0.3s;
-  -webkit-transition: all 0.3s;
   cursor: pointer;
   background: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-secondary:hover {
   background-color: var(--accent-cyan);
   color: black;
-  transform: translateY(-3px);
-  -webkit-transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .btn-secondary:active {
   transform: translateY(0px);
-  -webkit-transform: translateY(0px);
 }
 
+/* P-07/P-08 FIX: Unified .project-card — single definition combining base + transition + hover */
 .project-card {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -257,17 +251,17 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
-  transition: all 0.3s;
-  -webkit-transition: all 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .project-card:hover {
   transform: translateY(-8px);
-  -webkit-transform: translateY(-8px);
+  border-color: rgba(0, 191, 255, 0.4);
   box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
   -webkit-box-shadow: 0 0 30px var(--glow-cyan), 0 0 60px var(--glow-cyan);
 }
 
+/* P-07/P-08 FIX: Unified .team-card — single definition combining base + transition + hover */
 .team-card {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -276,13 +270,11 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 1rem;
   padding: 1.5rem;
   text-align: center;
-  transition: all 0.3s;
-  -webkit-transition: all 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .team-card:hover {
   transform: scale(1.05);
-  -webkit-transform: scale(1.05);
 }
 
 /* ============================================
@@ -305,6 +297,12 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 0% 50%; }
 }
 
+/* P-15 FIX: skeleton-shimmer animation for loading skeletons */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
   -webkit-animation: float 3s ease-in-out infinite;
@@ -319,6 +317,13 @@ h1, h2, h3, h4, h5, h6 {
   background-size: 200% 200%;
   animation: gradient-shift 8s ease infinite;
   -webkit-animation: gradient-shift 8s ease infinite;
+}
+
+/* P-15 FIX: skeleton-shimmer class for loading placeholders */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #141430 25%, #1A1A3E 50%, #141430 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
 .gradient-mesh {
@@ -358,6 +363,7 @@ h1, h2, h3, h4, h5, h6 {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
+/* P-07/P-08 FIX: Unified scrollbar — single definition using design system variables */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -434,41 +440,6 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link:hover::after,
 .nav-link:focus-visible::after {
   width: 100%;
-}
-
-/* Cartes projets - hover lift + glow */
-.project-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(0, 191, 255, 0.4);
-}
-
-/* Cartes équipe - hover scale */
-.team-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.team-card:hover {
-  transform: scale(1.05);
-}
-
-/* Boutons - hover lift */
-.btn-primary,
-.btn-secondary {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-.btn-primary:hover,
-.btn-secondary:hover {
-  transform: translateY(-2px);
-}
-
-.btn-primary:active,
-.btn-secondary:active {
-  transform: translateY(0);
 }
 
 /* Inputs - hover border */
@@ -851,11 +822,6 @@ html.light .mobile-menu-overlay {
   scrollbar-width: none;
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
-
 /* ============================================
    SKILLS SECTION ANIMATIONS
    ============================================ */
@@ -871,20 +837,17 @@ html {
   to { width: var(--progress-width); }
 }
 
-/* Smooth scrollbar pour les sections */
-::-webkit-scrollbar {
+/* ============================================
+   P-05: UNSAVED CHANGES INDICATOR
+   ============================================ */
+
+/* P-05 FIX: Unsaved changes dot indicator for admin */
+.unsaved-dot {
   width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0A0A1E;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1A1A2E;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00BFFF;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #F59E0B;
+  display: inline-block;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
 }
