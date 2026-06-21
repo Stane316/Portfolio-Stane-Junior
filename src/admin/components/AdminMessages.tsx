@@ -67,11 +67,15 @@ const AdminMessages: React.FC = () => {
     }
   };
 
+  // EVOLUTION 2026: Labels des sujets mis à jour
   const getSubjectLabel = (subject: string) => {
     const labels: Record<string, string> = {
-      freelance: isFr ? 'Mission freelance' : 'Freelance',
+      ai: isFr ? 'Projet IA / Systèmes intelligents' : 'AI Project / Intelligent Systems',
       growtech: isFr ? 'Collaboration GROW TECH' : 'GROW TECH',
-      other: isFr ? 'Autre' : 'Other',
+      research: isFr ? 'Recherche & Académique' : 'Research & Academic',
+      // Rétrocompatibilité pour anciens messages
+      freelance: isFr ? 'Mission freelance (ancien)' : 'Freelance (legacy)',
+      other: isFr ? 'Autre (ancien)' : 'Other (legacy)',
     };
     return labels[subject] || subject;
   };

@@ -72,10 +72,14 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onRefresh, onToast 
     return date.toLocaleDateString('fr-FR');
   };
 
+  // EVOLUTION 2026: Labels des sujets mis à jour
   const subjectLabels: Record<string, string> = {
-    freelance: 'Mission freelance',
+    ai: 'Projet IA / Systèmes intelligents',
     growtech: 'Collaboration GROW TECH',
-    other: 'Autre',
+    research: 'Recherche & Académique',
+    // Rétrocompatibilité pour anciens messages
+    freelance: 'Mission freelance (ancien)',
+    other: 'Autre (ancien)',
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {

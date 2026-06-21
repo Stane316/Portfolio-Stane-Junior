@@ -1,17 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-// FALLBACKS quand Supabase n'est pas configuré
+// EVOLUTION 2026: FALLBACKS mis à jour pour refléter le positionnement
+// AI Systems Engineering — comme PROLONGEMENT, pas pivot
 const FALLBACK_STATS = {
-  hero_stat_1: { value_generic: '5+', value_fr: 'Projets livrés', value_en: 'Delivered projects' },
-  hero_stat_2: { value_generic: '6', value_fr: 'Membres GROW TECH', value_en: 'GROW TECH members' },
-  hero_stat_3: { value_generic: '2', value_fr: 'Co-fondateurs', value_en: 'Co-founders' },
+  hero_stat_1: { value_generic: '5+', value_fr: 'Projets construits', value_en: 'Projects Built' },
+  hero_stat_2: { value_generic: '3+', value_fr: 'Concepts IA & Systèmes intelligents', value_en: 'AI & Intelligent Concepts' },
+  hero_stat_3: { value_generic: '1', value_fr: 'Agence fondée', value_en: 'Agency Founded' },
 };
 
 const FALLBACK_BADGE = {
   value_generic: '',
-  value_fr: 'Disponible pour missions freelance',
-  value_en: 'Available for freelance missions',
+  value_fr: 'Building Intelligent Systems for Africa',
+  value_en: 'Building Intelligent Systems for Africa',
 };
 
 const FALLBACK_TAGLINE = {
@@ -77,7 +78,7 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
       setError(null);
       
       if (!isSupabaseConfigured()) {
-        // FALLBACKS : retourner les données par défaut
+        // FALLBACKS : retourner les données par défaut (EVOLUTION 2026)
         setProjects([]);
         setTestimonials([]);
         setSiteConfig({
@@ -125,7 +126,7 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
     } catch (err: any) {
       console.error('Error fetching data from Supabase:', err);
       setError(err.message || 'Failed to load data');
-      // En cas d'erreur, utiliser les fallbacks
+      // En cas d'erreur, utiliser les fallbacks (EVOLUTION 2026)
       setProjects([]);
       setTestimonials([]);
       setSiteConfig({
