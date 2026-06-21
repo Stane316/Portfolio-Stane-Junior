@@ -16,6 +16,7 @@ import AdminBlog from '../admin/components/AdminBlog';
 import AdminGrowTech from '../admin/components/AdminGrowTech';
 import AdminVision from '../admin/components/AdminVision';
 import AdminProjectsNew from '../admin/components/AdminProjectsNew';
+import AdminSkills from '../admin/components/AdminSkills';
 import GlobalLoadingIndicator from '../admin/components/GlobalLoadingIndicator';
 
 // ... [Tes interfaces Project, Message, etc. restent ici] ...
@@ -212,6 +213,7 @@ const AdminLayout: React.FC = () => {
     const path = location.pathname;
     if (path.includes('/projects')) return { title: 'Projets', breadcrumb: ['Projets'] };
     if (path.includes('/testimonials')) return { title: 'Témoignages', breadcrumb: ['Témoignages'] };
+    if (path.includes('/skills')) return { title: 'Compétences', breadcrumb: ['Compétences'] };
     if (path.includes('/messages')) return { title: 'Messages', breadcrumb: ['Messages'] };
     if (path.includes('/content')) return { title: 'Contenu', breadcrumb: ['Contenu'] };
     if (path.includes('/blog')) return { title: 'Blog', breadcrumb: ['Blog'] };
@@ -240,6 +242,7 @@ const AdminLayout: React.FC = () => {
           <Route path="testimonials" element={<AdminTestimonials testimonials={testimonials} onRefresh={fetchDashboard} onToast={addToast} onConfirmDelete={(name: string, onDone: () => void) => showConfirm('Supprimer le témoignage', `Êtes-vous sûr de vouloir supprimer le témoignage de "${name}" ?`, onDone, 'danger')} />} />
           <Route path="messages" element={<MessageList messages={messages} onRefresh={fetchDashboard} onToast={addToast} />} />
           <Route path="content" element={<AdminContent />} />
+          <Route path="skills" element={<AdminSkills onToast={addToast} />} />
           <Route path="blog" element={<AdminBlog onToast={addToast} />} />
           <Route path="growtech" element={<AdminGrowTech onToast={addToast} />} />
           <Route path="vision" element={<AdminVision onToast={addToast} />} />

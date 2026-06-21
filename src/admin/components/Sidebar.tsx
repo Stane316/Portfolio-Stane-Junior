@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { isSupabaseConfigured } from '../../lib/supabase';
 
 interface SidebarProps {
   unreadCount: number;
@@ -17,6 +18,23 @@ type NavItem = {
   badge?: number;
 };
 
+const SupabaseStatus: React.FC = () => {
+  const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    setConnected(isSupabaseConfigured());
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-2">
+      <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-400' : 'bg-red-400'}`} />
+      <span className="text-[10px] text-[#4A5568]">
+        Supabase {connected ? 'connecté' : 'non configuré'}
+      </span>
+    </div>
+  );
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, onMobileClose }) => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
@@ -26,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
   const navItems: NavItem[] = [
     {
       path: '/admin/dashboard',
-      label: isFr ? 'Vue d\'ensemble' : 'Overview',
+      label: isFr ? "Vue d'ensemble" : 'Overview',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -39,6 +57,15 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+    },
+    {
+      path: '/admin/skills',
+      label: isFr ? 'Compétences' : 'Skills',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
       ),
     },
@@ -162,6 +189,13 @@ const Sidebar: React.FC<SidebarProps> = ({ unreadCount, onLogout, isMobileOpen, 
           );
         })}
       </nav>
+
+      {/* Supabase Status */}
+      {!isCollapsed && (
+        <div className="px-3 pb-2">
+          <SupabaseStatus />
+        </div>
+      )}
 
       <div className="p-3 border-t border-[rgba(0,191,255,0.15)]">
         <div className={`flex items-center gap-3 p-2 rounded-lg ${isCollapsed ? 'justify-center' : ''}`}>

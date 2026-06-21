@@ -16,7 +16,7 @@ const AdminContent: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'skills' | 'footer' | 'links'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'about' | 'footer' | 'links'>('hero');
 
   const fetchConfig = async () => {
     try {
@@ -72,7 +72,6 @@ const AdminContent: React.FC = () => {
   const tabs = [
     { id: 'hero' as const, label: 'Hero' },
     { id: 'about' as const, label: 'À propos' },
-    { id: 'skills' as const, label: 'Compétences' },
     { id: 'footer' as const, label: 'Footer' },
     { id: 'links' as const, label: 'Liens' },
   ];
@@ -206,31 +205,6 @@ const AdminContent: React.FC = () => {
                 <ConfigField config={config} label="Disponibilité (FR)" configKey="about_available" field="value_fr" onSave={handleSave} type="text" />
                 <ConfigField config={config} label="Disponibilité (EN)" configKey="about_available" field="value_en" onSave={handleSave} type="text" />
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================ */}
-      {/* TAB: SKILLS */}
-      {/* ============================================ */}
-      {activeTab === 'skills' && (
-        <div className="glass-card border border-[rgba(0,191,255,0.15)]">
-          <h3 className="text-lg font-display font-bold text-white mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-            Compétences
-          </h3>
-          <div className="space-y-4">
-            <ConfigField config={config} label="Note d'honnêteté (FR)" configKey="skills_honesty" field="value_fr" onSave={handleSave} type="textarea" />
-            <ConfigField config={config} label="Note d'honnêteté (EN)" configKey="skills_honesty" field="value_en" onSave={handleSave} type="textarea" />
-            
-            <div className="border-t border-[#1A1A2E] pt-4 mt-4">
-              <h4 className="text-white font-semibold mb-2">Données des compétences (JSON)</h4>
-              <p className="text-[#4A5568] text-xs mb-3">
-                Format : tableau JSON avec les champs name, level (0-100), category (mastered/learning/basics), icon.
-                Modifiez avec précaution.
-              </p>
-              <ConfigField config={config} label="Compétences" configKey="skills_data" field="value_generic" onSave={handleSave} type="textarea" />
             </div>
           </div>
         </div>
