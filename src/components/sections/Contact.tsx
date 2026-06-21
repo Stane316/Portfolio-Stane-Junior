@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
@@ -13,7 +13,7 @@ const Contact: React.FC = () => {
   const isFr = lang === 'fr';
   const { siteConfig } = useSupabaseData();
 
-  // Schema de validation (Conservé)
+  // EVOLUTION 2026: Updated subjects — AI Project, GROW TECH, Research
   const schema = yup.object({
     name: yup.string()
       .required(isFr ? 'Nom requis' : 'Name required')
@@ -22,7 +22,7 @@ const Contact: React.FC = () => {
       .email(isFr ? 'Email invalide' : 'Invalid email')
       .required(isFr ? 'Email requis' : 'Email required'),
     subject: yup.string()
-      .oneOf(['freelance', 'growtech', 'other'], 'Invalid subject'),
+      .oneOf(['ai', 'growtech', 'research'], 'Invalid subject'),
     message: yup.string()
       .required(isFr ? 'Message requis' : 'Message required')
       .min(10, isFr ? 'Message trop court' : 'Message too short'),
@@ -110,13 +110,18 @@ const Contact: React.FC = () => {
           {/* Colonne Gauche : Info & Liens */}
           <div className="relative">
             <SectionNumber number="06" />
+            {/* EVOLUTION 2026: Title changed */}
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10 mb-6">
-              CONTACT
+              {isFr ? 'CONSTRUISONS' : 'LET\'S BUILD'}
             </h2>
+            {/* EVOLUTION 2026: Subtitle + description */}
+            <p className="text-[#00BFFF] text-lg font-semibold mb-2 relative z-10">
+              {isFr ? 'Projets IA · Collaboration · Recherche' : 'AI Projects · Collaboration · Research'}
+            </p>
             <p className="text-[#A8B4C8] text-xl font-light leading-relaxed mb-12 relative z-10">
               {isFr 
-                ? 'Un projet en tête ? Une idée à concrétiser ? Discutons-en.' 
-                : 'Have a project in mind? An idea to make reality? Let\'s talk.'}
+                ? 'Un projet IA en tête ? Une idée de système intelligent ? Une collaboration technique ? Discutons-en.' 
+                : 'Have an AI project in mind? An intelligent system idea? A technical collaboration? Let\'s talk.'}
             </p>
 
             {/* Social Links */}
@@ -211,6 +216,7 @@ const Contact: React.FC = () => {
                 {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
               </div>
 
+              {/* EVOLUTION 2026: Updated subject options */}
               <div>
                 <label className="block text-xs uppercase tracking-widest text-[#4A5568] mb-2">
                   {isFr ? 'Sujet' : 'Subject'}
@@ -219,9 +225,9 @@ const Contact: React.FC = () => {
                   {...register('subject')}
                   className="w-full bg-[#0A0A1E] border border-[#1A1A2E] rounded-lg px-4 py-3 text-white focus:border-[#00BFFF] focus:outline-none transition-colors"
                 >
-                  <option value="freelance">{isFr ? 'Mission freelance' : 'Freelance mission'}</option>
+                  <option value="ai">{isFr ? 'Projet IA / Systèmes intelligents' : 'AI Project / Intelligent Systems'}</option>
                   <option value="growtech">{isFr ? 'Collaboration GROW TECH' : 'GROW TECH collaboration'}</option>
-                  <option value="other">{isFr ? 'Autre' : 'Other'}</option>
+                  <option value="research">{isFr ? 'Recherche & Académique' : 'Research & Academic'}</option>
                 </select>
               </div>
 

@@ -31,34 +31,42 @@ const Skills: React.FC = () => {
     },
   };
 
+  // EVOLUTION 2026: Restructured by CAPABILITY, not technology
+  // Category 1: Software Engineering (merged Frontend+Backend)
+  // Category 2: AI & Intelligent Systems (NEW)
+  // Category 3: Tools & Methods
   const categories = [
     {
-      title: isFr ? 'Frontend' : 'Frontend',
+      title: isFr ? 'Software Engineering' : 'Software Engineering',
+      accent: 'bg-[#00BFFF]',
       skills: [
-        { name: 'HTML5 / CSS3', level: 'mastered' as const, context: isFr ? 'Tous les projets' : 'All projects' },
-        { name: 'React / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients' : 'Portfolio, CRM, Client projects' },
-        { name: 'TypeScript', level: 'mastered' as const, context: isFr ? 'Architecture type-safe' : 'Type-safe architecture' },
-        { name: 'TailwindCSS', level: 'mastered' as const, context: isFr ? 'Design system complet' : 'Complete design system' },
-        { name: 'Three.js', level: 'learning' as const, context: isFr ? 'Scènes 3D basiques' : 'Basic 3D scenes' },
-        { name: 'Framer Motion', level: 'mastered' as const, context: isFr ? 'Animations fluides' : 'Smooth animations' },
+        { name: 'React / TypeScript / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients' : 'Portfolio, CRM, Client projects' },
+        { name: 'TailwindCSS / Design Systems', level: 'mastered' as const, context: isFr ? 'System de design complet' : 'Complete design system' },
+        { name: 'Supabase / PostgreSQL', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime' : 'Auth, DB, Storage, Realtime' },
+        { name: 'Node.js / APIs REST', level: 'learning' as const, context: isFr ? 'APIs REST en cours' : 'REST APIs in progress' },
+        { name: 'Software Design & Architecture', level: 'learning' as const, context: isFr ? 'Patterns, modulaire, scalable' : 'Patterns, modular, scalable' },
+        { name: 'Framer Motion / Animations', level: 'mastered' as const, context: isFr ? 'Animations fluides' : 'Smooth animations' },
       ],
     },
     {
-      title: isFr ? 'Backend & Data' : 'Backend & Data',
+      title: isFr ? 'IA & Systèmes Intelligents' : 'AI & Intelligent Systems',
+      accent: 'bg-purple-400',
       skills: [
-        { name: 'Node.js', level: 'learning' as const, context: isFr ? 'APIs REST en cours' : 'REST APIs in progress' },
-        { name: 'Supabase', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime' : 'Auth, DB, Storage, Realtime' },
-        { name: 'PostgreSQL', level: 'learning' as const, context: isFr ? 'Requêtes avancées' : 'Advanced queries' },
-        { name: 'API REST', level: 'mastered' as const, context: isFr ? 'Intégration complète' : 'Full integration' },
+        { name: 'Prompt Engineering', level: 'mastered' as const, context: isFr ? 'Conception de prompts complexes, chaînes de raisonnement' : 'Complex prompt design, chain-of-thought' },
+        { name: 'LLM Orchestration & Workflows', level: 'learning' as const, context: isFr ? 'Chaînes, pipelines, intégration multi-modèles' : 'Chains, pipelines, multi-model integration' },
+        { name: 'RAG Systems', level: 'learning' as const, context: isFr ? 'Retrieval-Augmented Generation, embeddings, vector DB' : 'Retrieval-Augmented Generation, embeddings, vector DB' },
+        { name: 'AI Agents & Multi-Agent Systems', level: 'basics' as const, context: isFr ? 'Agents autonomes, orchestration, tool use' : 'Autonomous agents, orchestration, tool use' },
+        { name: 'Human-AI Collaboration', level: 'learning' as const, context: isFr ? 'Conception de workflows humain-IA' : 'Human-AI workflow design' },
       ],
     },
     {
-      title: isFr ? 'Outils & Workflow' : 'Tools & Workflow',
+      title: isFr ? 'Outils & Méthodes' : 'Tools & Methods',
+      accent: 'bg-emerald-400',
       skills: [
         { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versionning & collaboration' : 'Versioning & collaboration' },
-        { name: 'Figma', level: 'learning' as const, context: isFr ? 'Maquettes & prototypes' : 'Mockups & prototypes' },
-        { name: 'Vercel / Netlify', level: 'mastered' as const, context: isFr ? 'Déploiement continu' : 'Continuous deployment' },
-        { name: 'IA / Prompting', level: 'mastered' as const, context: isFr ? 'Accélération dev' : 'Dev acceleration' },
+        { name: 'Problem Framing & Product Thinking', level: 'mastered' as const, context: isFr ? 'De l\'observation au produit' : 'From observation to product' },
+        { name: 'Figma / UI Design', level: 'learning' as const, context: isFr ? 'Maquettes & prototypes' : 'Mockups & prototypes' },
+        { name: 'Vercel / Netlify / CI/CD', level: 'mastered' as const, context: isFr ? 'Déploiement continu' : 'Continuous deployment' },
       ],
     },
   ];
@@ -74,8 +82,9 @@ const Skills: React.FC = () => {
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
               {isFr ? 'COMPÉTENCES' : 'SKILLS'}
             </h2>
+            {/* EVOLUTION 2026: Subtitle updated */}
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
-              {isFr ? 'Technologies que je maîtrise au quotidien.' : 'Technologies I master daily.'}
+              {isFr ? 'De la construction logicielle à la conception de systèmes intelligents.' : 'From software engineering to intelligent systems design.'}
             </p>
           </div>
         </div>
@@ -92,7 +101,7 @@ const Skills: React.FC = () => {
               className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors duration-300"
             >
               <h3 className="text-xl text-white font-bold mb-8 flex items-center gap-3">
-                <span className="w-2 h-8 bg-[#00BFFF] rounded-full" />
+                <span className={`w-2 h-8 ${category.accent} rounded-full`} />
                 {category.title}
               </h3>
 
@@ -125,7 +134,7 @@ const Skills: React.FC = () => {
           ))}
         </div>
 
-        {/* Note honnêteté */}
+        {/* EVOLUTION 2026: Note honnêteté enrichie */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -135,8 +144,8 @@ const Skills: React.FC = () => {
         >
           <p className="text-[#4A5568] text-sm italic max-w-2xl mx-auto">
             {isFr 
-              ? 'Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière.' 
-              : 'I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right.'}
+              ? 'Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière. L\'IA est mon domaine d\'apprentissage le plus actif. Je ne prétends pas maîtriser ce que je découvre, mais j\'investis délibérément dans cette direction.' 
+              : 'I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right. AI is my most active area of learning. I don\'t pretend to master what I\'m discovering, but I\'m deliberately investing in this direction.'}
           </p>
         </motion.div>
       </div>

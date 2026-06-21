@@ -14,10 +14,12 @@ const Hero: React.FC = () => {
     return field === 'value' ? config.value_generic || '0' : (isFr ? config.value_fr : config.value_en);
   };
 
+  // EVOLUTION 2026: Badge repositioned from freelance to intelligent systems
   const badge = siteConfig['hero_badge'] 
     ? (isFr ? siteConfig['hero_badge'].value_fr : siteConfig['hero_badge'].value_en)
-    : (isFr ? 'Disponible pour missions freelance' : 'Available for freelance missions');
+    : 'Building Intelligent Systems for Africa';
 
+  // Tagline CONSERVÉ — universel et fort
   const tagline = siteConfig['hero_tagline']
     ? (isFr ? siteConfig['hero_tagline'].value_fr : siteConfig['hero_tagline'].value_en)
     : (isFr 
@@ -30,6 +32,7 @@ const Hero: React.FC = () => {
 
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
 
+  // EVOLUTION 2026: Stats repensées — Projects, AI Concepts, Agency
   const stats = [
     { value: getStat('1', 'value'), label: getStat('1', 'label') },
     { value: getStat('2', 'value'), label: getStat('2', 'label') },
@@ -58,6 +61,7 @@ const Hero: React.FC = () => {
             animate="visible"
             className="text-center lg:text-left"
           >
+            {/* EVOLUTION 2026: Badge — "Building Intelligent Systems for Africa" */}
             <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-4 sm:mb-6">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 glass rounded-full">
                 <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
@@ -65,10 +69,11 @@ const Hero: React.FC = () => {
               </div>
             </motion.div>
 
+            {/* EVOLUTION 2026: Headline — "Software Engineering Student. Building Intelligent Systems." */}
             <motion.h1 variants={itemVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-4 sm:mb-6 leading-tight">
-              <span className="text-gradient">{isFr ? 'Étudiant Développeur' : 'Developer Student'}</span>
-              <br className="sm:hidden" />
-              <span className="text-white">{isFr ? "& Fondateur d'Agence" : '& Agency Founder'}</span>
+              <span className="text-gradient">Software Engineering Student.</span>
+              <br />
+              <span className="text-white">Building Intelligent Systems.</span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 px-2">
@@ -94,6 +99,7 @@ const Hero: React.FC = () => {
               </motion.a>
             )}
 
+            {/* EVOLUTION 2026: Stats — Projects Built, AI & Intelligent Concepts, Agency Founded */}
             <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-2xl mx-auto lg:mx-0">
               {stats.map((stat, index) => (
                 <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + index * 0.1 }} className="glass-card text-center py-2 sm:py-3 md:py-4">

@@ -8,7 +8,8 @@ import { SkeletonVision } from '../../components/ui/Skeleton';
 /**
  * Vision Section — Public display of future projects/concepts
  *
- * P-15 FIX: Uses SkeletonVision instead of simple spinner
+ * EVOLUTION 2026: Fallback data includes AI concepts
+ * (AgentFactura, MentorLink, OHADA Legal Assistant)
  */
 
 interface VisionItem {
@@ -24,7 +25,7 @@ interface VisionItem {
 }
 
 // ============================================================
-// Fallback data — when Supabase is unavailable
+// Fallback data — EVOLUTION 2026: AI concepts added
 // ============================================================
 
 const FALLBACK_VISIONS: VisionItem[] = [
@@ -41,24 +42,35 @@ const FALLBACK_VISIONS: VisionItem[] = [
   },
   {
     id: '2',
-    title_fr: 'BeninPro',
-    title_en: 'BeninPro',
-    description_fr: 'Marketplace dédiée aux professionnels et services béninois. Connecte clients et prestataires sur une plateforme adaptée au contexte local.',
-    description_en: 'Marketplace dedicated to Beninese professionals and services. Connects clients and providers on a platform adapted to the local context.',
-    status: 'in_progress',
+    title_fr: 'AgentFactura',
+    title_en: 'AgentFactura',
+    description_fr: "Un agent IA de facturation intelligente pour la zone OHADA. Comprend le contexte réglementaire, génère des factures conformes, prédit les flux de trésorerie et automatise le suivi. FacturaPro évolue vers un système intelligent.",
+    description_en: 'An AI invoicing agent for the OHADA zone. Understands regulatory context, generates compliant invoices, predicts cash flows and automates follow-up. FacturaPro evolves into an intelligent system.',
+    status: 'concept',
     image_url: '',
     order: 2,
     created_at: '',
   },
   {
     id: '3',
-    title_fr: 'EduConnect',
-    title_en: 'EduConnect',
-    description_fr: "Plateforme de mentorat et de partage de ressources pour les étudiants en informatique de l'UAC. Facilite l'entraide et l'apprentissage collaboratif.",
-    description_en: 'Mentorship and resource sharing platform for UAC computer science students. Facilitates peer support and collaborative learning.',
+    title_fr: 'MentorLink',
+    title_en: 'MentorLink',
+    description_fr: "Plateforme de mentorat académique avec système de recommandation intelligent. Connecte étudiants et mentors via un accompagnement adaptatif. Pas juste un réseau — un système qui apprend des parcours de réussite.",
+    description_en: 'Academic mentorship platform with intelligent recommendation system. Connects students and mentors through adaptive accompaniment. Not just a network — a system that learns from success paths.',
     status: 'concept',
     image_url: '',
     order: 3,
+    created_at: '',
+  },
+  {
+    id: '4',
+    title_fr: 'Assistant Juridique OHADA',
+    title_en: 'OHADA Legal Assistant',
+    description_fr: "Un système RAG alimenté par la documentation juridique OHADA qui aide les entrepreneurs à naviguer les obligations légales. L'IA au service de l'accessibilité juridique en Afrique francophone.",
+    description_en: 'A RAG system powered by OHADA legal documentation that helps entrepreneurs navigate legal obligations. AI serving legal accessibility in French-speaking Africa.',
+    status: 'concept',
+    image_url: '',
+    order: 4,
     created_at: '',
   },
 ];
@@ -117,6 +129,12 @@ const Vision: React.FC = () => {
     }
   };
 
+  // EVOLUTION 2026: Check if item is AI-related for visual distinction
+  const isAIConcept = (title: string) => {
+    const aiKeywords = ['Agent', 'AI', 'Assistant', 'Intelligent', 'RAG', 'MentorLink'];
+    return aiKeywords.some(kw => title.includes(kw));
+  };
+
   return (
     <section id="vision" className="py-24 lg:py-32 bg-[#0A0A1E] relative overflow-hidden">
       <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
@@ -147,10 +165,28 @@ const Vision: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.15, duration: 0.6 }}
-                className="group relative bg-[#141430] border border-[#1A1A2E] rounded-3xl p-8 lg:p-10 overflow-hidden hover:border-[#00BFFF] transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,191,255,0.15)]"
+                className={`group relative bg-[#141430] border rounded-3xl p-8 lg:p-10 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,191,255,0.15)] ${
+                  isAIConcept(isFr ? item.title_fr : item.title_en)
+                    ? 'border-purple-500/30 hover:border-purple-400'
+                    : 'border-[#1A1A2E] hover:border-[#00BFFF]'
+                }`}
               >
                 {/* Background Glow Effect */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00BFFF] rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 -mr-16 -mt-16" />
+                <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 -mr-16 -mt-16 ${
+                  isAIConcept(isFr ? item.title_fr : item.title_en)
+                    ? 'bg-purple-400'
+                    : 'bg-[#00BFFF]'
+                }`} />
+
+                {/* EVOLUTION 2026: AI badge for AI concepts */}
+                {isAIConcept(isFr ? item.title_fr : item.title_en) && (
+                  <div className="absolute top-6 right-6">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/40">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                      IA
+                    </span>
+                  </div>
+                )}
 
                 <div className="relative z-10 flex flex-col h-full">
                   {/* Header Carte */}
@@ -163,8 +199,12 @@ const Vision: React.FC = () => {
                           className="w-16 h-16 rounded-xl object-cover"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-[#0A0A1E] border border-[#1A1A2E] flex items-center justify-center">
-                          <svg className="w-8 h-8 text-[#00BFFF] opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                        <div className={`w-16 h-16 rounded-xl border flex items-center justify-center ${
+                          isAIConcept(isFr ? item.title_fr : item.title_en)
+                            ? 'bg-purple-500/10 border-purple-500/30'
+                            : 'bg-[#0A0A1E] border-[#1A1A2E]'
+                        }`}>
+                          <svg className={`w-8 h-8 opacity-50 ${isAIConcept(isFr ? item.title_fr : item.title_en) ? 'text-purple-400' : 'text-[#00BFFF]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
                         </div>
                       )}
                       <div>
