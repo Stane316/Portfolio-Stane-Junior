@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-// EVOLUTION 2026: FALLBACKS mis à jour pour refléter le positionnement
-// AI Systems Engineering — comme PROLONGEMENT, pas pivot
+// EVOLUTION 2026: FALLBACKS mis à jour — FR conforme (100% français)
 const FALLBACK_STATS = {
   hero_stat_1: { value_generic: '5+', value_fr: 'Projets construits', value_en: 'Projects Built' },
   hero_stat_2: { value_generic: '3+', value_fr: 'Concepts IA & Systèmes intelligents', value_en: 'AI & Intelligent Concepts' },
@@ -11,7 +10,7 @@ const FALLBACK_STATS = {
 
 const FALLBACK_BADGE = {
   value_generic: '',
-  value_fr: 'Building Intelligent Systems for Africa',
+  value_fr: "Construire des systèmes intelligents pour l'Afrique",
   value_en: 'Building Intelligent Systems for Africa',
 };
 

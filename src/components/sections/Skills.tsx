@@ -37,7 +37,7 @@ const Skills: React.FC = () => {
   // Category 3: Tools & Methods
   const categories = [
     {
-      title: isFr ? 'Software Engineering' : 'Software Engineering',
+      title: isFr ? 'Ingénierie Logicielle' : 'Software Engineering',
       accent: 'bg-[#00BFFF]',
       skills: [
         { name: 'React / TypeScript / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients' : 'Portfolio, CRM, Client projects' },

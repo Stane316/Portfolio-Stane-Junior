@@ -63,10 +63,10 @@ const Journey: React.FC = () => {
     },
     {
       year: 'Future',
-      title_fr: 'AI Systems Engineer',
+      title_fr: 'Ingénieur Systèmes Intelligents',
       title_en: 'AI Systems Engineer',
-      description_fr: "Candidature MEXT — Information Engineering au Japon. Objectif : devenir un ingénieur capable de combiner génie logiciel et intelligence artificielle pour construire des systèmes intelligents utiles pour l'Afrique.",
-      description_en: "MEXT Application — Information Engineering in Japan. Goal: become an engineer capable of combining software engineering and AI to build useful intelligent systems for Africa.",
+      description_fr: "Mon ambition : devenir un ingénieur capable de combiner génie logiciel et intelligence artificielle pour construire des systèmes intelligents utiles pour l'Afrique. Le chemin continue.",
+      description_en: "My ambition: become an engineer capable of combining software engineering and AI to build useful intelligent systems for Africa. The journey continues.",
       icon: 'flag',
     },
   ];

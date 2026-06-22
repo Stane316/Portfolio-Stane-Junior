@@ -36,14 +36,13 @@ const About: React.FC = () => {
     { number: '18', label: isFr ? 'Ans' : 'Years Old' },
   ];
 
-  // EVOLUTION 2026: Info badges with AI specialization + MEXT
+  // EVOLUTION 2026: Info badges with AI specialization
   const infoBadges = [
     { icon: '📍', text: isFr ? 'Abomey-Calavi, Bénin' : 'Abomey-Calavi, Benin' },
     { icon: '🎓', text: isFr ? 'IFRI-UAC — Licence 1 Dev Logiciel' : 'IFRI-UAC — Software Development Licence 1' },
     { icon: '🏢', text: isFr ? 'Fondateur & Tech Lead — GROW TECH' : 'Founder & Tech Lead — GROW TECH' },
     { icon: '🌍', text: isFr ? 'Zone OHADA — 17 pays cibles' : 'OHADA Zone — 17 target countries' },
     { icon: '🤖', text: isFr ? 'Spécialisation IA & Systèmes Agents' : 'AI & Agent Systems Specialization' },
-    { icon: '🇯🇵', text: isFr ? 'Candidature MEXT — Information Engineering' : 'MEXT Application — Information Engineering' },
   ];
 
   // EVOLUTION 2026: Updated conclusion — from "développeur" to "ingénieur logiciel en devenir"
@@ -64,7 +63,7 @@ const About: React.FC = () => {
             </h2>
             {/* EVOLUTION 2026: Subtitle updated */}
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
-              {isFr ? 'Plus qu\'un développeur. Un ingénieur en devenir.' : 'More than a developer. An engineer in the making.'}
+              {isFr ? "Plus qu'un développeur. Un ingénieur en devenir." : 'More than a developer. An engineer in the making.'}
             </p>
           </div>
         </div>

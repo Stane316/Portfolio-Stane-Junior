@@ -4,7 +4,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 const Hero: React.FC = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
   const { siteConfig } = useSupabaseData();
 
@@ -14,25 +14,23 @@ const Hero: React.FC = () => {
     return field === 'value' ? config.value_generic || '0' : (isFr ? config.value_fr : config.value_en);
   };
 
-  // EVOLUTION 2026: Badge repositioned from freelance to intelligent systems
+  // Badge — i18n first, Supabase override second
   const badge = siteConfig['hero_badge'] 
     ? (isFr ? siteConfig['hero_badge'].value_fr : siteConfig['hero_badge'].value_en)
-    : 'Building Intelligent Systems for Africa';
+    : t('hero.badge');
 
-  // Tagline CONSERVÉ — universel et fort
+  // Tagline — CONSERVÉ
   const tagline = siteConfig['hero_tagline']
     ? (isFr ? siteConfig['hero_tagline'].value_fr : siteConfig['hero_tagline'].value_en)
-    : (isFr 
-        ? "Je ne construis pas juste des sites web. Je code des solutions à des problèmes que j'ai observés, vécus, compris."
-        : "I don't just build websites. I code solutions to problems I've observed, lived, and understood.");
+    : t('hero.tagline');
 
-  const ctaProjects = isFr ? 'Voir mes projets' : 'See my projects';
-  const ctaContact = isFr ? 'Me contacter' : 'Get in touch';
+  const ctaProjects = t('hero.cta.projects');
+  const ctaContact = t('hero.cta.contact');
   const cvUrl = siteConfig['cv_url']?.value_generic || '#';
 
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
 
-  // EVOLUTION 2026: Stats repensées — Projects, AI Concepts, Agency
+  // Stats — i18n for fallback labels
   const stats = [
     { value: getStat('1', 'value'), label: getStat('1', 'label') },
     { value: getStat('2', 'value'), label: getStat('2', 'label') },
@@ -61,7 +59,7 @@ const Hero: React.FC = () => {
             animate="visible"
             className="text-center lg:text-left"
           >
-            {/* EVOLUTION 2026: Badge — "Building Intelligent Systems for Africa" */}
+            {/* Badge */}
             <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-4 sm:mb-6">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 glass rounded-full">
                 <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
@@ -69,11 +67,11 @@ const Hero: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* EVOLUTION 2026: Headline — "Software Engineering Student. Building Intelligent Systems." */}
+            {/* Headline — bilingue via i18n */}
             <motion.h1 variants={itemVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-4 sm:mb-6 leading-tight">
-              <span className="text-gradient">Software Engineering Student.</span>
+              <span className="text-gradient">{t('hero.headline.line1')}</span>
               <br />
-              <span className="text-white">Building Intelligent Systems.</span>
+              <span className="text-white">{t('hero.headline.line2')}</span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 px-2">
@@ -95,11 +93,11 @@ const Hero: React.FC = () => {
             {cvUrl && cvUrl !== '#' && (
               <motion.a variants={itemVariants} href={cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm px-2 mb-6 sm:mb-8">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                {isFr ? 'Télécharger mon CV' : 'Download my CV'}
+                {t('about.cv.download')}
               </motion.a>
             )}
 
-            {/* EVOLUTION 2026: Stats — Projects Built, AI & Intelligent Concepts, Agency Founded */}
+            {/* Stats */}
             <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-2xl mx-auto lg:mx-0">
               {stats.map((stat, index) => (
                 <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + index * 0.1 }} className="glass-card text-center py-2 sm:py-3 md:py-4">
@@ -116,31 +114,20 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="hidden lg:flex justify-center items-center relative"
           >
-            {/* Photo Hero Adaptée */}
+            {/* Photo Hero */}
             <div className="flex justify-center items-center relative">
-               {/* Halo derrière */}
                <div className="absolute w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-cyan-400 rounded-full blur-[80px] sm:blur-[100px] opacity-20 sm:opacity-30 animate-pulse" />
-    
-               {/* Container de l'image - S'adapte au contenu */}
                <div className="relative w-auto h-auto max-w-[400px] max-h-[600px] animate-float">
-                   {/* Cadres décoratifs */}
                    <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl rotate-3 sm:rotate-6 opacity-60" />
                    <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl -rotate-3 sm:-rotate-6 opacity-60" />
-        
                    <div className="relative bg-[#141430] border border-[#1A1A2E] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
                        {heroImageUrl ? (
-                          // object-contain garantit que la photo entière est visible
-                           <img 
-                              src={heroImageUrl} 
-                              alt="Stane-Junior Aniambossou" 
-                              className="w-full h-auto max-h-[600px] object-contain" 
-                            />
-                     ) : (
-                          // Fallback si pas de photo
-                          <div className="w-[350px] h-[450px] flex items-center justify-center">
+                           <img src={heroImageUrl} alt="Stane-Junior Aniambossou" className="w-full h-auto max-h-[600px] object-contain" />
+                       ) : (
+                           <div className="w-[350px] h-[450px] flex items-center justify-center">
                              <span className="text-8xl font-heading text-white opacity-50">SJ</span>
-                          </div>
-                      )}
+                           </div>
+                       )}
                    </div>
                 </div>
             </div>
