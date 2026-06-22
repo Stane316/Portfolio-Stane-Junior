@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import DynamicMeta from './components/layout/DynamicMeta';
 import NotFound from './routes/NotFound';
 
 // Lazy loading pour la performance
@@ -25,18 +26,12 @@ const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState<boolean>(false);
   const [introFinished, setIntroFinished] = useState<boolean>(false);
 
-  // Vérifie si l'intro doit s'afficher (jamais affichée sur admin)
   useEffect(() => {
     const path = window.location.pathname;
-    const hasSeenIntro = sessionStorage.getItem('intro_seen');
-    
-    // On affiche l'intro si :
-    // 1. On n'est pas sur la route admin
-    // 2. L'utilisateur n'a pas encore vu l'intro (optionnel, ici on force à chaque session pour l'effet)
     if (!path.startsWith('/admin')) {
       setShowIntro(true);
     } else {
-      setIntroFinished(true); // Pas d'intro pour l'admin
+      setIntroFinished(true);
     }
   }, []);
 
@@ -51,8 +46,10 @@ const App: React.FC = () => {
       <LanguageProvider>
         <ThemeProvider>
           <Router>
+            {/* Dynamic Meta tags for SEO (P1) */}
+            <DynamicMeta />
+            
             <Suspense fallback={<LoadingFallback />}>
-              {/* Animation d'intro */}
               {showIntro && !introFinished ? (
                 <IntroAnimation onFinish={handleIntroFinish} />
               ) : (
