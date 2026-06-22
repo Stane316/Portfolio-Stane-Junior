@@ -1,10 +1,12 @@
-# robots.txt pour portfolio Stane-Junior
-# Autoriser les moteurs de recherche
+# robots.txt — Stane Aniambossou Portfolio
+# Production-ready - staneaniambossou.netlify.app
+
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://stanejunior.netlify.app/sitemap.xml
+# Sitemap principal
+Sitemap: https://staneaniambossou.netlify.app/sitemap.xml
 
-# Ne pas indexer les pages admin
-Disallow: /#/admin
+# Bloquer l'accès aux zones privées
+Disallow: /admin
+Disallow: /admin/*

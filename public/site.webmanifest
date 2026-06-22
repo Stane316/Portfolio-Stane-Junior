@@ -1,7 +1,7 @@
 {
-  "name": "Stane-Junior Aniambossou — Portfolio",
-  "short_name": "SJ Portfolio",
-  "description": "Portfolio professionnel — Étudiant Développeur & Fondateur de GROW TECH",
+  "name": "Stane Aniambossou | Software Engineering & Intelligent Systems for Africa",
+  "short_name": "Stane Portfolio",
+  "description": "Software Engineering student building intelligent systems for Africa. Founder of GROW TECH. Portfolio professionnel — React, Supabase, AI Agents.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A1E",
@@ -16,5 +16,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["productivity", "education", "business"]
 }
