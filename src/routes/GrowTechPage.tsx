@@ -1,435 +1,172 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import SectionNumber from '../components/ui/SectionNumber';
 
-// --- Composant Animation Intro GROW TECH (CORRIGÉ RESPONSIVE) ---
 const GrowTechIntro: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { staggerChildren: 0.1 } 
-    },
-    exit: {
-      opacity: 0,
-      transition: { duration: 0.8, ease: "easeInOut" }
-    }
-  };
-
-  const letterVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20, 
-      filter: 'blur(10px)',
-      color: '#00BFFF'
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      filter: 'blur(0px)',
-      color: '#FFFFFF',
-      transition: { 
-        duration: 0.5, 
-        ease: "easeOut",
-        color: { duration: 0.4, delay: 0.2 }
-      }
-    },
-  };
-
-  // Texte adapté : Ton nom complet
-  const text = "Stane-Junior Aniambossou";
-  const slogan = "Innover • Développer • Grandir";
-
-  useEffect(() => {
-    // L'intro dure 4 secondes avant de disparaître
-    const timer = setTimeout(onComplete, 4000);
+  React.useEffect(() => {
+    const timer = setTimeout(onComplete, 1800);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -50, transition: { duration: 0.8, ease: 'easeInOut' } }}
-      className="fixed inset-0 z-[100] bg-[#0A0A1E] flex flex-col items-center justify-center px-4 sm:px-6"
-    >
-      <div className="text-center w-full max-w-full overflow-hidden">
-        {/* Titre Principal Lettre par Lettre */}
-        <motion.h1 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          // Correction responsive : text-3xl sur mobile, augmente sur desktop
-          className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white tracking-tighter mb-4 sm:mb-6 break-words"
-        >
-          {text.split('').map((char, i) => (
-            <motion.span key={i} variants={letterVariants} className="inline-block">
-              {char === ' ' ? '\u00A0' : char}
-            </motion.span>
-          ))}
-        </motion.h1>
-
-        {/* Slogan avec correction responsive */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="w-full px-2"
-        >
-          <span className="text-[#00BFFF] text-xs sm:text-lg md:text-2xl font-light tracking-wide sm:tracking-widest uppercase break-words">
-            {slogan}
-          </span>
-        </motion.p>
-
-        {/* Barre de progression */}
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: '100%' }}
-          transition={{ duration: 3, ease: "easeInOut", delay: 0.5 }}
-          className="h-1 bg-gradient-to-r from-transparent via-[#00BFFF] to-transparent mx-auto mt-8 sm:mt-12 w-48 sm:w-80"
-        />
+    <div className="fixed inset-0 z-[100] bg-[#0A0A1E] flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-6xl md:text-7xl font-heading text-white tracking-tighter mb-3">GROW TECH</div>
+        <div className="text-[#00BFFF] text-sm tracking-[4px] uppercase">Votre Vision • Notre Technologie</div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
-// --- Page Principale ---
 const GrowTechPage: React.FC = () => {
   const { lang } = useLanguage();
   const isFr = lang === 'fr';
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
-  // États pour l'intro et l'affichage
   const [showIntro, setShowIntro] = useState(true);
-  const [showAllMembers, setShowAllMembers] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       try {
-        const { data: config, error } = await supabase.from('site_config').select('*').eq('key', 'growtech_data').single();
-        if (!error && config?.value_generic) setData(JSON.parse(config.value_generic));
-      } catch (e) { console.error(e); } finally { setLoading(false); }
+        const { data: config } = await supabase
+          .from('site_config')
+          .select('*')
+          .eq('key', 'growtech_data')
+          .single();
+
+        if (config?.value_generic) {
+          setData(JSON.parse(config.value_generic));
+        } else {
+          setData({
+            logo_url: '',
+            description_fr: "GROW TECH est une agence digitale estudiantine co-fondée avec Godo Landron. Six personnes. Trois squads : Front-End, Back-End, Commercial.",
+            description_en: "GROW TECH is a student digital agency co-founded with Godo Landron. Six people. Three squads: Front-End, Back-End, Commercial.",
+            members: [],
+            projects: [],
+            vision: {
+              title_fr: "Notre Vision",
+              title_en: "Our Vision",
+              content_fr: "Accélérer la transformation digitale des entreprises africaines.",
+              content_en: "Accelerating digital transformation for African businesses."
+            }
+          });
+        }
+      } catch (e) {
+        setData({
+          description_fr: "GROW TECH est une agence digitale estudiantine.",
+          description_en: "GROW TECH is a student digital agency.",
+          members: [],
+          projects: [],
+          vision: { title_fr: 'Notre Vision', title_en: 'Our Vision', content_fr: '', content_en: '' }
+        });
+      } finally {
+        setLoading(false);
+      }
     };
-    fetch();
+    fetchData();
   }, []);
 
-  const handleIntroComplete = () => {
-    setShowIntro(false);
-  };
+  const handleIntroComplete = () => setShowIntro(false);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const amount = 300;
-      scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
-    }
-  };
+  if (loading) {
+    return <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#00BFFF] animate-spin rounded-full" /></div>;
+  }
 
-  if (loading) return <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#00BFFF] border-t-transparent rounded-full animate-spin" /></div>;
-  if (!data) return <div className="min-h-screen bg-[#0A0A1E] flex items-center justify-center text-[#A8B4C8]">Données non disponibles</div>;
-
-  const members = data.members || [];
-  const visibleMembers = showAllMembers ? members : members.slice(0, 3);
+  const safeData = data || {};
+  const members = Array.isArray(safeData.members) ? safeData.members : [];
+  const projects = Array.isArray(safeData.projects) ? safeData.projects : [];
+  const description = isFr ? safeData.description_fr : safeData.description_en;
+  const vision = safeData.vision || { title_fr: '', title_en: '', content_fr: '', content_en: '' };
 
   return (
     <div className="min-h-screen bg-[#0A0A1E]">
-      {/* Animation Intro */}
       <AnimatePresence>
         {showIntro && <GrowTechIntro onComplete={handleIntroComplete} />}
       </AnimatePresence>
 
-      {/* Contenu Principal (Masqué pendant l'intro) */}
-      <motion.div 
-        className={`pt-32 pb-24 transition-opacity duration-1000 ${showIntro ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-      >
+      <motion.div className={`transition-opacity duration-700 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
         <Navbar />
-        <main>
-          <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 space-y-32">
-            
-            {/* Header Agence */}
-            <section className="pt-10">
-              <div className="relative mb-12">
-                <SectionNumber number="AG" />
-                <h1 className="text-5xl sm:text-7xl lg:text-9xl font-heading tracking-tighter relative z-10">GROW TECH</h1>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-                {/* Description */}
-                <div className="lg:col-span-7 space-y-8">
-                  <motion.p 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="text-[#A8B4C8] text-xl lg:text-2xl leading-relaxed font-light"
-                  >
-                    {isFr 
-                      ? "GROW TECH n'est pas une simple agence digitale. Nous sommes un accélérateur de croissance pour les entreprises africaines. Nous transformons vos défis en solutions technologiques concrètes, alliant expertise technique et compréhension profonde du marché local."
-                      : "GROW TECH is not just a digital agency. We are a growth accelerator for African businesses. We transform your challenges into concrete technological solutions, combining technical expertise with a deep understanding of the local market."}
-                  </motion.p>
-                  
-                  {data.vision.title_fr && (
-                    <div className="bg-[#141430] border-l-4 border-[#00BFFF] p-6 rounded-r-xl">
-                      <h3 className="text-white font-bold text-xl mb-2">{isFr ? data.vision.title_fr : data.vision.title_en}</h3>
-                      <p className="text-[#A8B4C8]">{isFr ? data.vision.content_fr : data.vision.content_en}</p>
-                    </div>
-                  )}
-                </div>
 
-                {/* Logo */}
-                <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full max-w-sm aspect-square bg-[#141430] rounded-3xl border border-[#1A1A2E] flex items-center justify-center p-8 relative overflow-hidden shadow-[0_0_50px_rgba(0,191,255,0.1)]"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#1A6FC4] to-[#00BFFF] opacity-10" />
-                    {data.logo_url ? (
-                      <img src={data.logo_url} alt="Logo GROW TECH" className="w-full h-full object-contain relative z-10" />
-                    ) : (
-                      <span className="text-8xl font-heading text-white opacity-20 relative z-10">GT</span>
-                    )}
-                  </motion.div>
-                </div>
-              </div>
+        <main className="pt-20">
+          <div className="container-custom max-w-[1280px] mx-auto px-6 space-y-24 pb-20">
+
+            {/* HERO */}
+            <section className="pt-16 text-center">
+              <h1 className="text-6xl sm:text-7xl lg:text-[92px] font-heading tracking-tighter mb-6">GROW TECH</h1>
+              <p className="max-w-2xl mx-auto text-xl text-[#A8B4C8]">
+                {description || (isFr ? "Votre vision, notre technologie." : "Your vision, our technology.")}
+              </p>
             </section>
 
-            {/* Services Section */}
-            <section>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Services' : 'Our Services'}</h2>
-                <div className="w-24 h-1 bg-[#00BFFF] mx-auto rounded-full" />
-              </motion.div>
+            {/* VISION */}
+            {(vision.title_fr || vision.title_en) && (
+              <section className="max-w-3xl mx-auto">
+                <div className="bg-[#141430] border-l-4 border-[#00BFFF] p-8 rounded-r-2xl">
+                  <h3 className="text-2xl font-semibold mb-3 text-white">{isFr ? vision.title_fr : vision.title_en}</h3>
+                  <p className="text-[#A8B4C8] text-lg">{isFr ? vision.content_fr : vision.content_en}</p>
+                </div>
+              </section>
+            )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
+            {/* SERVICES */}
+            <section>
+              <h2 className="text-4xl font-heading text-center mb-12">Nos Services</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[
-                  { title: isFr ? 'Sites vitrines professionnels' : 'Professional Showcase Websites', icon: 'web' },
-                  { title: isFr ? 'Applications web sur mesure' : 'Custom Web Applications', icon: 'app' },
-                  { title: isFr ? 'Intégration IA & Automatisation' : 'AI Integration & Automation', icon: 'ai', highlight: true },
-                  { title: isFr ? 'Solutions SaaS pour le marché africain' : 'SaaS Solutions for African Market', icon: 'saas' },
-                  { title: isFr ? 'Accompagnement digital PME' : 'SME Digital Accompaniment', icon: 'pme' },
-                ].map((service, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`group bg-[#141430] border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center hover:border-[#00BFFF] hover:bg-[#141430]/80 transition-all duration-300 relative overflow-hidden ${
-                      service.highlight ? 'border-purple-500/40 bg-purple-500/5' : 'border-[#1A1A2E]'
-                    }`}
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#00BFFF] rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10 ${
-                      service.highlight ? 'bg-purple-500/20 border-purple-500/50' : 'bg-[#0A0A1E] border-[#00BFFF]/30'
-                    }`}>
-                      {service.icon === 'ai' ? (
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#00BFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <h3 className={`text-lg font-bold relative z-10 ${service.highlight ? 'text-purple-300' : 'text-white'}`}>{service.title}</h3>
-                    {service.highlight && (
-                      <span className="mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                        {isFr ? 'Nouveau' : 'New'}
-                      </span>
-                    )}
-                  </motion.div>
+                  { title: isFr ? 'Sites vitrines professionnels' : 'Professional Websites' },
+                  { title: isFr ? 'Applications web sur mesure' : 'Custom Web Apps' },
+                  { title: isFr ? 'Intégration IA & Automatisation' : 'AI & Automation' },
+                  { title: isFr ? 'Solutions SaaS' : 'SaaS Solutions' },
+                  { title: isFr ? 'Accompagnement PME' : 'SME Support' },
+                ].map((s, i) => (
+                  <div key={i} className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors">
+                    <div className="text-[#00BFFF] text-3xl mb-4">•</div>
+                    <div className="text-xl font-semibold">{s.title}</div>
+                  </div>
                 ))}
               </div>
-
-              {/* CTA Buttons */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-4"
-              >
-                <div className="px-6 sm:px-8 py-3 sm:py-4 bg-[#141430] border border-[#1A1A2E] text-[#A8B4C8] rounded-xl font-bold flex items-center gap-3 opacity-60 cursor-not-allowed text-sm sm:text-base">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                  {isFr ? 'Bientôt disponible' : 'Coming Soon'}
-                </div>
-                <a href="mailto:contact@growtech.bj" className="px-6 sm:px-8 py-3 sm:py-4 bg-[#00BFFF] text-black rounded-xl font-bold flex items-center gap-3 hover:bg-opacity-90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(0,191,255,0.3)] text-sm sm:text-base">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  {isFr ? 'Nous contacter' : 'Contact Us'}
-                </a>
-              </motion.div>
             </section>
 
-            {/* Projets : Scroll Horizontal + Détails */}
-            {data.projects && data.projects.length > 0 && (
+            {/* PROJETS */}
+            {projects.length > 0 && (
               <section>
-                <div className="mb-12">
-                  <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'Nos Réalisations' : 'Our Projects'}</h2>
-                  <p className="text-[#A8B4C8]">{isFr ? 'Des solutions concrètes pour des problèmes réels.' : 'Concrete solutions for real problems.'}</p>
-                </div>
-
-                {/* Scroll Horizontal */}
-                <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 mb-16 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-                  {data.projects.map((proj: any) => (
-                    <div key={proj.id} className="min-w-[280px] md:min-w-[350px] snap-center bg-[#141430] border border-[#1A1A2E] rounded-2xl overflow-hidden group hover:border-[#00BFFF] transition-colors">
-                      <div className="h-48 overflow-hidden bg-[#0A0A1E]">
-                        {proj.image_url ? (
-                          <img src={proj.image_url} alt={proj.title_fr} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-4xl">🚀</div>
-                        )}
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold text-white mb-1">{isFr ? proj.title_fr : proj.title_en}</h3>
-                        <p className="text-[#A8B4C8] text-xs line-clamp-2">{proj.description}</p>
+                <h2 className="text-4xl font-heading text-center mb-10">Projets Récents</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {projects.slice(0, 6).map((proj: any, idx: number) => (
+                    <div key={idx} className="bg-[#141430] border border-[#1A1A2E] rounded-2xl overflow-hidden">
+                      {proj.image_url && <img src={proj.image_url} alt="" className="w-full h-48 object-cover" />}
+                      <div className="p-6">
+                        <h3 className="font-semibold mb-2">{isFr ? proj.title_fr : proj.title_en}</h3>
+                        <p className="text-sm text-[#A8B4C8] line-clamp-2">{proj.description}</p>
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                {/* Détails Alternés */}
-                <div className="space-y-24">
-                  {data.projects.map((proj: any, index: number) => (
-                    <motion.div 
-                      key={`detail-${proj.id}`}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}
-                    >
-                      <div className="w-full lg:w-3/5 aspect-video rounded-2xl overflow-hidden border border-[#1A1A2E]">
-                        {proj.image_url ? (
-                          <img src={proj.image_url} alt={proj.title_fr} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full bg-[#141430] flex items-center justify-center text-6xl">🚀</div>
-                        )}
-                      </div>
-                      <div className="w-full lg:w-2/5 space-y-4">
-                        <span className="text-[#00BFFF] text-xs font-bold uppercase tracking-widest">{proj.status === 'delivered' ? (isFr ? 'Livré' : 'Delivered') : (isFr ? 'En cours' : 'In Progress')}</span>
-                        <h3 className="text-2xl sm:text-3xl font-heading text-white">{isFr ? proj.title_fr : proj.title_en}</h3>
-                        <p className="text-[#A8B4C8] leading-relaxed text-sm sm:text-base">{proj.description}</p>
-                        
-                        {proj.stack && proj.stack.length > 0 && (
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {proj.stack.map((tech: string, i: number) => (
-                              <span key={i} className="px-3 py-1 bg-[#141430] border border-[#1A1A2E] rounded-full text-[#A8B4C8] text-xs">{tech}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        {proj.live_url && (
-                          <a href={proj.live_url} target="_blank" className="inline-flex items-center gap-2 text-white font-semibold hover:text-[#00BFFF] transition-colors mt-4">
-                            {isFr ? 'Voir le projet' : 'View Project'}
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                          </a>
-                        )}
-
-                        {proj.case_study_fr && (
-                          <div className="pt-4 border-t border-[#1A1A2E] mt-4">
-                            <h4 className="text-white text-sm font-bold mb-2">{isFr ? 'Étude de cas' : 'Case Study'}</h4>
-                            <div className="space-y-3">
-                              {Object.values(isFr ? proj.case_study_fr : proj.case_study_en).map((step: any, i: number) => (
-                                <div key={i} className="flex gap-3 text-sm">
-                                  <span className="text-[#00BFFF] font-bold">{i + 1}.</span>
-                                  <div>
-                                    <span className="text-white font-semibold block">{step.title}</span>
-                                    <span className="text-[#A8B4C8] text-xs">{step.content}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Équipe : Limité à 3 + Bouton */}
+            {/* ÉQUIPE */}
             {members.length > 0 && (
               <section>
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl sm:text-5xl font-heading text-white mb-4">{isFr ? 'L\'Équipe' : 'The Team'}</h2>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
-                  {visibleMembers.map((member: any, i: number) => (
-                    <motion.div 
-                      key={member.id} 
-                      initial={{ opacity: 0, y: 20 }} 
-                      whileInView={{ opacity: 1, y: 0 }} 
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 }}
-                      className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 text-center hover:border-[#00BFFF] transition-all group"
-                    >
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
+                <h2 className="text-4xl font-heading text-center mb-10">L'Équipe</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {members.map((member: any, i: number) => (
+                    <div key={i} className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border-2 border-[#1A1A2E]">
                         {member.image_url ? (
-                          <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                          <img src={member.image_url} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-2xl sm:text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
+                          <div className="w-full h-full flex items-center justify-center text-3xl bg-[#0A0A1E] text-[#00BFFF]">{member.initial}</div>
                         )}
                       </div>
-                      <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2 break-words">{member.name}</h3>
-                      <p className="text-[#00BFFF] font-medium text-sm sm:text-base">{isFr ? member.role_fr : member.role_en}</p>
-                    </motion.div>
+                      <div className="font-semibold">{member.name}</div>
+                      <div className="text-sm text-[#00BFFF]">{isFr ? member.role_fr : member.role_en}</div>
+                    </div>
                   ))}
                 </div>
-
-                {members.length > 3 && (
-                  <div className="text-center">
-                    <button 
-                      onClick={() => setShowAllMembers(!showAllMembers)}
-                      className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 bg-[#141430] border border-[#1A1A2E] text-white rounded-full hover:border-[#00BFFF] hover:text-[#00BFFF] transition-all text-sm sm:text-base"
-                    >
-                      {showAllMembers ? (isFr ? 'Voir moins' : 'See less') : (isFr ? `Voir les ${members.length} membres` : `See all ${members.length} members`)}
-                      <svg className={`w-4 h-4 transition-transform ${showAllMembers ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                    </button>
-                  </div>
-                )}
-
-                <AnimatePresence>
-                  {showAllMembers && members.length > 3 && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-8 pt-8 border-t border-[#1A1A2E]">
-                        {members.slice(3).map((member: any, i: number) => (
-                          <motion.div 
-                            key={member.id} 
-                            initial={{ opacity: 0, y: 20 }} 
-                            animate={{ opacity: 1, y: 0 }} 
-                            transition={{ delay: i * 0.1 }}
-                            className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 text-center hover:border-[#00BFFF] transition-all group"
-                          >
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full overflow-hidden border-2 border-[#1A1A2E] group-hover:border-[#00BFFF] transition-colors">
-                              {member.image_url ? (
-                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-[#0A0A1E] flex items-center justify-center text-2xl sm:text-3xl font-heading text-[#00BFFF]">{member.initial}</div>
-                              )}
-                            </div>
-                            <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2 break-words">{member.name}</h3>
-                            <p className="text-[#00BFFF] font-medium text-sm sm:text-base">{isFr ? member.role_fr : member.role_en}</p>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </section>
             )}
 
