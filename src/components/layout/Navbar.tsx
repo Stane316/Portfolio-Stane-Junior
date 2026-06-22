@@ -30,6 +30,7 @@ const Navbar: React.FC = () => {
   const navItems = [
     { label: isFr ? 'Accueil' : 'Home', path: '/', isAnchor: false },
     { label: isFr ? 'À propos' : 'About', path: '#about', isAnchor: true },
+    { label: isFr ? 'Parcours' : 'Journey', path: '#journey', isAnchor: true },
     { label: isFr ? 'Projets' : 'Projects', path: '#projects', isAnchor: true },
     { label: 'GROW TECH', path: '/growtech', isAnchor: false },
     { label: 'Blog', path: '/blog', isAnchor: false },

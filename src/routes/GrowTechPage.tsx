@@ -211,10 +211,11 @@ const GrowTechPage: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
                 {[
-                  { title: isFr ? 'Sites vitrines professionnels' : 'Professional Showcase Websites' },
-                  { title: isFr ? 'Applications web sur mesure' : 'Custom Web Applications' },
-                  { title: isFr ? 'Solutions SaaS pour le marché africain' : 'SaaS Solutions for African Market' },
-                  { title: isFr ? 'Accompagnement digital PME' : 'SME Digital Accompaniment' },
+                  { title: isFr ? 'Sites vitrines professionnels' : 'Professional Showcase Websites', icon: 'web' },
+                  { title: isFr ? 'Applications web sur mesure' : 'Custom Web Applications', icon: 'app' },
+                  { title: isFr ? 'Intégration IA & Automatisation' : 'AI Integration & Automation', icon: 'ai', highlight: true },
+                  { title: isFr ? 'Solutions SaaS pour le marché africain' : 'SaaS Solutions for African Market', icon: 'saas' },
+                  { title: isFr ? 'Accompagnement digital PME' : 'SME Digital Accompaniment', icon: 'pme' },
                 ].map((service, index) => (
                   <motion.div
                     key={index}
@@ -222,15 +223,30 @@ const GrowTechPage: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="group bg-[#141430] border border-[#1A1A2E] rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center hover:border-[#00BFFF] hover:bg-[#141430]/80 transition-all duration-300 relative overflow-hidden"
+                    className={`group bg-[#141430] border rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center hover:border-[#00BFFF] hover:bg-[#141430]/80 transition-all duration-300 relative overflow-hidden ${
+                      service.highlight ? 'border-purple-500/40 bg-purple-500/5' : 'border-[#1A1A2E]'
+                    }`}
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#00BFFF] rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0A0A1E] border border-[#00BFFF]/30 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10">
-                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#00BFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                      </svg>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10 ${
+                      service.highlight ? 'bg-purple-500/20 border-purple-500/50' : 'bg-[#0A0A1E] border-[#00BFFF]/30'
+                    }`}>
+                      {service.icon === 'ai' ? (
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#00BFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
                     </div>
-                    <h3 className="text-lg font-bold text-white relative z-10">{service.title}</h3>
+                    <h3 className={`text-lg font-bold relative z-10 ${service.highlight ? 'text-purple-300' : 'text-white'}`}>{service.title}</h3>
+                    {service.highlight && (
+                      <span className="mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                        {isFr ? 'Nouveau' : 'New'}
+                      </span>
+                    )}
                   </motion.div>
                 ))}
               </div>

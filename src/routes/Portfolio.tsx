@@ -6,6 +6,7 @@ import HeroScene from '../components/three/HeroScene'; // Nouvelle scène 3D
 import { SkeletonHero } from '../components/ui/Skeleton';
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
+import Journey from '../components/sections/Journey';
 import Skills from '../components/sections/Skills';
 import ProjectsStrip from '../components/sections/ProjectsStrip';
 import ProjectsDetails from '../components/sections/ProjectsDetails';
@@ -72,6 +73,10 @@ const Portfolio: React.FC = () => {
         
         <section id="about" aria-label="À propos">
           <About />
+        </section>
+        
+        <section id="journey" aria-label="Parcours">
+          <Journey />
         </section>
         
         <section id="skills" aria-label="Compétences">

@@ -15,12 +15,19 @@ export const translations: Record<Language, Record<string, string>> = {
     // Navigation
     'nav.home': 'Accueil',
     'nav.about': 'À propos',
+    'nav.journey': 'Parcours',
     'nav.skills': 'Compétences',
     'nav.projects': 'Projets',
     'nav.growtech': 'GROW TECH',
     'nav.vision': 'Vision',
     'nav.contact': 'Contact',
     'nav.blog': 'Blog',
+    
+    // Journey Section
+    'journey.title': 'Parcours',
+    'journey.subtitle': "De la rigueur mathématique à l'ingénierie des systèmes intelligents. Une progression naturelle.",
+    'journey.now': 'Maintenant',
+    'journey.statement': "Je ne veux pas devenir juste un autre développeur full-stack. Mon ambition est de devenir un ingénieur capable de construire des systèmes intelligents.",
     
     // Hero Section
     'hero.badge': 'Building Intelligent Systems for Africa',
@@ -231,12 +238,19 @@ export const translations: Record<Language, Record<string, string>> = {
     // Navigation
     'nav.home': 'Home',
     'nav.about': 'About',
+    'nav.journey': 'Journey',
     'nav.skills': 'Skills',
     'nav.projects': 'Projects',
     'nav.growtech': 'GROW TECH',
     'nav.vision': 'Vision',
     'nav.contact': 'Contact',
     'nav.blog': 'Blog',
+    
+    // Journey Section
+    'journey.title': 'JOURNEY',
+    'journey.subtitle': 'From mathematical rigor to intelligent systems engineering. A natural progression.',
+    'journey.now': 'Now',
+    'journey.statement': "I do not want to become just another full-stack developer. My ambition is to become an engineer capable of building intelligent systems.",
     
     // Hero Section
     'hero.badge': 'Building Intelligent Systems for Africa',
