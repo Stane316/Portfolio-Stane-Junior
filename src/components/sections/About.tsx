@@ -20,13 +20,13 @@ const About: React.FC = () => {
         "J'ai 18 ans, étudiant en Licence 1 Développement Logiciel à l'IFRI-UAC. Je code depuis que j'ai compris qu'on pouvait transformer une idée en quelque chose de réel avec juste un clavier.",
         "Ce qui me motive n'est pas l'outil. C'est le problème à résoudre. J'ai travaillé dans une agence Mobile Money, j'ai vu comment les petits commerçants béninois gèrent — ou plutôt ne gèrent pas — leurs factures. C'est de là qu'est né FacturaPro.",
         "Aujourd'hui, j'ai co-fondé GROW TECH. Six personnes. Une vraie agence. On développe des solutions digitales pour les entreprises du Bénin et de la sous-région OHADA.",
-        "Récemment, mon parcours a pris une nouvelle direction. L'intelligence artificielle n'est pas pour moi une mode — c'est le prolongement naturel de ma façon de penser. Observer un système, comprendre sa logique, puis concevoir des solutions qui apprennent et s'adaptent. C'est la suite logique de tout ce que j'ai construit jusqu'ici. Mon objectif : devenir un AI Systems Engineer capable de combiner génie logiciel et intelligence artificielle pour l'Afrique.",
+        "Récemment, mon parcours a pris une direction claire. L'intelligence artificielle n'est pas une mode pour moi, c'est le prolongement naturel de ma façon de penser : observer un système, comprendre sa logique, puis concevoir des solutions qui apprennent et s'adaptent. Aujourd'hui, je développe des agents IA et des systèmes intelligents. Mon objectif est de devenir un ingénieur capable de concevoir des systèmes intelligents utiles pour l'Afrique.",
       ]
     : [
         "I'm 18, studying Software Development at IFRI-UAC. I've been coding since I realized you can turn an idea into something real with just a keyboard.",
         "What drives me isn't the tool. It's the problem to solve. I worked at a Mobile Money agency and saw how small Beninese merchants struggle with invoicing. That's where FacturaPro was born.",
         "Today, I co-founded GROW TECH. Six people. A real agency. We build digital solutions for businesses in Benin and the OHADA sub-region.",
-        "Recently, my journey has taken a new direction. Artificial intelligence isn't a trend for me — it's the natural extension of how I think. Observe a system, understand its logic, then design solutions that learn and adapt. That's the logical next step from everything I've built so far. My goal: become an AI Systems Engineer capable of combining software engineering and artificial intelligence for Africa.",
+        "Recently, my path has taken a clear direction. Artificial intelligence isn't a trend for me — it's the natural extension of how I think: observe a system, understand its logic, then design solutions that learn and adapt. Today I'm building AI agents and intelligent systems. My goal is to become an engineer who designs intelligent systems that create real value for Africa.",
       ];
 
   // EVOLUTION 2026: Stats updated — Projects, Agency, Age
@@ -47,8 +47,8 @@ const About: React.FC = () => {
 
   // EVOLUTION 2026: Updated conclusion — from "développeur" to "ingénieur logiciel en devenir"
   const conclusion = isFr
-    ? "Je suis un ingénieur logiciel en devenir. J'observe, je comprends, je construis. Et aujourd'hui, je construis des systèmes intelligents."
-    : "I'm a software engineer in the making. I observe, I understand, I build. And today, I build intelligent systems.";
+    ? "Je suis un ingénieur logiciel en devenir qui combine mathématiques, génie logiciel et intelligence artificielle pour construire des systèmes intelligents."
+    : "I'm a software engineer in the making who combines mathematics, software engineering and artificial intelligence to build intelligent systems.";
 
   return (
     <section id="about" className="py-24 lg:py-32 bg-[#0A0A1E] relative overflow-hidden">
