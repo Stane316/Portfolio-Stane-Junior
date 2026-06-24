@@ -8,8 +8,11 @@ import SectionNumber from '../../components/ui/SectionNumber';
 /**
  * Projects Section — Public display of portfolio projects
  *
- * P-13 FIX: Replaced emoji (🚀, 📖, ✅, 🔄, 💭) with SVG icons
- * P-15 FIX: Uses SkeletonProjects for loading state
+ * EVOLUTION 2026: 
+ * - "Ce que je construis aujourd'hui"
+ * - Shows concrete delivered work as the foundation for intelligent systems
+ * - Links naturally to Vision (FacturaPro → AgentFactura, etc.)
+ * - Preserves all existing functionality (Supabase, modal, lazy loading)
  */
 
 import { SkeletonProjects } from '../../components/ui/Skeleton';
@@ -126,15 +129,24 @@ const Projects: React.FC = () => {
     <section id="projects" className="py-24 lg:py-32 relative overflow-hidden bg-[#0A0A1E]">
       <div className="container-custom relative z-10">
         
-        {/* HEADER DE SECTION NOUVEAU STYLE */}
+        {/* HEADER — EVOLUTION 2026 */}
         <div className="mb-20 relative">
           <SectionNumber number="02" />
           <div className="heading-mixed relative z-10">
             <span className="label">PROJETS</span>
             <span className="subtitle">
-              {isFr ? 'Des problèmes réels, des solutions concrètes.' : 'Real problems, concrete solutions.'}
+              {isFr ? 'Des problèmes observés. Des solutions livrées. Les fondations de systèmes intelligents.' : 'Problems observed. Solutions delivered. The foundations of intelligent systems.'}
             </span>
           </div>
+        </div>
+
+        {/* EVOLUTION 2026: Intro paragraph — shows progression */}
+        <div className="max-w-3xl mb-16">
+          <p className="text-[#A8B4C8] text-lg leading-relaxed">
+            {isFr 
+              ? "Chaque projet que j'ai livré est né d'un problème réel observé sur le terrain. Ces réalisations concrètes constituent les fondations solides sur lesquelles je construis aujourd'hui des systèmes intelligents. FacturaPro, par exemple, a posé les bases de ce qui deviendra AgentFactura."
+              : "Every project I have delivered was born from a real problem observed in the field. These concrete realizations form the solid foundation on which I am now building intelligent systems. FacturaPro, for example, laid the groundwork for what will become AgentFactura."}
+          </p>
         </div>
 
         {error && (

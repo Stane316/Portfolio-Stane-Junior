@@ -8,8 +8,10 @@ import { SkeletonVision } from '../../components/ui/Skeleton';
 /**
  * Vision Section — Public display of future projects/concepts
  *
- * EVOLUTION 2026: Fallback data includes AI concepts
- * (AgentFactura, MentorLink, OHADA Legal Assistant)
+ * EVOLUTION 2026: "Ce que je construis pour demain"
+ * - Stronger storytelling: observer problème → documenter solution → valider
+ * - AI concepts are the natural prolongation of delivered projects (FacturaPro → AgentFactura)
+ * - Position as concrete evidence of the journey toward intelligent systems
  */
 
 interface VisionItem {
@@ -25,7 +27,8 @@ interface VisionItem {
 }
 
 // ============================================================
-// Fallback data — EVOLUTION 2026: AI concepts added
+// Fallback data — EVOLUTION 2026: Aligned with Journey + Skills
+// From mathematics rigor → software foundations → intelligent systems
 // ============================================================
 
 const FALLBACK_VISIONS: VisionItem[] = [
@@ -33,8 +36,8 @@ const FALLBACK_VISIONS: VisionItem[] = [
     id: '1',
     title_fr: 'FacturaPro',
     title_en: 'FacturaPro',
-    description_fr: "SaaS de facturation conçu pour les entrepreneurs d'Afrique francophone. Résout le problème de gestion des factures observé dans les agences Mobile Money.",
-    description_en: 'Invoicing SaaS designed for entrepreneurs in French-speaking Africa. Solves the invoicing management problem observed in Mobile Money agencies.',
+    description_fr: "SaaS de facturation conçu pour les entrepreneurs d'Afrique francophone. Résout le problème de gestion des factures observé dans les agences Mobile Money. Premier produit livré qui a posé les bases d'une automatisation intelligente.",
+    description_en: 'Invoicing SaaS designed for entrepreneurs in French-speaking Africa. Solves the invoicing management problem observed in Mobile Money agencies. First delivered product that laid the foundations for intelligent automation.',
     status: 'concept',
     image_url: '',
     order: 1,
@@ -44,8 +47,8 @@ const FALLBACK_VISIONS: VisionItem[] = [
     id: '2',
     title_fr: 'AgentFactura',
     title_en: 'AgentFactura',
-    description_fr: "Un agent IA de facturation intelligente pour la zone OHADA. Comprend le contexte réglementaire, génère des factures conformes, prédit les flux de trésorerie et automatise le suivi. FacturaPro évolue vers un système intelligent.",
-    description_en: 'An AI invoicing agent for the OHADA zone. Understands regulatory context, generates compliant invoices, predicts cash flows and automates follow-up. FacturaPro evolves into an intelligent system.',
+    description_fr: "Un agent IA de facturation intelligente pour la zone OHADA. Comprend le contexte réglementaire, génère des factures conformes, prédit les flux de trésorerie et automatise le suivi. FacturaPro évolue naturellement vers un système intelligent.",
+    description_en: 'An AI invoicing agent for the OHADA zone. Understands regulatory context, generates compliant invoices, predicts cash flows and automates follow-up. FacturaPro evolves naturally into an intelligent system.',
     status: 'concept',
     image_url: '',
     order: 2,
@@ -55,8 +58,8 @@ const FALLBACK_VISIONS: VisionItem[] = [
     id: '3',
     title_fr: 'MentorLink',
     title_en: 'MentorLink',
-    description_fr: "Plateforme de mentorat académique avec système de recommandation intelligent. Connecte étudiants et mentors via un accompagnement adaptatif. Pas juste un réseau — un système qui apprend des parcours de réussite.",
-    description_en: 'Academic mentorship platform with intelligent recommendation system. Connects students and mentors through adaptive accompaniment. Not just a network — a system that learns from success paths.',
+    description_fr: "Plateforme de mentorat académique avec système de recommandation intelligent. Connecte étudiants et mentors via un accompagnement adaptatif. Pas juste un réseau — un système qui apprend des parcours de réussite pour construire des trajectoires plus efficaces.",
+    description_en: 'Academic mentorship platform with intelligent recommendation system. Connects students and mentors through adaptive accompaniment. Not just a network — a system that learns from success paths to build more effective trajectories.',
     status: 'concept',
     image_url: '',
     order: 3,
@@ -66,8 +69,8 @@ const FALLBACK_VISIONS: VisionItem[] = [
     id: '4',
     title_fr: 'Assistant Juridique OHADA',
     title_en: 'OHADA Legal Assistant',
-    description_fr: "Un système RAG alimenté par la documentation juridique OHADA qui aide les entrepreneurs à naviguer les obligations légales. L'IA au service de l'accessibilité juridique en Afrique francophone.",
-    description_en: 'A RAG system powered by OHADA legal documentation that helps entrepreneurs navigate legal obligations. AI serving legal accessibility in French-speaking Africa.',
+    description_fr: "Un système RAG alimenté par la documentation juridique OHADA qui aide les entrepreneurs à naviguer les obligations légales. L'IA au service de l'accessibilité juridique en Afrique francophone. Un exemple concret de système intelligent utile.",
+    description_en: 'A RAG system powered by OHADA legal documentation that helps entrepreneurs navigate legal obligations. AI serving legal accessibility in French-speaking Africa. A concrete example of a useful intelligent system.',
     status: 'concept',
     image_url: '',
     order: 4,
@@ -125,11 +128,11 @@ const Vision: React.FC = () => {
     switch (status) {
       case 'in_progress': return isFr ? 'En développement' : 'In Development';
       case 'paused': return isFr ? 'En pause' : 'Paused';
-      default: return isFr ? 'Concept' : 'Concept';
+      default: return isFr ? 'Concept documenté' : 'Documented Concept';
     }
   };
 
-  // EVOLUTION 2026: Check if item is AI-related for visual distinction
+  // EVOLUTION 2026: AI concepts get visual distinction + link to journey
   const isAIConcept = (title: string) => {
     const aiKeywords = ['Agent', 'AI', 'Assistant', 'Intelligent', 'RAG', 'MentorLink'];
     return aiKeywords.some(kw => title.includes(kw));
@@ -139,24 +142,35 @@ const Vision: React.FC = () => {
     <section id="vision" className="py-24 lg:py-32 bg-[#0A0A1E] relative overflow-hidden">
       <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
         
-        {/* Header */}
+        {/* Header — EVOLUTION 2026: "Ce que je construis pour demain" */}
         <div className="mb-16 lg:mb-24">
           <div className="relative">
-            <SectionNumber number="04" />
+            <SectionNumber number="03" />
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
-              VISION
+              {isFr ? 'VISION' : 'VISION'}
             </h2>
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
-              {isFr ? 'Les projets qui façonneront demain.' : 'Projects that will shape tomorrow.'}
+              {isFr 
+                ? "Ce que je construis pour demain. Des idées documentées. Des problèmes réels. Des systèmes intelligents en construction."
+                : "What I'm building for tomorrow. Documented ideas. Real problems. Intelligent systems in construction."}
             </p>
           </div>
+        </div>
+
+        {/* Stronger explanation per evolution plan */}
+        <div className="max-w-3xl mb-16">
+          <p className="text-[#A8B4C8] text-lg leading-relaxed">
+            {isFr 
+              ? "Ces projets ne sont pas encore livrés. Ils sont en réflexion, en pause ou en construction. Je les présente ici non pas pour prétendre qu'ils existent, mais parce qu'ils témoignent d'une façon de penser : observer un problème de marché, documenter une solution, valider avant de coder. Ils illustrent ma progression naturelle du génie logiciel vers l'ingénierie des systèmes intelligents."
+              : "These projects are not yet delivered. They are in reflection, on hold, or under construction. I present them here not to claim they exist, but because they demonstrate a way of thinking: observe a market problem, document a solution, validate before coding. They illustrate my natural progression from software engineering toward intelligent systems engineering."}
+          </p>
         </div>
 
         {/* P-15 FIX: Skeleton loading */}
         {loading ? (
           <SkeletonVision />
         ) : (
-          /* Grille des Projets */
+          /* Grille des Projets — EVOLUTION 2026: AI concepts highlighted */
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {visions.map((item, index) => (
               <motion.div
@@ -227,6 +241,21 @@ const Vision: React.FC = () => {
             ))}
           </div>
         )}
+
+        {/* EVOLUTION 2026: Strong closing statement — links Vision to Journey & Future */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="mt-16 text-center"
+        >
+          <p className="text-[#A8B4C8] text-sm italic max-w-2xl mx-auto">
+            {isFr
+              ? "Ces concepts documentés sont la preuve que je ne construis pas seulement des logiciels. Je construis des systèmes qui apprennent, s'adaptent et créent de la valeur réelle pour l'Afrique — le prolongement naturel de mon parcours."
+              : "These documented concepts prove that I don't just build software. I build systems that learn, adapt, and create real value for Africa — the natural extension of my journey."}
+          </p>
+        </motion.div>
       </div>
     </section>
   );
