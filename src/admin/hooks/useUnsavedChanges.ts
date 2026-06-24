@@ -10,7 +10,7 @@
  *   // The hook automatically shows browser warning on tab close / URL change
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 
 interface UseUnsavedChangesReturn {
@@ -23,12 +23,11 @@ interface UseUnsavedChangesReturn {
 
 export function useUnsavedChanges(): UseUnsavedChangesReturn {
   const hasChangesRef = useRef(false);
-  const [, forceUpdate] = useRef(0);
+  const [hasChanges, setHasChangesState] = useState(false);
 
   const setHasChanges = useCallback((value: boolean) => {
     hasChangesRef.current = value;
-    // Force re-render so consumers can read hasChanges
-    forceUpdate.current += 1;
+    setHasChangesState(value);
   }, []);
 
   // Block React Router navigation when there are unsaved changes
@@ -42,6 +41,7 @@ export function useUnsavedChanges(): UseUnsavedChangesReturn {
 
   const proceed = useCallback(() => {
     hasChangesRef.current = false;
+    setHasChangesState(false);
     blocker.proceed?.();
   }, [blocker]);
 
@@ -65,7 +65,7 @@ export function useUnsavedChanges(): UseUnsavedChangesReturn {
   }, []);
 
   return {
-    hasChanges: hasChangesRef.current,
+    hasChanges,
     setHasChanges,
     isBlocked,
     proceed,
