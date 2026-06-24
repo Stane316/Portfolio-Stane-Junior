@@ -56,19 +56,64 @@ export interface SiteConfig {
   [key: string]: { value_fr: string; value_en: string; value_generic: string };
 }
 
+export interface MediaItem {
+  id: string;
+  key: string;
+  type: 'image' | 'video';
+  url: string | null;
+  storage_path: string | null;
+  alt_fr: string | null;
+  alt_en: string | null;
+  section: string;
+  active: boolean;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface UseSupabaseDataReturn {
   projects: Project[];
   testimonials: Testimonial[];
   siteConfig: SiteConfig;
+  mediaItems: MediaItem[];
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
 }
 
+// UNIVERSAL MEDIA HELPER — Phase 2
+export const getMediaForKey = (
+  key: string, 
+  siteConfig: SiteConfig, 
+  mediaItems: MediaItem[],
+  fallbackUrl?: string
+): { url: string | null; type: 'image' | 'video' } => {
+  // 1. Prefer dedicated media_items table
+  const media = mediaItems.find(m => m.key === key && m.active && m.url);
+  if (media) {
+    return {
+      url: media.url,
+      type: media.type
+    };
+  }
+
+  // 2. Fallback to site_config (legacy + hero_video_url etc.)
+  const configEntry = siteConfig[key];
+  const url = configEntry?.value_generic || fallbackUrl || null;
+
+  const isVideo = !!url && /\.(mp4|mov|webm|avi)$/i.test(url);
+  
+  return {
+    url,
+    type: isVideo ? 'video' : 'image'
+  };
+};
+
 export const useSupabaseData = (): UseSupabaseDataReturn => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({});
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,14 +132,16 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
           hero_badge: FALLBACK_BADGE,
           hero_tagline: FALLBACK_TAGLINE,
         });
+        setMediaItems([]);
         setLoading(false);
         return;
       }
       
-      const [projectsRes, testimonialsRes, configRes] = await Promise.all([
+      const [projectsRes, testimonialsRes, configRes, mediaRes] = await Promise.all([
         supabase.from('projects').select('*').eq('is_visible', true).order('display_order', { ascending: true }),
         supabase.from('testimonials').select('*').eq('is_visible', true).order('display_order', { ascending: true }),
         supabase.from('site_config').select('*'),
+        supabase.from('media_items').select('*').eq('active', true).order('order_index', { ascending: true }),
       ]);
 
       if (projectsRes.error) throw projectsRes.error;
@@ -104,6 +151,7 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
       setProjects((projectsRes.data as Project[]) || []);
       setTestimonials((testimonialsRes.data as Testimonial[]) || []);
       
+      // Site config
       const configMap = (configRes.data || []).reduce((acc: SiteConfig, item: any) => {
         acc[item.key] = {
           value_fr: item.value_fr || '',
@@ -113,7 +161,7 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
         return acc;
       }, {} as SiteConfig);
 
-      // Merge avec les fallbacks pour les stats si absentes de la DB
+      // Merge avec les fallbacks pour les stats si absentes
       if (!configMap.hero_stat_1) configMap.hero_stat_1 = FALLBACK_STATS.hero_stat_1;
       if (!configMap.hero_stat_2) configMap.hero_stat_2 = FALLBACK_STATS.hero_stat_2;
       if (!configMap.hero_stat_3) configMap.hero_stat_3 = FALLBACK_STATS.hero_stat_3;
@@ -122,9 +170,13 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
 
       setSiteConfig(configMap);
 
+      // Media items (new universal system)
+      setMediaItems((mediaRes.data as MediaItem[]) || []);
+
     } catch (err: any) {
       console.error('Error fetching data from Supabase:', err);
       setError(err.message || 'Failed to load data');
+      
       // En cas d'erreur, utiliser les fallbacks (EVOLUTION 2026)
       setProjects([]);
       setTestimonials([]);
@@ -135,6 +187,7 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
         hero_badge: FALLBACK_BADGE,
         hero_tagline: FALLBACK_TAGLINE,
       });
+      setMediaItems([]);
     } finally {
       setLoading(false);
     }
@@ -144,5 +197,5 @@ export const useSupabaseData = (): UseSupabaseDataReturn => {
     fetchData();
   }, [fetchData]);
 
-  return { projects, testimonials, siteConfig, loading, error, refresh: fetchData };
+  return { projects, testimonials, siteConfig, mediaItems, loading, error, refresh: fetchData };
 };
