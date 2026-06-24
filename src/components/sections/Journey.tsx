@@ -18,6 +18,8 @@ import SectionNumber from '../../components/ui/SectionNumber';
  * Future: AI Systems Engineer
  * 
  * Position: Between About and Skills
+ * 
+ * FINAL POLISH: Renamed/strengthened Future step + much stronger closing statement
  */
 
 interface JourneyStep {
@@ -73,8 +75,8 @@ const Journey: React.FC = () => {
       year: 'Future',
       title_fr: 'Ingénieur Systèmes Intelligents',
       title_en: 'AI Systems Engineer',
-      description_fr: "Mon ambition : devenir un ingénieur capable de combiner mathématiques, génie logiciel et intelligence artificielle pour construire des systèmes intelligents utiles pour l'Afrique. Le chemin continue.",
-      description_en: "My ambition: to become an engineer capable of combining mathematics, software engineering and artificial intelligence to build intelligent systems useful for Africa. The journey continues.",
+      description_fr: "Mon ambition ultime : devenir un ingénieur capable de combiner mathématiques, génie logiciel et intelligence artificielle pour concevoir des systèmes intelligents qui transforment réellement l'Afrique. Pas pour quelques-uns. Pour des millions de personnes. Je ne veux pas juste coder. Je veux construire l'avenir.",
+      description_en: "My ultimate ambition: to become an engineer capable of combining mathematics, software engineering and artificial intelligence to design intelligent systems that truly transform Africa. Not for a few. For millions of people. I don't just want to code. I want to build the future.",
       icon: 'flag',
     },
   ];
@@ -210,7 +212,7 @@ const Journey: React.FC = () => {
           })}
         </div>
 
-        {/* Bottom statement */}
+        {/* Bottom statement — FINAL POLISH 2026: Texte beaucoup plus fort et ambitieux */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -218,10 +220,10 @@ const Journey: React.FC = () => {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-16 text-center"
         >
-          <p className="text-[#A8B4C8] text-sm italic max-w-xl mx-auto">
+          <p className="text-[#A8B4C8] text-sm italic max-w-2xl mx-auto">
             {isFr
-              ? "Je ne veux pas devenir juste un autre développeur full-stack. Mon ambition est de devenir un ingénieur capable de construire des systèmes intelligents."
-              : "I do not want to become just another full-stack developer. My ambition is to become an engineer capable of building intelligent systems."}
+              ? "Je ne suis pas simplement un étudiant en génie logiciel. Je suis un futur ingénieur systèmes intelligents qui combine mathématiques, génie logiciel, pensée produit et systèmes intelligents pour construire des technologies utiles pour l'Afrique. Pas pour quelques-uns. Pour des millions."
+              : "I am not simply a software engineering student. I am a future intelligent systems engineer who combines mathematics, software engineering, product thinking and intelligent systems to build useful technology for Africa. Not for a few. For millions."}
           </p>
         </motion.div>
       </div>
