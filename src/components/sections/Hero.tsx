@@ -3,6 +3,11 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
+/**
+ * HERO — CINEMATIC IMMERSIVE SCENE (Creative Direction Master Prompt)
+ * Supports IMAGE or VIDEO dynamically
+ */
+
 const Hero: React.FC = () => {
   const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
@@ -14,132 +19,98 @@ const Hero: React.FC = () => {
     return field === 'value' ? config.value_generic || '0' : (isFr ? config.value_fr : config.value_en);
   };
 
-  // Badge — i18n first, Supabase override second
-  const badge = siteConfig['hero_badge'] 
-    ? (isFr ? siteConfig['hero_badge'].value_fr : siteConfig['hero_badge'].value_en)
-    : t('hero.badge');
-
-  // Tagline — CONSERVÉ
-  const tagline = siteConfig['hero_tagline']
-    ? (isFr ? siteConfig['hero_tagline'].value_fr : siteConfig['hero_tagline'].value_en)
-    : t('hero.tagline');
-
+  const badge = siteConfig['hero_badge'] ? (isFr ? siteConfig['hero_badge'].value_fr : siteConfig['hero_badge'].value_en) : t('hero.badge');
+  const tagline = siteConfig['hero_tagline'] ? (isFr ? siteConfig['hero_tagline'].value_fr : siteConfig['hero_tagline'].value_en) : t('hero.tagline');
   const ctaProjects = t('hero.cta.projects');
   const ctaContact = t('hero.cta.contact');
   const cvUrl = siteConfig['cv_url']?.value_generic || '#';
 
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
+  const heroVideoUrl = siteConfig['hero_video_url']?.value_generic || '';
+  const useVideo = !!heroVideoUrl;
 
-  // Stats — i18n for fallback labels
   const stats = [
     { value: getStat('1', 'value'), label: getStat('1', 'label') },
     { value: getStat('2', 'value'), label: getStat('2', 'label') },
     { value: getStat('3', 'value'), label: getStat('3', 'label') },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-24 sm:pt-32 lg:pt-20 overflow-hidden">
-      <div className="gradient-mesh" />
+    <section className="relative min-h-screen flex items-center justify-center pt-20 sm:pt-24 lg:pt-16 overflow-hidden bg-[#0A0A1E]">
+      {/* Cinematic layers */}
+      <div className="absolute inset-0 bg-[radial-gradient(#1A1A2E_0.7px,transparent_1px)] bg-[length:3.5px_3.5px] opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/80" />
+      <div className="absolute top-[-20%] right-[-10%] w-[700px] h-[700px] bg-[#00BFFF]/8 rounded-full blur-[180px] pointer-events-none" />
 
       <div className="container-custom relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="text-center lg:text-left"
-          >
-            {/* Badge */}
-            <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-4 sm:mb-6">
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 glass rounded-full">
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                <span className="text-cyan-400 text-xs sm:text-sm font-semibold whitespace-nowrap">{badge}</span>
-              </div>
-            </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+          <div className="lg:col-span-7 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-8">
+              <div className="w-1.5 h-1.5 bg-[#00BFFF] rounded-full animate-pulse" />
+              <span className="text-[#00BFFF] text-xs sm:text-sm font-medium tracking-[3px] uppercase">{badge}</span>
+            </div>
 
-            {/* Headline — bilingue via i18n */}
-            <motion.h1 variants={itemVariants} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-4 sm:mb-6 leading-tight">
-              <span className="text-gradient">{t('hero.headline.line1')}</span>
-              <br />
-              <span className="text-white">{t('hero.headline.line2')}</span>
-            </motion.h1>
+            <h1 className="text-[52px] sm:text-[68px] md:text-[82px] lg:text-[92px] xl:text-[102px] font-display font-bold leading-[0.86] tracking-[-4.5px] mb-7">
+              <span className="text-white">{t('hero.headline.line1')}</span><br />
+              <span className="text-[#00BFFF]">{t('hero.headline.line2')}</span>
+            </h1>
 
-            <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 px-2">
+            <p className="text-[17px] sm:text-xl text-[#A8B4C8] max-w-[580px] mx-auto lg:mx-0 mb-9 leading-relaxed">
               {tagline}
-            </motion.p>
+            </p>
 
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8">
-              <a href="#projects" className="btn-primary inline-flex items-center justify-center gap-2 min-h-[48px] px-5 sm:px-6 md:px-8">
-                <span className="text-sm sm:text-base">{ctaProjects}</span>
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10">
+              <a href="#projects" className="inline-flex items-center justify-center gap-3 px-10 py-[17px] rounded-2xl bg-white text-black font-semibold text-base hover:bg-[#00BFFF] hover:text-white active:scale-[0.985] transition-all">
+                {ctaProjects}
               </a>
-              <a href="#contact" className="btn-secondary inline-flex items-center justify-center min-h-[48px] px-5 sm:px-6 md:px-8">
-                <span className="text-sm sm:text-base">{ctaContact}</span>
+              <a href="#contact" className="inline-flex items-center justify-center gap-3 px-10 py-[17px] rounded-2xl border border-white/30 hover:bg-white/5 font-medium text-base transition-all">
+                {ctaContact}
               </a>
-            </motion.div>
+            </div>
 
             {cvUrl && cvUrl !== '#' && (
-              <motion.a variants={itemVariants} href={cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors text-sm px-2 mb-6 sm:mb-8">
+              <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-[#A8B4C8] hover:text-white mb-10 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 {t('about.cv.download')}
-              </motion.a>
+              </a>
             )}
 
-            {/* Stats */}
-            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-2xl mx-auto lg:mx-0">
-              {stats.map((stat, index) => (
-                <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + index * 0.1 }} className="glass-card text-center py-2 sm:py-3 md:py-4">
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-cyan-400 mb-0 sm:mb-1">{stat.value}</div>
-                  <div className="text-gray-400 text-[10px] sm:text-xs md:text-sm px-1 leading-tight">{stat.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="hidden lg:flex justify-center items-center relative"
-          >
-            {/* Photo Hero */}
-            <div className="flex justify-center items-center relative">
-               <div className="absolute w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-cyan-400 rounded-full blur-[80px] sm:blur-[100px] opacity-20 sm:opacity-30 animate-pulse" />
-               <div className="relative w-auto h-auto max-w-[400px] max-h-[600px] animate-float">
-                   <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl rotate-3 sm:rotate-6 opacity-60" />
-                   <div className="absolute inset-0 glass rounded-2xl sm:rounded-3xl -rotate-3 sm:-rotate-6 opacity-60" />
-                   <div className="relative bg-[#141430] border border-[#1A1A2E] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
-                       {heroImageUrl ? (
-                           <img src={heroImageUrl} alt="Stane-Junior Aniambossou" className="w-full h-auto max-h-[600px] object-contain" />
-                       ) : (
-                           <div className="w-[350px] h-[450px] flex items-center justify-center">
-                             <span className="text-8xl font-heading text-white opacity-50">SJ</span>
-                           </div>
-                       )}
-                   </div>
+            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
+              {stats.map((stat, i) => (
+                <div key={i} className="bg-[#141430]/80 border border-[#1A1A2E] rounded-2xl py-3.5 text-center">
+                  <div className="text-3xl font-display font-bold text-[#00BFFF] tracking-tighter">{stat.value}</div>
+                  <div className="text-[#A8B4C8] text-[10px] mt-1 tracking-widest uppercase">{stat.label}</div>
                 </div>
+              ))}
             </div>
-          </motion.div>
+          </div>
+
+          {/* Cinematic visual (image OR video) */}
+          <div className="lg:col-span-5 relative hidden lg:block">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-[#00BFFF]/5 rounded-[3.5rem] blur-3xl" />
+              <div className="relative rounded-[3rem] overflow-hidden border border-[#1A1A2E] shadow-2xl bg-black">
+                {useVideo ? (
+                  <video src={heroVideoUrl} autoPlay muted loop playsInline className="w-full h-auto object-cover aspect-[4/4.65]" />
+                ) : heroImageUrl ? (
+                  <img src={heroImageUrl} alt="Stane-Junior Aniambossou" className="w-full h-auto object-cover aspect-[4/4.65]" />
+                ) : (
+                  <div className="w-full aspect-[4/4.65] bg-gradient-to-br from-[#141430] to-black flex items-center justify-center">
+                    <span className="text-[110px] font-display text-white/20 tracking-[-8px]">SJ</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-[radial-gradient(#ffffff_0.55px,transparent_1px)] bg-[length:3px_3px] opacity-[0.04] pointer-events-none" />
+              </div>
+              <div className="absolute -bottom-5 -right-5 w-36 h-36 border border-[#00BFFF]/15 rounded-[2.5rem] -z-10" />
+            </div>
+          </div>
         </div>
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2">
-        <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 1.5, repeat: Infinity }} className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-cyan-400 rounded-full flex justify-center pt-2">
-          <div className="w-1 h-2 bg-cyan-400 rounded-full" />
-        </motion.div>
-      </motion.div>
+      <div className="absolute bottom-9 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center text-[#A8B4C8]/50 text-xs tracking-[3px]">
+        SCROLL
+        <div className="w-px h-9 mt-2 bg-gradient-to-b from-[#00BFFF]/40 to-transparent" />
+      </div>
     </section>
   );
 };
