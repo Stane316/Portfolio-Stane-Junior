@@ -1,3 +1,4 @@
+// === FICHIER COMPLET : src/components/sections/Journey.tsx ===
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -6,10 +7,17 @@ import SectionNumber from '../../components/ui/SectionNumber';
 /**
  * Journey Section — Timeline of Stane's evolution
  * 
- * EVOLUTION 2026: New section showing the natural progression
- * from math olympiad → software engineering → AI systems
+ * EVOLUTION 2026: Updated to reflect natural progression
+ * from mathematics → software engineering → AI systems engineering (prolongement, not pivot)
  * 
- * Position: Between About and Skills (after the story, before the skills)
+ * Exact alignment with evolution portfolio.md:
+ * 2023 Math Olympiad
+ * 2024 Bac Série C (17.72/20 Très Bien)
+ * 2025 IFRI-UAC + GROW TECH + AI Discovery
+ * 2026 Beginning of specialization toward AI agents and intelligent systems
+ * Future: AI Systems Engineer
+ * 
+ * Position: Between About and Skills
  */
 
 interface JourneyStep {
@@ -31,24 +39,24 @@ const Journey: React.FC = () => {
       year: '2023',
       title_fr: 'Olympiades de Mathématiques',
       title_en: 'Mathematics Olympiad',
-      description_fr: "Première reconnaissance académique. Les mathématiques m'ont appris la rigueur, la logique et la persévérance — des fondations qui servent encore aujourd'hui dans la conception de systèmes.",
-      description_en: "First academic recognition. Mathematics taught me rigor, logic and perseverance — foundations that still serve me today in system design.",
+      description_fr: "Qualification aux Olympiades de Mathématiques. Les mathématiques m'ont appris la rigueur, la logique et la persévérance — des fondations solides qui servent encore aujourd'hui dans la conception de systèmes intelligents.",
+      description_en: "Mathematics Olympiad qualification. Mathematics taught me rigor, logic and perseverance — solid foundations that still serve me today in the design of intelligent systems.",
       icon: 'math',
     },
     {
       year: '2024',
       title_fr: 'Bac Série C — Mention Très Bien',
       title_en: 'Bac Série C — Highest Honors',
-      description_fr: '17.72/20. Le baccalauréat scientifique le plus exigeant du système francophone. Une confirmation que la résolution de problèmes est mon langage naturel.',
-      description_en: '17.72/20. The most demanding scientific baccalaureate in the French-speaking system. A confirmation that problem-solving is my natural language.',
+      description_fr: "17.72/20. Le baccalauréat scientifique le plus exigeant du système francophone. Une confirmation que la résolution de problèmes complexes est mon langage naturel.",
+      description_en: "17.72/20. The most demanding scientific baccalaureate in the French-speaking system. A confirmation that complex problem-solving is my natural language.",
       icon: 'graduation',
     },
     {
       year: '2025',
       title_fr: 'IFRI-UAC + GROW TECH + Découverte de l\'IA',
       title_en: 'IFRI-UAC + GROW TECH + AI Discovery',
-      description_fr: "Entrée en Licence 1 Développement Logiciel. Fondation de GROW TECH. Et surtout : la découverte de l'intelligence artificielle comme prolongement naturel de ma façon de penser. Pas une mode — une évidence.",
-      description_en: "Started Software Development at IFRI-UAC. Founded GROW TECH. And most importantly: the discovery of artificial intelligence as the natural extension of how I think. Not a trend — an evidence.",
+      description_fr: "Admission en Licence 1 Développement Logiciel. Création de GROW TECH. Et surtout : la découverte de l'intelligence artificielle comme prolongement naturel de ma façon de penser. Pas une mode — une évidence.",
+      description_en: "Admission to Software Development Licence 1 at IFRI-UAC. Creation of GROW TECH. And most importantly: the discovery of artificial intelligence as the natural extension of how I think. Not a trend — an evidence.",
       icon: 'agency',
       highlight: true,
     },
@@ -56,8 +64,8 @@ const Journey: React.FC = () => {
       year: '2026',
       title_fr: 'Spécialisation IA & Systèmes Agents',
       title_en: 'AI & Agent Systems Specialization',
-      description_fr: "Apprentissage actif : Prompt Engineering, LLM Orchestration, RAG, AI Agents. Conception de concepts comme AgentFactura et l'Assistant Juridique OHADA. L'ingénierie logicielle rencontre l'intelligence.",
-      description_en: "Active learning: Prompt Engineering, LLM Orchestration, RAG, AI Agents. Designing concepts like AgentFactura and OHADA Legal Assistant. Software engineering meets intelligence.",
+      description_fr: "Début de spécialisation vers les agents IA et les systèmes intelligents. Apprentissage actif : Prompt Engineering, Orchestration LLM, RAG, AI Agents. Conception concrète de concepts comme AgentFactura et l'Assistant Juridique OHADA. L'ingénierie logicielle rencontre l'intelligence.",
+      description_en: "Beginning of specialization toward AI agents and intelligent systems. Active learning: Prompt Engineering, LLM Orchestration, RAG, AI Agents. Concrete design of concepts like AgentFactura and the OHADA Legal Assistant. Software engineering meets intelligence.",
       icon: 'ai',
       highlight: true,
     },
@@ -65,8 +73,8 @@ const Journey: React.FC = () => {
       year: 'Future',
       title_fr: 'Ingénieur Systèmes Intelligents',
       title_en: 'AI Systems Engineer',
-      description_fr: "Mon ambition : devenir un ingénieur capable de combiner génie logiciel et intelligence artificielle pour construire des systèmes intelligents utiles pour l'Afrique. Le chemin continue.",
-      description_en: "My ambition: become an engineer capable of combining software engineering and AI to build useful intelligent systems for Africa. The journey continues.",
+      description_fr: "Mon ambition : devenir un ingénieur capable de combiner mathématiques, génie logiciel et intelligence artificielle pour construire des systèmes intelligents utiles pour l'Afrique. Le chemin continue.",
+      description_en: "My ambition: to become an engineer capable of combining mathematics, software engineering and artificial intelligence to build intelligent systems useful for Africa. The journey continues.",
       icon: 'flag',
     },
   ];
