@@ -1,3 +1,4 @@
+// === FICHIER COMPLET : src/components/sections/Skills.tsx ===
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -31,42 +32,41 @@ const Skills: React.FC = () => {
     },
   };
 
-  // EVOLUTION 2026: Restructured by CAPABILITY, not technology
-  // Category 1: Software Engineering (merged Frontend+Backend)
-  // Category 2: AI & Intelligent Systems (NEW)
-  // Category 3: Tools & Methods
+  // EVOLUTION 2026: Positionnement technique clair
+  // De la rigueur mathématique (2023-2024) → génie logiciel (2025) → systèmes intelligents (2026+)
+  // IA & Systèmes Intelligents = prolongement naturel, pas un pivot
   const categories = [
     {
       title: isFr ? 'Ingénierie Logicielle' : 'Software Engineering',
       accent: 'bg-[#00BFFF]',
       skills: [
-        { name: 'React / TypeScript / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients' : 'Portfolio, CRM, Client projects' },
-        { name: 'TailwindCSS / Design Systems', level: 'mastered' as const, context: isFr ? 'System de design complet' : 'Complete design system' },
-        { name: 'Supabase / PostgreSQL', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime' : 'Auth, DB, Storage, Realtime' },
-        { name: 'Node.js / APIs REST', level: 'learning' as const, context: isFr ? 'APIs REST en cours' : 'REST APIs in progress' },
-        { name: 'Software Design & Architecture', level: 'learning' as const, context: isFr ? 'Patterns, modulaire, scalable' : 'Patterns, modular, scalable' },
-        { name: 'Framer Motion / Animations', level: 'mastered' as const, context: isFr ? 'Animations fluides' : 'Smooth animations' },
+        { name: 'React / TypeScript / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients réels (GROW TECH)' : 'Portfolio, CRM, Real client projects (GROW TECH)' },
+        { name: 'TailwindCSS / Design Systems', level: 'mastered' as const, context: isFr ? 'Système de design complet et maintenable' : 'Complete and maintainable design systems' },
+        { name: 'Supabase / PostgreSQL', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime — fondation de produits scalables' : 'Auth, DB, Storage, Realtime — foundation for scalable products' },
+        { name: 'Node.js / APIs REST', level: 'learning' as const, context: isFr ? 'APIs REST modernes et performantes' : 'Modern and performant REST APIs' },
+        { name: 'Software Design & Architecture', level: 'learning' as const, context: isFr ? 'Patterns, modularité, systèmes scalables' : 'Patterns, modularity, scalable systems' },
+        { name: 'Framer Motion / Animations', level: 'mastered' as const, context: isFr ? 'Expériences utilisateur fluides et professionnelles' : 'Smooth and professional user experiences' },
       ],
     },
     {
       title: isFr ? 'IA & Systèmes Intelligents' : 'AI & Intelligent Systems',
       accent: 'bg-purple-400',
       skills: [
-        { name: 'Prompt Engineering', level: 'mastered' as const, context: isFr ? 'Conception de prompts complexes, chaînes de raisonnement' : 'Complex prompt design, chain-of-thought' },
-        { name: 'LLM Orchestration & Workflows', level: 'learning' as const, context: isFr ? 'Chaînes, pipelines, intégration multi-modèles' : 'Chains, pipelines, multi-model integration' },
-        { name: 'RAG Systems', level: 'learning' as const, context: isFr ? 'Retrieval-Augmented Generation, embeddings, vector DB' : 'Retrieval-Augmented Generation, embeddings, vector DB' },
-        { name: 'AI Agents & Multi-Agent Systems', level: 'basics' as const, context: isFr ? 'Agents autonomes, orchestration, tool use' : 'Autonomous agents, orchestration, tool use' },
-        { name: 'Human-AI Collaboration', level: 'learning' as const, context: isFr ? 'Conception de workflows humain-IA' : 'Human-AI workflow design' },
+        { name: 'Prompt Engineering', level: 'mastered' as const, context: isFr ? 'Conception de prompts complexes et chaînes de raisonnement. Utilisé dans AgentFactura et Assistant OHADA.' : 'Complex prompt design and chain-of-thought. Used in AgentFactura and OHADA Legal Assistant concepts.' },
+        { name: 'LLM Orchestration & Workflows', level: 'learning' as const, context: isFr ? 'Chaînes, pipelines et intégration multi-modèles' : 'Chains, pipelines and multi-model integration' },
+        { name: 'RAG Systems', level: 'learning' as const, context: isFr ? 'Retrieval-Augmented Generation, embeddings, vector databases' : 'Retrieval-Augmented Generation, embeddings, vector databases' },
+        { name: 'AI Agents & Multi-Agent Systems', level: 'learning' as const, context: isFr ? 'Agents autonomes, orchestration, tool use — spécialisation 2026 en cours' : 'Autonomous agents, orchestration, tool use — 2026 specialization in progress' },
+        { name: 'Human-AI Collaboration', level: 'learning' as const, context: isFr ? 'Conception de workflows où l\'humain et l\'IA collaborent efficacement' : 'Designing workflows where humans and AI collaborate effectively' },
       ],
     },
     {
       title: isFr ? 'Outils & Méthodes' : 'Tools & Methods',
       accent: 'bg-emerald-400',
       skills: [
-        { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versionning & collaboration' : 'Versioning & collaboration' },
-        { name: 'Problem Framing & Product Thinking', level: 'mastered' as const, context: isFr ? 'De l\'observation au produit' : 'From observation to product' },
-        { name: 'Figma / UI Design', level: 'learning' as const, context: isFr ? 'Maquettes & prototypes' : 'Mockups & prototypes' },
-        { name: 'Vercel / Netlify / CI/CD', level: 'mastered' as const, context: isFr ? 'Déploiement continu' : 'Continuous deployment' },
+        { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versioning, collaboration et contribution open-source' : 'Versioning, collaboration and open-source contribution' },
+        { name: 'Problem Framing & Product Thinking', level: 'mastered' as const, context: isFr ? 'De l\'observation d\'un problème réel à la conception d\'un produit' : 'From observing a real problem to designing a product' },
+        { name: 'Figma / UI Design', level: 'learning' as const, context: isFr ? 'Maquettes, prototypes et systèmes de design' : 'Mockups, prototypes and design systems' },
+        { name: 'Vercel / Netlify / CI/CD', level: 'mastered' as const, context: isFr ? 'Déploiement continu et mise en production rapide' : 'Continuous deployment and fast production releases' },
       ],
     },
   ];
@@ -82,7 +82,7 @@ const Skills: React.FC = () => {
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
               {isFr ? 'COMPÉTENCES' : 'SKILLS'}
             </h2>
-            {/* EVOLUTION 2026: Subtitle updated */}
+            {/* EVOLUTION 2026: Subtitle aligné avec Journey */}
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
               {isFr ? 'De la construction logicielle à la conception de systèmes intelligents.' : 'From software engineering to intelligent systems design.'}
             </p>
@@ -134,7 +134,7 @@ const Skills: React.FC = () => {
           ))}
         </div>
 
-        {/* EVOLUTION 2026: Note honnêteté enrichie */}
+        {/* EVOLUTION 2026: Note honnêteté — alignée avec Journey */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -144,8 +144,8 @@ const Skills: React.FC = () => {
         >
           <p className="text-[#4A5568] text-sm italic max-w-2xl mx-auto">
             {isFr 
-              ? 'Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière. L\'IA est mon domaine d\'apprentissage le plus actif. Je ne prétends pas maîtriser ce que je découvre, mais j\'investis délibérément dans cette direction.' 
-              : 'I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right. AI is my most active area of learning. I don\'t pretend to master what I\'m discovering, but I\'m deliberately investing in this direction.'}
+              ? 'Je ne veux pas devenir juste un autre développeur full-stack. Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. L\'IA est mon domaine d\'apprentissage le plus actif. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière. J\'investis délibérément dans cette direction pour devenir un ingénieur de systèmes intelligents.' 
+              : 'I do not want to become just another full-stack developer. I work with an honest approach: I only list what I can defend and explain. AI is my most active area of learning. My ability to intelligently use AI tools to complete projects is a skill in its own right. I am deliberately investing in this direction to become an intelligent systems engineer.'}
           </p>
         </motion.div>
       </div>
