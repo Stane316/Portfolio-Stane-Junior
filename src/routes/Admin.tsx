@@ -16,6 +16,7 @@ import AdminVision from '../admin/components/AdminVision';
 import AdminProjectsNew from '../admin/components/AdminProjectsNew';
 import AdminSkills from '../admin/components/AdminSkills';
 import GlobalLoadingIndicator from '../admin/components/GlobalLoadingIndicator';
+import MessageList from '../admin/components/MessageList';
 
 // Import centralisé des types (P2 Refactor)
 import {

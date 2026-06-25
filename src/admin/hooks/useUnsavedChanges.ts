@@ -1,17 +1,14 @@
 /**
- * useUnsavedChanges — Detects unsaved changes and warns before navigation
- *
- * P-05 FIX: Implements beforeunload + React Router blocking
- *
- * Usage:
- *   const { hasChanges, setHasChanges } = useUnsavedChanges();
- *   // When user edits, call setHasChanges(true)
- *   // When saved, call setHasChanges(false)
- *   // The hook automatically shows browser warning on tab close / URL change
+ * useUnsavedChanges — Safe version (no useBlocker)
+ * 
+ * Compatible with the current BrowserRouter setup.
+ * Only provides:
+ * - hasChanges state
+ * - beforeunload warning
+ * - proceed/cancel (no-ops for compatibility with AdminContent)
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { useBlocker } from 'react-router-dom';
 
 interface UseUnsavedChangesReturn {
   hasChanges: boolean;
@@ -30,31 +27,11 @@ export function useUnsavedChanges(): UseUnsavedChangesReturn {
     setHasChangesState(value);
   }, []);
 
-  // Block React Router navigation when there are unsaved changes
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => {
-      return hasChangesRef.current && currentLocation.pathname !== nextLocation.pathname;
-    }
-  );
-
-  const isBlocked = blocker.state === 'blocked';
-
-  const proceed = useCallback(() => {
-    hasChangesRef.current = false;
-    setHasChangesState(false);
-    blocker.proceed?.();
-  }, [blocker]);
-
-  const cancel = useCallback(() => {
-    blocker.reset?.();
-  }, [blocker]);
-
-  // beforeunload — warn when closing tab / refreshing
+  // beforeunload warning only (safe, no router dependency)
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasChangesRef.current) {
         e.preventDefault();
-        // Modern browsers ignore custom messages but require returnValue
         e.returnValue = '';
         return '';
       }
@@ -64,10 +41,19 @@ export function useUnsavedChanges(): UseUnsavedChangesReturn {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
+  const proceed = useCallback(() => {
+    hasChangesRef.current = false;
+    setHasChangesState(false);
+  }, []);
+
+  const cancel = useCallback(() => {
+    // no-op (safe version)
+  }, []);
+
   return {
     hasChanges,
     setHasChanges,
-    isBlocked,
+    isBlocked: false,
     proceed,
     cancel,
   };
