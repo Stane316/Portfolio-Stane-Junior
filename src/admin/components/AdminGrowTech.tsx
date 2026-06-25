@@ -23,16 +23,17 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     selectAll: true
   });
 
-  const [data, setData] = useState<GrowTechData>(DEFAULT_DATA);
+  const [draft, setDraft] = useState<GrowTechData>(DEFAULT_DATA);
   const [isDirty, setIsDirty] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Load from DB (only once when data arrives)
+  // Load server data into local draft ONLY once when loaded
   useEffect(() => {
     if (configData.length > 0 && configData[0].value_generic) {
       try {
         const parsed = JSON.parse(configData[0].value_generic);
-        setData({ ...DEFAULT_DATA, ...parsed });
+        const loaded = { ...DEFAULT_DATA, ...parsed };
+        setDraft(loaded);
         setIsDirty(false);
       } catch (e) {
         console.error('Erreur parsing growtech_data:', e);
@@ -40,34 +41,69 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
     }
   }, [configData]);
 
-  // Update local state only (no save)
-  const updateData = (updates: Partial<GrowTechData>) => {
-    const newData = { ...data, ...updates };
-    setData(newData);
-    setIsDirty(true);
+  // Pure local draft updates — NEVER trigger save
+  const updateDraft = (updates: Partial<GrowTechData>) => {
+    setDraft(prev => {
+      const updated = { ...prev, ...updates };
+      setIsDirty(true);
+      return updated;
+    });
   };
 
-  // Single explicit save
-  const handleSave = async () => {
+  const updateIdentity = (partial: Partial<GrowTechData>) => {
+    updateDraft(partial);
+  };
+
+  const updateVision = (vision: GrowTechData['vision']) => {
+    updateDraft({ vision });
+  };
+
+  const updateProjects = (projects: GrowTechData['projects']) => {
+    updateDraft({ projects });
+  };
+
+  const updateMembers = (members: GrowTechData['members']) => {
+    updateDraft({ members });
+  };
+
+  const handleSaveAll = async () => {
     if (!isDirty) return;
 
     setSaving(true);
     try {
-      const result = await saveItem(
-        { key: 'growtech_data', value_generic: JSON.stringify(data) },
-        configData[0]?.id
-      );
+      const payload = {
+        key: 'growtech_data',
+        value_generic: JSON.stringify(draft)
+      };
+      const result = await saveItem(payload, configData[0]?.id);
 
       if (result.success) {
         setIsDirty(false);
-        onToast('success', 'Données GROW TECH sauvegardées !');
+        onToast('success', '✅ Toutes les données GROW TECH ont été enregistrées avec succès !');
       } else {
         onToast('error', result.error || 'Erreur lors de la sauvegarde');
       }
-    } catch (err) {
-      onToast('error', 'Erreur inattendue');
+    } catch (err: any) {
+      onToast('error', 'Erreur inattendue : ' + err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (configData.length > 0 && configData[0].value_generic) {
+      try {
+        const parsed = JSON.parse(configData[0].value_generic);
+        const loaded = { ...DEFAULT_DATA, ...parsed };
+        setDraft(loaded);
+        setIsDirty(false);
+        onToast('info', 'Modifications annulées. Données serveur rechargées.');
+      } catch (e) {
+        onToast('error', 'Impossible de réinitialiser');
+      }
+    } else {
+      setDraft(DEFAULT_DATA);
+      setIsDirty(false);
     }
   };
 
@@ -81,79 +117,97 @@ const AdminGrowTech: React.FC<{ onToast: (type: 'success' | 'error' | 'info' | '
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Gestion GROW TECH</h2>
-        
-        <button
-          onClick={handleSave}
-          disabled={!isDirty || saving}
-          className={`px-6 py-2 rounded-lg font-medium transition-all ${
-            isDirty && !saving
-              ? 'bg-[#00BFFF] text-black hover:bg-white'
-              : 'bg-[#1A1A2E] text-[#4A5568] cursor-not-allowed'
-          }`}
-        >
-          {saving ? 'Sauvegarde...' : isDirty ? 'Enregistrer les modifications' : 'Aucune modification'}
-        </button>
+      {/* Header with single explicit save button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Gestion GROW TECH</h2>
+          <p className="text-[#4A5568] text-sm mt-1">État local + bouton d'enregistrement unique (stable)</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {isDirty && (
+            <span className="px-3 py-1 text-xs rounded-full bg-yellow-900/40 text-yellow-400 border border-yellow-700">
+              Modifications non sauvegardées
+            </span>
+          )}
+          
+          <button
+            onClick={handleReset}
+            disabled={!isDirty || saving}
+            className="px-4 py-2 text-sm bg-[#1A1A2E] hover:bg-[#252545] text-white rounded-lg border border-[#1A1A2E] disabled:opacity-50 transition-colors"
+          >
+            Annuler
+          </button>
+          
+          <button
+            onClick={handleSaveAll}
+            disabled={!isDirty || saving}
+            className="px-6 py-2 text-sm font-bold bg-[#00BFFF] hover:bg-[#00A3D9] text-black rounded-lg flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.985]"
+          >
+            {saving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                Enregistrement...
+              </>
+            ) : (
+              'Enregistrer toutes les modifications'
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Identité */}
+      {/* Identité & Description - local updates only */}
       <div className="glass-card p-6 space-y-6">
-        <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">
-          Identité &amp; Description
-        </h3>
-
+        <h3 className="text-white font-semibold text-lg border-b border-[#1A1A2E] pb-2">Identité & Description</h3>
+        
         <FileUpload
-          label="Logo GROW TECH"
+          label="Logo"
           bucket="portfolio-assets"
           folder="growtech"
-          currentUrl={data.logo_url}
-          onChange={(url) => updateData({ logo_url: url })}
+          currentUrl={draft.logo_url}
+          onChange={(url) => updateIdentity({ logo_url: url })}
           accept="image/*"
           maxSizeMB={5}
         />
 
         <BilingualInput
-          label="Description de l'agence"
-          valueFr={data.description_fr}
-          valueEn={data.description_en}
-          onChangeFr={(v) => updateData({ description_fr: v })}
-          onChangeEn={(v) => updateData({ description_en: v })}
+          label="Description"
+          valueFr={draft.description_fr}
+          valueEn={draft.description_en}
+          onChangeFr={(v) => updateIdentity({ description_fr: v })}
+          onChangeEn={(v) => updateIdentity({ description_en: v })}
           rows={4}
         />
       </div>
 
-      {/* Vision */}
-      <AdminGrowTechVision
-        vision={data.vision}
-        onChange={(vision) => updateData({ vision })}
+      {/* Sub-components receive local draft + pure update callbacks */}
+      <AdminGrowTechVision 
+        vision={draft.vision} 
+        onChange={updateVision} 
       />
 
-      {/* Projets */}
-      <AdminGrowTechProjects
-        projects={data.projects}
-        onChange={(projects) => updateData({ projects })}
-        onToast={onToast}
+      <AdminGrowTechProjects 
+        projects={draft.projects} 
+        onChange={updateProjects} 
+        onToast={onToast} 
       />
 
-      {/* Membres */}
-      <AdminGrowTechMembers
-        members={data.members}
-        onChange={(members) => updateData({ members })}
-        onToast={onToast}
+      <AdminGrowTechMembers 
+        members={draft.members} 
+        onChange={updateMembers} 
+        onToast={onToast} 
       />
 
-      {isDirty && (
-        <div className="sticky bottom-4 flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-[#00BFFF] text-black px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-white transition-all"
-          >
-            {saving ? 'Sauvegarde en cours...' : 'Enregistrer toutes les modifications'}
-          </button>
-        </div>
-      )}
+      {/* Bottom save CTA */}
+      <div className="flex justify-end pt-4">
+        <button
+          onClick={handleSaveAll}
+          disabled={!isDirty || saving}
+          className="px-8 py-3 bg-[#00BFFF] hover:bg-[#00A3D9] text-black font-bold rounded-xl text-base flex items-center gap-3 disabled:opacity-60 transition-all"
+        >
+          {saving ? 'Enregistrement en cours...' : '💾 Enregistrer toutes les modifications'}
+        </button>
+      </div>
     </div>
   );
 };
