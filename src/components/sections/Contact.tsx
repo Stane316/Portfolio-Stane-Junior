@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import SectionNumber from '../../components/ui/SectionNumber';
 
 const Contact: React.FC = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
   const { siteConfig } = useSupabaseData();
 
@@ -109,19 +109,17 @@ const Contact: React.FC = () => {
           
           {/* Colonne Gauche : Info & Liens */}
           <div className="relative">
-            <SectionNumber number="06" />
+            <SectionNumber number="09" />
             {/* EVOLUTION 2026: Title changed */}
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10 mb-6">
               {isFr ? 'CONSTRUISONS' : 'LET\'S BUILD'}
             </h2>
             {/* EVOLUTION 2026: Subtitle + description */}
             <p className="text-[#00BFFF] text-lg font-semibold mb-2 relative z-10">
-              {isFr ? 'Projets IA · Collaboration · Recherche' : 'AI Projects · Collaboration · Research'}
+              {t('contact.subtitle')}
             </p>
             <p className="text-[#A8B4C8] text-xl font-light leading-relaxed mb-12 relative z-10">
-              {isFr 
-                ? 'Un projet IA en tête ? Une idée de système intelligent ? Une collaboration technique ? Discutons-en.' 
-                : 'Have an AI project in mind? An intelligent system idea? A technical collaboration? Let\'s talk.'}
+              {t('contact.description')}
             </p>
 
             {/* Social Links */}

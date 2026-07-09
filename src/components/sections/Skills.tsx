@@ -1,8 +1,19 @@
-// === FICHIER COMPLET : src/components/sections/Skills.tsx ===
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import SectionNumber from '../../components/ui/SectionNumber';
+
+/**
+ * Skills Section — PORTFOLIO 2026
+ * 
+ * Restructured per brief: 4 categories
+ * 1. Software Engineering (Python, Java, JavaScript, Software design, Problem solving)
+ * 2. Web Development (Frontend, Backend, APIs, Databases)
+ * 3. Artificial Intelligence (Prompt engineering, LLM systems, AI agents, RAG)
+ * 4. Tools (Git, GitHub, Figma, VS Code, Claude, ChatGPT)
+ * 
+ * Section number: 05 (after WhatIBuild)
+ */
 
 interface SkillItem {
   name: string;
@@ -10,63 +21,102 @@ interface SkillItem {
   context: string;
 }
 
+interface SkillCategory {
+  titleKey: string;
+  accent: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  skills: SkillItem[];
+}
+
 const Skills: React.FC = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
 
   const levelConfig = {
-    mastered: { 
-      label: isFr ? 'Maîtrisé' : 'Mastered', 
-      color: 'text-[#00BFFF]', 
-      dot: 'bg-[#00BFFF]' 
+    mastered: {
+      label: t('skills.mastered'),
+      color: 'text-[#00BFFF]',
+      dot: 'bg-[#00BFFF]',
     },
-    learning: { 
-      label: isFr ? 'En apprentissage actif' : 'Actively Learning', 
-      color: 'text-yellow-400', 
-      dot: 'bg-yellow-400' 
+    learning: {
+      label: t('skills.learning'),
+      color: 'text-yellow-400',
+      dot: 'bg-yellow-400',
     },
-    basics: { 
-      label: isFr ? 'Notion' : 'Basics', 
-      color: 'text-[#4A5568]', 
-      dot: 'bg-[#4A5568]' 
+    basics: {
+      label: t('skills.basics'),
+      color: 'text-[#4A5568]',
+      dot: 'bg-[#4A5568]',
     },
   };
 
-  // EVOLUTION 2026: Positionnement technique clair
-  // De la rigueur mathématique (2023-2024) → génie logiciel (2025) → systèmes intelligents (2026+)
-  // IA & Systèmes Intelligents = prolongement naturel, pas un pivot
-  const categories = [
+  const categories: SkillCategory[] = [
     {
-      title: isFr ? 'Ingénierie Logicielle' : 'Software Engineering',
+      titleKey: isFr ? 'Ingénierie Logicielle' : 'Software Engineering',
       accent: 'bg-[#00BFFF]',
+      iconColor: 'text-[#00BFFF]',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+      ),
       skills: [
-        { name: 'React / TypeScript / Next.js', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, Projets clients réels (GROW TECH)' : 'Portfolio, CRM, Real client projects (GROW TECH)' },
-        { name: 'TailwindCSS / Design Systems', level: 'mastered' as const, context: isFr ? 'Système de design complet et maintenable' : 'Complete and maintainable design systems' },
-        { name: 'Supabase / PostgreSQL', level: 'mastered' as const, context: isFr ? 'Auth, DB, Storage, Realtime — fondation de produits scalables' : 'Auth, DB, Storage, Realtime — foundation for scalable products' },
-        { name: 'Node.js / APIs REST', level: 'learning' as const, context: isFr ? 'APIs REST modernes et performantes' : 'Modern and performant REST APIs' },
-        { name: 'Software Design & Architecture', level: 'learning' as const, context: isFr ? 'Patterns, modularité, systèmes scalables' : 'Patterns, modularity, scalable systems' },
-        { name: 'Framer Motion / Animations', level: 'mastered' as const, context: isFr ? 'Expériences utilisateur fluides et professionnelles' : 'Smooth and professional user experiences' },
+        { name: 'Python', level: 'learning' as const, context: isFr ? 'Scripts, automatisation, data' : 'Scripts, automation, data' },
+        { name: 'Java', level: 'learning' as const, context: isFr ? 'Programmation orientée objet, algorithmique' : 'Object-oriented programming, algorithms' },
+        { name: 'JavaScript / TypeScript', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, projets clients' : 'Portfolio, CRM, client projects' },
+        { name: isFr ? 'Software Design' : 'Software Design', level: 'learning' as const, context: isFr ? 'Patterns, architecture modulaire, scalable' : 'Patterns, modular architecture, scalable' },
+        { name: isFr ? 'Problem Solving' : 'Problem Solving', level: 'mastered' as const, context: isFr ? "De l'observation au produit" : 'From observation to product' },
       ],
     },
     {
-      title: isFr ? 'IA & Systèmes Intelligents' : 'AI & Intelligent Systems',
+      titleKey: isFr ? 'Développement Web' : 'Web Development',
       accent: 'bg-purple-400',
+      iconColor: 'text-purple-400',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+      ),
       skills: [
-        { name: 'Prompt Engineering', level: 'mastered' as const, context: isFr ? 'Conception de prompts complexes et chaînes de raisonnement. Utilisé dans AgentFactura et Assistant OHADA.' : 'Complex prompt design and chain-of-thought. Used in AgentFactura and OHADA Legal Assistant concepts.' },
-        { name: 'LLM Orchestration & Workflows', level: 'learning' as const, context: isFr ? 'Chaînes, pipelines et intégration multi-modèles' : 'Chains, pipelines and multi-model integration' },
-        { name: 'RAG Systems', level: 'learning' as const, context: isFr ? 'Retrieval-Augmented Generation, embeddings, vector databases' : 'Retrieval-Augmented Generation, embeddings, vector databases' },
-        { name: 'AI Agents & Multi-Agent Systems', level: 'learning' as const, context: isFr ? 'Agents autonomes, orchestration, tool use — spécialisation 2026 en cours' : 'Autonomous agents, orchestration, tool use — 2026 specialization in progress' },
-        { name: 'Human-AI Collaboration', level: 'learning' as const, context: isFr ? 'Conception de workflows où l\'humain et l\'IA collaborent efficacement' : 'Designing workflows where humans and AI collaborate effectively' },
+        { name: 'React / Next.js / TailwindCSS', level: 'mastered' as const, context: isFr ? 'Portfolio, CRM, design systems' : 'Portfolio, CRM, design systems' },
+        { name: isFr ? 'Backend & APIs REST' : 'Backend & REST APIs', level: 'learning' as const, context: isFr ? 'Node.js, Express, APIs en cours' : 'Node.js, Express, APIs in progress' },
+        { name: isFr ? 'Bases de données' : 'Databases', level: 'learning' as const, context: isFr ? 'Supabase / PostgreSQL, Auth, Storage' : 'Supabase / PostgreSQL, Auth, Storage' },
+        { name: 'Framer Motion / Animations', level: 'mastered' as const, context: isFr ? 'Animations fluides et interactives' : 'Smooth and interactive animations' },
       ],
     },
     {
-      title: isFr ? 'Outils & Méthodes' : 'Tools & Methods',
-      accent: 'bg-emerald-400',
+      titleKey: isFr ? 'Intelligence Artificielle' : 'Artificial Intelligence',
+      accent: 'bg-cyan-400',
+      iconColor: 'text-cyan-400',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      ),
       skills: [
-        { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versioning, collaboration et contribution open-source' : 'Versioning, collaboration and open-source contribution' },
-        { name: 'Problem Framing & Product Thinking', level: 'mastered' as const, context: isFr ? 'De l\'observation d\'un problème réel à la conception d\'un produit' : 'From observing a real problem to designing a product' },
-        { name: 'Figma / UI Design', level: 'learning' as const, context: isFr ? 'Maquettes, prototypes et systèmes de design' : 'Mockups, prototypes and design systems' },
-        { name: 'Vercel / Netlify / CI/CD', level: 'mastered' as const, context: isFr ? 'Déploiement continu et mise en production rapide' : 'Continuous deployment and fast production releases' },
+        { name: 'Prompt Engineering', level: 'mastered' as const, context: isFr ? 'Conception de prompts complexes, chaînes de raisonnement' : 'Complex prompt design, chain-of-thought' },
+        { name: 'LLM Systems & Orchestration', level: 'learning' as const, context: isFr ? 'Chaînes, pipelines, intégration multi-modèles' : 'Chains, pipelines, multi-model integration' },
+        { name: 'AI Agents & Multi-Agent Systems', level: 'basics' as const, context: isFr ? 'Agents autonomes, orchestration, tool use' : 'Autonomous agents, orchestration, tool use' },
+        { name: 'RAG Systems', level: 'learning' as const, context: isFr ? 'Retrieval-Augmented Generation, embeddings, vector DB' : 'Retrieval-Augmented Generation, embeddings, vector DB' },
+      ],
+    },
+    {
+      titleKey: isFr ? 'Outils' : 'Tools',
+      accent: 'bg-emerald-400',
+      iconColor: 'text-emerald-400',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+      skills: [
+        { name: 'Git / GitHub', level: 'mastered' as const, context: isFr ? 'Versionning & collaboration' : 'Versioning & collaboration' },
+        { name: 'Figma / UI Design', level: 'learning' as const, context: isFr ? 'Maquettes & prototypes' : 'Mockups & prototypes' },
+        { name: 'VS Code', level: 'mastered' as const, context: isFr ? 'Environnement de développement principal' : 'Primary development environment' },
+        { name: 'Claude / ChatGPT', level: 'mastered' as const, context: isFr ? 'Collaboration IA, ingénierie de prompts, productivité' : 'AI collaboration, prompt engineering, productivity' },
+        { name: 'Vercel / Netlify / CI/CD', level: 'mastered' as const, context: isFr ? 'Déploiement continu' : 'Continuous deployment' },
       ],
     },
   ];
@@ -78,31 +128,31 @@ const Skills: React.FC = () => {
         {/* Header */}
         <div className="mb-16 lg:mb-24">
           <div className="relative">
-            <SectionNumber number="02" />
+            <SectionNumber number="05" />
             <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
-              {isFr ? 'COMPÉTENCES' : 'SKILLS'}
+              {t('skills.title')}
             </h2>
-            {/* EVOLUTION 2026: Subtitle aligné avec Journey */}
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
-              {isFr ? 'De la construction logicielle à la conception de systèmes intelligents.' : 'From software engineering to intelligent systems design.'}
+              {t('skills.subtitle')}
             </p>
           </div>
         </div>
 
-        {/* Grille des catégories */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Category Grid — 2x2 on large screens */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {categories.map((category, catIndex) => (
             <motion.div
-              key={category.title}
+              key={category.titleKey}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: catIndex * 0.15, duration: 0.6 }}
-              className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF] transition-colors duration-300"
+              transition={{ delay: catIndex * 0.12, duration: 0.6 }}
+              className="bg-[#141430] border border-[#1A1A2E] rounded-2xl p-8 hover:border-[#00BFFF]/40 transition-colors duration-300"
             >
               <h3 className="text-xl text-white font-bold mb-8 flex items-center gap-3">
                 <span className={`w-2 h-8 ${category.accent} rounded-full`} />
-                {category.title}
+                <span className={category.iconColor}>{category.icon}</span>
+                {category.titleKey}
               </h3>
 
               <div className="space-y-6">
@@ -114,7 +164,7 @@ const Skills: React.FC = () => {
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: (catIndex * 0.15) + (skillIndex * 0.1), duration: 0.4 }}
+                      transition={{ delay: (catIndex * 0.12) + (skillIndex * 0.08), duration: 0.4 }}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[#A8B4C8] font-medium">{skill.name}</span>
@@ -134,7 +184,7 @@ const Skills: React.FC = () => {
           ))}
         </div>
 
-        {/* EVOLUTION 2026: Note honnêteté — alignée avec Journey */}
+        {/* Honesty note */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -143,9 +193,7 @@ const Skills: React.FC = () => {
           className="mt-16 text-center"
         >
           <p className="text-[#4A5568] text-sm italic max-w-2xl mx-auto">
-            {isFr 
-              ? 'Je ne veux pas devenir juste un autre développeur full-stack. Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. L\'IA est mon domaine d\'apprentissage le plus actif. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière. J\'investis délibérément dans cette direction pour devenir un ingénieur de systèmes intelligents.' 
-              : 'I do not want to become just another full-stack developer. I work with an honest approach: I only list what I can defend and explain. AI is my most active area of learning. My ability to intelligently use AI tools to complete projects is a skill in its own right. I am deliberately investing in this direction to become an intelligent systems engineer.'}
+            {t('skills.honesty')}
           </p>
         </motion.div>
       </div>

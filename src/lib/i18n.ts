@@ -1,15 +1,18 @@
 /**
  * Internationalization (i18n) translations
  * 
- * All text content for the portfolio is stored here in FR/EN.
- * NO hardcoded strings in components!
- * 
- * EVOLUTION 2026: Content updated to reflect trajectory toward
- * AI Systems Engineering — as a PROLONGEMENT, not a pivot.
+ * EVOLUTION 2026: Content restructured per PORTFOLIO 2026 brief.
+ * - Hero: "Building Intelligent Systems for Africa" as main title
+ * - About → "More than a developer" with new narrative
+ * - Journey: "From mathematics to intelligent systems"
+ * - NEW: What Drives Me ("Why I build") — 3 cards
+ * - NEW: What I Build ("What I build today") — 3 cards
+ * - Skills: 4 categories (Software Eng, Web Dev, AI, Tools)
+ * - Vision → "Looking ahead" + future direction
  * 
  * RÈGLE: Version FR = 100% français. Version EN = 100% anglais.
- * Les termes techniques universels (React, API, RAG, LLM) restent
- * en anglais dans les deux versions — ce sont des noms propres techniques.
+ * Termes techniques universels (React, RAG, LLM, API) restent en anglais.
+ * MEXT: SUPPRIMÉ (bourse ≠ compétence, directive utilisateur).
  */
 
 export type Language = 'fr' | 'en';
@@ -18,8 +21,10 @@ export const translations: Record<Language, Record<string, string>> = {
   fr: {
     // Navigation
     'nav.home': 'Accueil',
-    'nav.about': 'À propos',
+    'nav.about': 'Qui suis-je',
     'nav.journey': 'Parcours',
+    'nav.drives': 'Pourquoi',
+    'nav.build': 'Ce que je construis',
     'nav.skills': 'Compétences',
     'nav.projects': 'Projets',
     'nav.growtech': 'GROW TECH',
@@ -29,11 +34,14 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Hero Section
     'hero.badge': "Construire des systèmes intelligents pour l'Afrique",
-    'hero.headline.line1': 'Étudiant en Ingénierie Logicielle',
-    'hero.headline.line2': 'Construire des Systèmes Intelligents',
-    'hero.tagline': "Je ne construis pas seulement des logiciels. J'observe des problèmes réels, je comprends les systèmes qui les causent, puis je conçois des solutions intelligentes — souvent avec de l'IA — qui créent de la valeur en Afrique.",
-    'hero.cta.projects': 'Voir mes projets',
+    'hero.headline': "Construire des systèmes intelligents pour l'Afrique.",
+    'hero.subtitle.line1': 'Étudiant en Ingénierie Logicielle à l\'IFRI-UAC.',
+    'hero.subtitle.line2': 'Fondateur de GROW TECH.',
+    'hero.subtitle.line3': 'Exploration des agents IA, des systèmes intelligents et des produits numériques.',
+    'hero.body': "Je construis des produits logiciels, des systèmes intelligents et des solutions numériques qui résolvent des problèmes réels.",
+    'hero.cta.projects': 'Explorer mes projets',
     'hero.cta.contact': 'Me contacter',
+    'hero.cta.resume': 'Télécharger mon CV',
     'hero.stat.projects.value': '5+',
     'hero.stat.projects.label': 'Projets construits',
     'hero.stat.ai.value': '3+',
@@ -41,14 +49,13 @@ export const translations: Record<Language, Record<string, string>> = {
     'hero.stat.agency.value': '1',
     'hero.stat.agency.label': 'Agence fondée',
     
-    // About Section
-    'about.title': 'À propos de moi',
-    'about.subtitle': "Plus qu'un développeur. Un ingénieur en devenir.",
-    'about.text.p1': "J'ai 18 ans, je suis en Licence 1 à l'IFRI-UAC à Abomey-Calavi, et je code depuis que j'ai compris qu'on pouvait transformer une idée en quelque chose de réel avec juste un clavier.",
-    'about.text.p2': "Ce qui me motive n'est pas l'outil. C'est le problème à résoudre. J'ai travaillé dans une agence Mobile Money, j'ai vu comment les petits commerçants béninois gèrent — ou plutôt ne gèrent pas — leurs factures. C'est de là qu'est né FacturaPro. J'ai voulu faire plaisir à quelqu'un d'une façon que personne d'autre ne pouvait faire. C'est de là qu'est né Capsule.",
-    'about.text.p3': "Aujourd'hui, j'ai fondé GROW TECH avec un collaborateur. Six personnes. Une vraie agence. On développe des solutions digitales pour les entreprises du Bénin et de la sous-région.",
-    'about.text.p4': "Récemment, mon parcours a pris une direction claire. L'intelligence artificielle n'est pas une mode pour moi, c'est le prolongement naturel de ma façon de penser : observer un système, comprendre sa logique, puis concevoir des solutions qui apprennent et s'adaptent. Aujourd'hui, je développe des agents IA et des systèmes intelligents. Mon objectif est de devenir un ingénieur capable de concevoir des systèmes intelligents utiles pour l'Afrique.",
-    'about.conclusion': "Je suis un ingénieur logiciel en devenir qui combine mathématiques, génie logiciel et intelligence artificielle pour construire des systèmes intelligents.",
+    // About Section — "More than a developer"
+    'about.title': 'Plus qu\'un développeur.',
+    'about.text.p1': "Je m'appelle Stane Aniambossou.",
+    'about.text.p2': "Je suis un étudiant en ingénierie logicielle du Bénin, passionné par l'intelligence artificielle, le génie logiciel et la technologie utile.",
+    'about.text.p3': "Mon parcours a commencé par les mathématiques, s'est poursuivi par le développement logiciel et évolue maintenant vers les systèmes intelligents et les agents IA.",
+    'about.text.p4': "Je n'aime pas simplement écrire du code. J'aime comprendre les systèmes, résoudre des problèmes et construire des produits qui ont du sens.",
+    'about.text.p5': "Aujourd'hui, mon ambition est de contribuer à la prochaine génération de systèmes intelligents tout en créant des technologies adaptées aux réalités africaines.",
     'about.location': '📍 Abomey-Calavi, Bénin',
     'about.education': '🎓 IFRI-UAC — Licence 1 Dev Logiciel',
     'about.role': '🏢 Fondateur & Tech Lead — GROW TECH',
@@ -56,23 +63,43 @@ export const translations: Record<Language, Record<string, string>> = {
     'about.specialization': '🤖 Spécialisation IA & Systèmes Agents',
     'about.cv.download': 'Télécharger mon CV',
     
-    // Journey Section
-    'journey.title': 'PARCOURS',
-    'journey.subtitle': "De la rigueur mathématique à l'ingénierie des systèmes intelligents. Une progression naturelle.",
+    // Journey Section — "From mathematics to intelligent systems"
+    'journey.title': 'Des mathématiques aux systèmes intelligents.',
+    'journey.subtitle': "Un parcours qui suit sa logique naturelle.",
     'journey.now': 'Maintenant',
     'journey.statement': "Je ne veux pas devenir juste un autre développeur full-stack. Mon ambition est de devenir un ingénieur capable de construire des systèmes intelligents.",
     
+    // What Drives Me Section — "Why I build"
+    'drives.title': 'Pourquoi je construis.',
+    'drives.subtitle': 'Ce qui me pousse à créer, au-delà du code.',
+    'drives.problems.title': 'Résoudre de vrais problèmes',
+    'drives.problems.text': "La technologie prend de la valeur quand elle améliore la vie des gens.",
+    'drives.products.title': 'Construire des produits utiles',
+    'drives.products.text': "Je préfère les produits qui ont du sens aux projets de démonstration.",
+    'drives.learning.title': 'Apprendre en construisant',
+    'drives.learning.text': "La meilleure façon de comprendre les systèmes complexes, c'est de les construire.",
+    
+    // What I Build Section — "What I build today"
+    'build.title': 'Ce que je construis aujourd\'hui.',
+    'build.subtitle': 'Trois domaines. Une même exigence : l\'utilité.',
+    'build.digital.title': 'Produits numériques',
+    'build.digital.items': 'Applications SaaS · Plateformes éducatives · Outils métier',
+    'build.intelligent.title': 'Systèmes intelligents',
+    'build.intelligent.items': 'Agents IA · Automatisation · Collaboration humain-IA',
+    'build.african.title': 'Solutions africaines',
+    'build.african.items': 'Produits adaptés aux réalités locales · Technologies accessibles · Innovation utile',
+    
     // Skills Section
-    'skills.title': 'Ce que je maîtrise',
+    'skills.title': 'Compétences',
     'skills.subtitle': 'De la construction logicielle à la conception de systèmes intelligents.',
     'skills.mastered': 'Maîtrisé',
     'skills.learning': 'En apprentissage actif',
     'skills.basics': 'Notions',
-    'skills.honesty': "Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. Ma capacité à utiliser intelligemment les outils IA pour mener des projets à terme est une compétence à part entière — pas un aveu de faiblesse. L'IA est mon domaine d'apprentissage le plus actif. Je ne prétends pas maîtriser ce que je découvre, mais j'investis délibérément dans cette direction.",
+    'skills.honesty': "Je travaille avec une approche honnête : je ne liste que ce que je peux défendre et expliquer. L'IA est mon domaine d'apprentissage le plus actif. Je ne prétends pas maîtriser ce que je découvre, mais j'investis délibérément dans cette direction.",
     
     // Projects Section
     'projects.title': 'Projets réels',
-    'projects.subtitle': 'Des problèmes observés. Des solutions livrées.',
+    'projects.subtitle': 'Chaque projet raconte un problème, une solution et un apprentissage.',
     'projects.view': 'Voir le projet',
     'projects.caseStudy': 'Étude de cas',
     'projects.status.delivered': 'Livré · En production',
@@ -102,10 +129,14 @@ export const translations: Record<Language, Record<string, string>> = {
     'growtech.services.sass': 'Solutions SaaS pour le marché africain',
     'growtech.services.pme': 'Accompagnement digital PME',
     
-    // Vision Section
-    'vision.title': 'Ce que je construis pour demain',
-    'vision.subtitle': 'Des idées documentées, des problèmes réels, des marchés identifiés.',
-    'vision.explanation': "Ces projets ne sont pas encore livrés. Ils sont en réflexion, en pause ou en construction. Je les présente ici non pas pour prétendre qu'ils existent, mais parce qu'ils témoignent d'une façon de penser : observer un problème de marché, documenter une solution, valider avant de coder.",
+    // Vision Section — "Looking ahead"
+    'vision.title': 'Ce qui m\'attend.',
+    'vision.subtitle': 'L\'avenir du logiciel passe par l\'intelligence.',
+    'vision.explanation': "L'intelligence artificielle représente la prochaine grande transformation du logiciel. Mes intérêts actuels se concentrent sur les agents IA, les systèmes multi-agents, l'orchestration de LLM, les systèmes RAG, les assistants intelligents et la collaboration humain-IA.",
+    'vision.learning.title': 'En apprentissage actif',
+    'vision.learning.items': 'IA Agentique · Prompt Engineering · Architectures RAG · Workflows LLM · Agents autonomes',
+    'vision.goal.title': 'Objectif long terme',
+    'vision.goal.text': "Devenir un ingénieur systèmes intelligents capable de concevoir des systèmes logiciels intelligents qui combinent ingénierie logicielle et intelligence artificielle.",
     'vision.badge.paused': 'En pause · Concept documenté',
     'vision.badge.concept': 'Concept documenté',
     'vision.target': 'Cible',
@@ -119,9 +150,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'testimonials.watchVideo': 'Voir la vidéo',
     
     // Contact Section
-    'contact.title': "Construisons quelque chose d'utile",
+    'contact.title': "Construisons quelque chose d'utile.",
     'contact.subtitle': 'Projets IA · Collaboration · Recherche',
-    'contact.description': 'Un projet IA en tête ? Une idée de système intelligent ? Une collaboration technique ? Discutons-en.',
+    'contact.description': "Que vous soyez étudiant, chercheur, entreprise ou constructeur, je suis toujours intéressé par les discussions sur la technologie, l'intelligence artificielle et les projets qui comptent.",
     'contact.form.name': 'Nom complet',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Sujet',
@@ -144,7 +175,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Footer
     'footer.tagline': 'Ingénierie Logicielle & Systèmes Intelligents',
     'footer.founder': 'Fondateur de GROW TECH · Abomey-Calavi, Bénin',
-    'footer.copyright': '© 2025 Stane-Junior Aniambossou',
+    'footer.copyright': '© 2026 Stane-Junior Aniambossou',
     'footer.rights': 'Tous droits réservés.',
     
     // Admin
@@ -240,8 +271,10 @@ export const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
     'nav.home': 'Home',
-    'nav.about': 'About',
+    'nav.about': 'Who I Am',
     'nav.journey': 'Journey',
+    'nav.drives': 'Why I Build',
+    'nav.build': 'What I Build',
     'nav.skills': 'Skills',
     'nav.projects': 'Projects',
     'nav.growtech': 'GROW TECH',
@@ -251,11 +284,14 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Hero Section
     'hero.badge': 'Building Intelligent Systems for Africa',
-    'hero.headline.line1': 'Software Engineering Student',
-    'hero.headline.line2': 'Building Intelligent Systems',
-    'hero.tagline': "I don't just build software. I observe real problems, understand the systems behind them, then design intelligent solutions — often with AI — that create value in Africa.",
-    'hero.cta.projects': 'See my projects',
-    'hero.cta.contact': 'Get in touch',
+    'hero.headline': 'Building Intelligent Systems for Africa.',
+    'hero.subtitle.line1': 'Software Engineering Student at IFRI-UAC.',
+    'hero.subtitle.line2': 'Founder of GROW TECH.',
+    'hero.subtitle.line3': 'Exploring AI Agents, Intelligent Systems and Digital Products.',
+    'hero.body': 'I build software products, intelligent systems and digital solutions that solve real problems.',
+    'hero.cta.projects': 'Explore My Work',
+    'hero.cta.contact': 'Contact Me',
+    'hero.cta.resume': 'Download Resume',
     'hero.stat.projects.value': '5+',
     'hero.stat.projects.label': 'Projects Built',
     'hero.stat.ai.value': '3+',
@@ -263,14 +299,13 @@ export const translations: Record<Language, Record<string, string>> = {
     'hero.stat.agency.value': '1',
     'hero.stat.agency.label': 'Agency Founded',
     
-    // About Section
-    'about.title': 'About me',
-    'about.subtitle': 'More than a developer. An engineer in the making.',
-    'about.text.p1': "I'm 18, studying Software Development (Licence 1) at IFRI-UAC in Abomey-Calavi, and I've been coding since I realized you can turn an idea into something real with just a keyboard.",
-    'about.text.p2': "What drives me isn't the tool. It's the problem to solve. I worked at a Mobile Money agency and watched how small Beninese merchants handle — or rather don't handle — their invoicing. That's where FacturaPro came from. I wanted to create something special for someone in a way nobody else could. That's where Capsule came from.",
-    'about.text.p3': "Today, I co-founded GROW TECH with a business partner. Six people. A real agency. We build digital solutions for businesses in Benin and the West African sub-region.",
-    'about.text.p4': "Recently, my path has taken a clear direction. Artificial intelligence isn't a trend for me — it's the natural extension of how I think: observe a system, understand its logic, then design solutions that learn and adapt. Today I'm building AI agents and intelligent systems. My goal is to become an engineer who designs intelligent systems that create real value for Africa.",
-    'about.conclusion': "I'm a software engineer in the making who combines mathematics, software engineering and artificial intelligence to build intelligent systems.",
+    // About Section — "More than a developer"
+    'about.title': 'More than a developer.',
+    'about.text.p1': 'My name is Stane Aniambossou.',
+    'about.text.p2': 'I am a Software Engineering student from Benin, passionate about artificial intelligence, software engineering and useful technology.',
+    'about.text.p3': 'My journey started with mathematics, continued through software development and is now evolving toward intelligent systems and AI agents.',
+    'about.text.p4': 'I do not simply enjoy writing code. I enjoy understanding systems, solving problems and building products that have meaning.',
+    'about.text.p5': 'Today, my ambition is to contribute to the next generation of intelligent systems while creating technologies adapted to African realities.',
     'about.location': '📍 Abomey-Calavi, Benin',
     'about.education': '🎓 IFRI-UAC — Software Development Licence 1',
     'about.role': '🏢 Founder & Tech Lead — GROW TECH',
@@ -278,23 +313,43 @@ export const translations: Record<Language, Record<string, string>> = {
     'about.specialization': '🤖 AI & Agent Systems Specialization',
     'about.cv.download': 'Download my CV',
     
-    // Journey Section
-    'journey.title': 'JOURNEY',
-    'journey.subtitle': 'From mathematical rigor to intelligent systems engineering. A natural progression.',
+    // Journey Section — "From mathematics to intelligent systems"
+    'journey.title': 'From mathematics to intelligent systems.',
+    'journey.subtitle': 'A journey that follows its natural logic.',
     'journey.now': 'Now',
     'journey.statement': "I do not want to become just another full-stack developer. My ambition is to become an engineer capable of building intelligent systems.",
     
+    // What Drives Me Section — "Why I build"
+    'drives.title': 'Why I build.',
+    'drives.subtitle': 'What drives me to create, beyond code.',
+    'drives.problems.title': 'Solving Real Problems',
+    'drives.problems.text': 'Technology becomes valuable when it improves people\'s lives.',
+    'drives.products.title': 'Building Useful Products',
+    'drives.products.text': 'I prefer meaningful products over demonstration projects.',
+    'drives.learning.title': 'Learning Through Creation',
+    'drives.learning.text': 'The best way to understand complex systems is to build them.',
+    
+    // What I Build Section — "What I build today"
+    'build.title': 'What I build today.',
+    'build.subtitle': 'Three domains. One requirement: usefulness.',
+    'build.digital.title': 'Digital Products',
+    'build.digital.items': 'SaaS Applications · Educational Platforms · Business Tools',
+    'build.intelligent.title': 'Intelligent Systems',
+    'build.intelligent.items': 'AI Agents · Automation · Human-AI Collaboration',
+    'build.african.title': 'African Solutions',
+    'build.african.items': 'Products adapted to local realities · Accessible technologies · Useful innovation',
+    
     // Skills Section
-    'skills.title': 'What I master',
+    'skills.title': 'Skills',
     'skills.subtitle': 'From software engineering to intelligent systems design.',
     'skills.mastered': 'Mastered',
     'skills.learning': 'Actively learning',
     'skills.basics': 'Basic knowledge',
-    'skills.honesty': "I work with an honest approach: I only list what I can defend and explain. My ability to intelligently use AI tools to complete projects is a skill in its own right — not an admission of weakness. AI is my most active area of learning. I don't pretend to master what I'm discovering, but I'm deliberately investing in this direction.",
+    'skills.honesty': "I work with an honest approach: I only list what I can defend and explain. AI is my most active area of learning. I don't pretend to master what I'm discovering, but I'm deliberately investing in this direction.",
     
     // Projects Section
     'projects.title': 'Real projects',
-    'projects.subtitle': 'Problems observed. Solutions delivered.',
+    'projects.subtitle': 'Every project represents a problem, a solution and a lesson.',
     'projects.view': 'View project',
     'projects.caseStudy': 'Case study',
     'projects.status.delivered': 'Delivered · In production',
@@ -324,10 +379,14 @@ export const translations: Record<Language, Record<string, string>> = {
     'growtech.services.sass': 'SaaS solutions for African market',
     'growtech.services.pme': 'SME digital accompaniment',
     
-    // Vision Section
-    'vision.title': "What I'm building for tomorrow",
-    'vision.subtitle': 'Documented ideas, real problems, identified markets.',
-    'vision.explanation': "These projects are not yet delivered. They are in reflection, on hold, or under construction. I present them here not to claim they exist, but because they demonstrate a way of thinking: observe a market problem, document a solution, validate before coding.",
+    // Vision Section — "Looking ahead"
+    'vision.title': "What's ahead.",
+    'vision.subtitle': 'The future of software goes through intelligence.',
+    'vision.explanation': "Artificial intelligence represents the next major transformation of software. My current interests focus on AI Agents, multi-agent systems, LLM orchestration, RAG systems, intelligent assistants and human-AI collaboration.",
+    'vision.learning.title': 'Currently learning',
+    'vision.learning.items': 'Agentic AI · Prompt Engineering · RAG Architectures · LLM Workflows · Autonomous Agents',
+    'vision.goal.title': 'Long-term goal',
+    'vision.goal.text': "Become an AI Systems Engineer capable of designing intelligent software systems that combine software engineering and artificial intelligence.",
     'vision.badge.paused': 'On hold · Documented concept',
     'vision.badge.concept': 'Documented concept',
     'vision.target': 'Target',
@@ -341,9 +400,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'testimonials.watchVideo': 'Watch video',
     
     // Contact Section
-    'contact.title': "Let's build something useful",
+    'contact.title': "Let's build something useful.",
     'contact.subtitle': 'AI Projects · Collaboration · Research',
-    'contact.description': "Have an AI project in mind? An intelligent system idea? A technical collaboration? Let's talk.",
+    'contact.description': "Whether you are a student, researcher, company or builder, I am always interested in discussing technology, artificial intelligence and meaningful projects.",
     'contact.form.name': 'Full name',
     'contact.form.email': 'Email',
     'contact.form.subject': 'Subject',
@@ -366,7 +425,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Footer
     'footer.tagline': 'Software Engineering & Intelligent Systems',
     'footer.founder': 'Founder of GROW TECH · Abomey-Calavi, Benin',
-    'footer.copyright': '© 2025 Stane-Junior Aniambossou',
+    'footer.copyright': '© 2026 Stane-Junior Aniambossou',
     'footer.rights': 'All rights reserved.',
     
     // Admin
@@ -460,9 +519,6 @@ export const translations: Record<Language, Record<string, string>> = {
   },
 };
 
-/**
- * Translation helper function
- */
 export const translate = (key: string, lang: Language): string => {
   return translations[lang][key] || key;
 };

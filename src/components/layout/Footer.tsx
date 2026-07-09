@@ -54,6 +54,8 @@ const Footer: React.FC = memo(() => {
   const footerLinks = [
     { href: '#hero', label: t('nav.home') },
     { href: '#about', label: t('nav.about') },
+    { href: '#journey', label: t('nav.journey') },
+    { href: '#drives', label: t('nav.drives') },
     { href: '#projects', label: t('nav.projects') },
     { href: '#contact', label: t('nav.contact') },
     { href: '/blog', label: t('nav.blog') || 'Blog' },

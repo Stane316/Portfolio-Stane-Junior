@@ -4,66 +4,62 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 import SectionNumber from '../../components/ui/SectionNumber';
 
+/**
+ * About Section — PORTFOLIO 2026
+ * 
+ * Title: "More than a developer."
+ * 5 short paragraphs per brief, building the narrative:
+ * Name → Identity → Journey → Philosophy → Ambition
+ * + Info badges + Photo + Quote
+ */
 const About: React.FC = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isFr = lang === 'fr';
   const { siteConfig } = useSupabaseData();
 
-  // Photo spécifique pour About (différente de Hero)
   const aboutImageUrl = siteConfig['about_image_url']?.value_generic || '';
   const heroImageUrl = siteConfig['hero_image_url']?.value_generic || '';
   const displayImage = aboutImageUrl || heroImageUrl;
 
-  // EVOLUTION 2026: 4 paragraphs with AI as natural prolongement
-  const paragraphs = isFr
-    ? [
-        "J'ai 18 ans, étudiant en Licence 1 Développement Logiciel à l'IFRI-UAC. Je code depuis que j'ai compris qu'on pouvait transformer une idée en quelque chose de réel avec juste un clavier.",
-        "Ce qui me motive n'est pas l'outil. C'est le problème à résoudre. J'ai travaillé dans une agence Mobile Money, j'ai vu comment les petits commerçants béninois gèrent — ou plutôt ne gèrent pas — leurs factures. C'est de là qu'est né FacturaPro.",
-        "Aujourd'hui, j'ai co-fondé GROW TECH. Six personnes. Une vraie agence. On développe des solutions digitales pour les entreprises du Bénin et de la sous-région OHADA.",
-        "Récemment, mon parcours a pris une direction claire. L'intelligence artificielle n'est pas une mode pour moi, c'est le prolongement naturel de ma façon de penser : observer un système, comprendre sa logique, puis concevoir des solutions qui apprennent et s'adaptent. Aujourd'hui, je développe des agents IA et des systèmes intelligents. Mon objectif est de devenir un ingénieur capable de concevoir des systèmes intelligents utiles pour l'Afrique.",
-      ]
-    : [
-        "I'm 18, studying Software Development at IFRI-UAC. I've been coding since I realized you can turn an idea into something real with just a keyboard.",
-        "What drives me isn't the tool. It's the problem to solve. I worked at a Mobile Money agency and saw how small Beninese merchants struggle with invoicing. That's where FacturaPro was born.",
-        "Today, I co-founded GROW TECH. Six people. A real agency. We build digital solutions for businesses in Benin and the OHADA sub-region.",
-        "Recently, my path has taken a clear direction. Artificial intelligence isn't a trend for me — it's the natural extension of how I think: observe a system, understand its logic, then design solutions that learn and adapt. Today I'm building AI agents and intelligent systems. My goal is to become an engineer who designs intelligent systems that create real value for Africa.",
-      ];
+  const paragraphs = [
+    t('about.text.p1'),
+    t('about.text.p2'),
+    t('about.text.p3'),
+    t('about.text.p4'),
+    t('about.text.p5'),
+  ];
 
-  // EVOLUTION 2026: Stats updated — Projects, Agency, Age
   const stats = [
     { number: '5+', label: isFr ? 'Projets construits' : 'Projects Built' },
     { number: '1', label: isFr ? 'Agence fondée' : 'Agency Founded' },
     { number: '18', label: isFr ? 'Ans' : 'Years Old' },
   ];
 
-  // EVOLUTION 2026: Info badges with AI specialization
   const infoBadges = [
     { icon: '📍', text: isFr ? 'Abomey-Calavi, Bénin' : 'Abomey-Calavi, Benin' },
-    { icon: '🎓', text: isFr ? 'IFRI-UAC — Licence 1 Dev Logiciel' : 'IFRI-UAC — Software Development Licence 1' },
+    { icon: '🎓', text: isFr ? 'IFRI-UAC — Licence 1 Dev Logiciel' : 'IFRI-UAC — Software Engineering' },
     { icon: '🏢', text: isFr ? 'Fondateur & Tech Lead — GROW TECH' : 'Founder & Tech Lead — GROW TECH' },
     { icon: '🌍', text: isFr ? 'Zone OHADA — 17 pays cibles' : 'OHADA Zone — 17 target countries' },
     { icon: '🤖', text: isFr ? 'Spécialisation IA & Systèmes Agents' : 'AI & Agent Systems Specialization' },
   ];
 
-  // EVOLUTION 2026: Updated conclusion — from "développeur" to "ingénieur logiciel en devenir"
   const conclusion = isFr
-    ? "Je suis un ingénieur logiciel en devenir qui combine mathématiques, génie logiciel et intelligence artificielle pour construire des systèmes intelligents."
-    : "I'm a software engineer in the making who combines mathematics, software engineering and artificial intelligence to build intelligent systems.";
+    ? "Je suis un ingénieur logiciel en devenir. J'observe, je comprends, je construis. Et aujourd'hui, je construis des systèmes intelligents."
+    : "I'm a software engineer in the making. I observe, I understand, I build. And today, I build intelligent systems.";
 
   return (
     <section id="about" className="py-24 lg:py-32 bg-[#0A0A1E] relative overflow-hidden">
       <div className="container-custom max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
         
-        {/* Header avec SectionNumber */}
+        {/* Header */}
         <div className="mb-16 lg:mb-24">
           <div className="relative">
             <SectionNumber number="01" />
-            <h2 className="text-6xl sm:text-8xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
-              {isFr ? 'À PROPOS' : 'ABOUT'}
+            <h2 className="text-5xl sm:text-7xl lg:text-9xl font-heading text-white tracking-tighter relative z-10">
+              {t('about.title')}
             </h2>
-            {/* EVOLUTION 2026: Subtitle updated */}
             <p className="text-[#A8B4C8] text-lg mt-4 max-w-lg relative z-10">
-              {isFr ? "Plus qu'un développeur. Un ingénieur en devenir." : 'More than a developer. An engineer in the making.'}
+              {isFr ? 'Qui je suis. Ce qui me définit.' : 'Who I am. What defines me.'}
             </p>
           </div>
         </div>
@@ -72,15 +68,19 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* Colonne Gauche: Texte (7/12) */}
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7 space-y-6">
             {paragraphs.map((text, index) => (
               <motion.p
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.6 }}
-                className={`text-[#A8B4C8] text-lg lg:text-xl leading-relaxed font-light ${index === 3 ? 'border-l-2 border-[#00BFFF] pl-4 sm:pl-6' : ''}`}
+                transition={{ delay: index * 0.12, duration: 0.6 }}
+                className={`leading-relaxed font-light ${
+                  index === 0 ? 'text-white text-2xl lg:text-3xl font-medium' 
+                  : index === 4 ? 'text-[#A8B4C8] text-lg lg:text-xl border-l-2 border-[#00BFFF] pl-4 sm:pl-6' 
+                  : 'text-[#A8B4C8] text-lg lg:text-xl'
+                }`}
               >
                 {text}
               </motion.p>
@@ -102,7 +102,7 @@ const About: React.FC = () => {
               ))}
             </motion.div>
 
-            {/* EVOLUTION 2026: Info badges including AI + MEXT */}
+            {/* Info badges */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -127,38 +127,28 @@ const About: React.FC = () => {
 
           {/* Colonne Droite: Photo & Citation (5/12) */}
           <div className="lg:col-span-5 flex flex-col gap-8">
-            {/* Photo - Utilise about_image_url si disponible, sinon hero_image_url */}
-            {/* Photo About Adaptée */}
-<motion.div
-    initial={{ opacity: 0, x: 30 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.8 }}
-    className="relative flex justify-center"
->
-    <div className="w-auto h-auto max-w-[350px] lg:max-w-[400px]">
-        {/* Cadre principal */}
-        <div className="aspect-auto rounded-2xl overflow-hidden bg-[#141430] border border-[#1A1A2E]">
-            {displayImage ? (
-                // object-contain garantit que la photo entière est visible
-                <img 
-                    src={displayImage} 
-                    alt="Stane-Junior" 
-                    className="w-full h-auto object-contain" 
-                />
-            ) : (
-                // Fallback
-                <div className="w-[350px] h-[450px] flex items-center justify-center">
-                    <span className="text-8xl font-heading text-white opacity-50">SJ</span>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative flex justify-center"
+            >
+              <div className="w-auto h-auto max-w-[350px] lg:max-w-[400px]">
+                <div className="aspect-auto rounded-2xl overflow-hidden bg-[#141430] border border-[#1A1A2E]">
+                  {displayImage ? (
+                    <img src={displayImage} alt="Stane-Junior" className="w-full h-auto object-contain" />
+                  ) : (
+                    <div className="w-[350px] h-[450px] flex items-center justify-center">
+                      <span className="text-8xl font-heading text-white opacity-50">SJ</span>
+                    </div>
+                  )}
                 </div>
-            )}
-        </div>
-        {/* Élément décoratif */}
-        <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-[#00BFFF] rounded-2xl -z-10" />
-    </div>
-</motion.div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-[#00BFFF] rounded-2xl -z-10" />
+              </div>
+            </motion.div>
 
-            {/* EVOLUTION 2026: Citation mise à jour */}
+            {/* Citation */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}

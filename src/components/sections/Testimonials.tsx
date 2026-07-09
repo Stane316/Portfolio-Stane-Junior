@@ -82,7 +82,7 @@ const Testimonials: React.FC = () => {
         {/* Header */}
         <div className="mb-16 lg:mb-24">
           <div className="relative">
-            <SectionNumber number="05" />
+            <SectionNumber number="08" />
             <h2 className="text-5xl sm:text-7xl lg:text-8xl font-heading text-white tracking-tighter relative z-10">
               TÉMOIGNAGES
             </h2>
